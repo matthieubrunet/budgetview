@@ -22,6 +22,7 @@ Le tri ci-dessous s'appuie sur l'historique git.
 | `LoginTest`, `SignpostSequenceTest` | séries par défaut « Income 1/2 » devenues « Income / Interest » | `b69993967` (2016) |
 | mode démo (`LoginTest` ×4, `SignpostSequenceTest`) | snapshots de démo non générés : `mvn -Pgen-demo install` | — |
 | `ColorTest` | **bug de l'appli** : clé `dashboard.title` (titre de l'import cloud) absente des 6 thèmes ; ajoutée avec `404040` comme le thème par défaut, le fond étant clair partout | — |
+| `BNPTest` ×4 | **régression de l'appli** : les 22 règles de libellés (`transactionMatcher`) de `banks/fr/bnp.xml` avaient été supprimées en marge du branchement Budgea, sans raison donnée ; restaurées depuis le parent de ce commit, car l'import OFX/QIF est le seul qui reste (Budgea arrêté) | `501972923` (2017) |
 
 ## Désactivés (méthode renommée `disabled_*`, raison en commentaire)
 
@@ -34,10 +35,6 @@ désactivée en la renommant, et une classe vide est exclue dans le `pom` (sinon
 | `RestartTest.testChangeDayChangesPlannedTransactionsForSavingsSeries` | **bug connu** noté par l'auteur : des opérations prévues sont générées sur un mois passé après redémarrage |
 | `UrlTest` ×2 (classe exclue) | vérifie en ligne les URL des textes : dépend du réseau et de budgetview.fr |
 | `JsonImporterTest` (classe exclue) | import du service cloud Budgea, arrêté en 2018 |
-| `BNPTest` ×4 (classe exclue) | règles de libellés BNP retirées de `banks/fr/bnp.xml` (`501972923`, 2017) |
-
-**Décision à prendre :** faut-il restaurer les règles BNP pour les utilisateurs qui importent
-des fichiers OFX/QIF de la BNP ? Elles sont dans le commit parent de `501972923`.
 
 ## Restent en échec : 38 tests, à investiguer
 
