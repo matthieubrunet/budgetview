@@ -31,8 +31,8 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 | `budgetview/bv_website` | Contenu du site (fr/en). **Référence du comportement attendu** : aide utilisateur dans `fr/content/support/` (`faq/`, `guides/`) et journal des versions `support/derniers_changements.html` (5.0 du 2017-10-29 = Sync/Budgea ; 5.01 du 2017-11-12 = jar 156, la version officielle). À consulter avant de trancher entre le code et un test | hors Maven |
 | `uispec4j/` | Framework de tests d'IHM Swing (fork) | **commenté** |
 | `budgetview-android/` | Appli mobile (Gradle, à part) | hors Maven |
-| `functests/` | Ancien projet de tests IntelliJ (`.ipr`) | hors Maven |
-| `ssl/` | Certificats **et clés privées** du serveur (voir Points d'attention) | — |
+| `functests/` | Ancien projet de tests IntelliJ (fichiers `.ipr` retirés le 2026-11-15) | hors Maven |
+| `ssl/` | Ne garde que le README de génération du certificat serveur (voir Points d'attention) | — |
 
 ## Application desktop (`budgetview/bv_desktop`)
 
@@ -184,12 +184,11 @@ qui prend globs dans `~/.m2`.
 
 ## Points d'attention
 
-- `ssl/` contient `bv.key`, `bv.jks`, `bv.keystore` : clés privées versionnées
-  publiquement — à considérer comme compromises, ne pas les réutiliser.
+- Les clés privées du serveur (`ssl/bv.key`, `bv.jks`, `bv.keystore`) ont été retirées de l'arbre
+  le 2026-11-15 mais restent dans l'historique git, public : elles sont compromises, ne jamais les
+  réutiliser. Le `.gitignore` bloque désormais `*.key`, `*.jks`, `*.keystore`, `*.p12`, `*.pem`.
 - Les `howto/` (livraison, serveur) décrivent l'infrastructure d'origine
   (IP, comptes SSH) : documentation historique, pas à rejouer telle quelle.
-- Fichiers IntelliJ anciens (`.ipr`, `.iws`, `.iml`) versionnés.
-- L'extension Java de VS Code (Red Hat) écrit dans le dépôt : `bin/` (classes compilées),
-  `.settings/`, modifications de `.project`. Ni le build ni les tests ne s'en servent ; elle a été
-  désinstallée le 2026-11-15. Si ces fichiers réapparaissent, ce n'est pas du travail en cours :
-  restaurer les fichiers versionnés (`git checkout`) et supprimer les autres.
+- Fichiers d'IDE (IntelliJ `.ipr`/`.iws`/`.iml`, Eclipse `.project`/`.classpath`/`.settings/`,
+  `bin/`, `.vscode/`) : retirés et ignorés depuis le 2026-11-15, le `pom.xml` fait foi. L'extension
+  Java de VS Code (Red Hat), qui les créait, a été désinstallée ; s'ils réapparaissent, les supprimer.
