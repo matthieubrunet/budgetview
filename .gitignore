@@ -5,3 +5,4 @@ budgetview/bv_desktop/dump.jar
 .DS_Store
 tmp/
 budgetview/bv_desktop/badFile.ofx
+budgetview/bv_desktop/src/main/resources/demo/
