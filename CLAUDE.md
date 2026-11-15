@@ -149,6 +149,15 @@ Adaptations des tests faites pour la 6.00 :
   sinon plus aucune fenêtre principale ne se crée.
 - `LoggedInFunctionalTestCase.setUp` referme la fenêtre partagée (`static mainWindow`) s'il échoue :
   sinon tous les tests suivants de la classe échouent en cascade (« textBox 'name' not found »).
+- Fenêtre partagée, suite : un test qui passe seul mais échoue dans sa classe vient presque toujours
+  d'un réglage d'IHM laissé modifié par un test précédent (ex. filtrage par mois de la vue Budget).
+  Tout test qui change un tel réglage doit le rétablir avant de finir.
+- Un test qui se déconnecte puis se reconnecte doit travailler sur disque (`setInMemory(false)` dans
+  son `setUp`, voir `PreferencesTest`) : la déconnexion recrée la session (`MainWindow.initServerAccess`),
+  ce qui vide une base en mémoire.
+- Ne jamais lancer deux `mvn test` en même temps : ils écrivent dans le même `target/`. Pendant une suite
+  complète, lire ou éditer les sources reste possible (les classes sont déjà compilées).
+- Contrôle des données en échec : `OperationChecker.checkDataIsOk` affiche le détail des erreurs trouvées.
 - Pour diagnostiquer : rapports dans `target/surefire-reports/*.txt`, pile complète avec
   `-DtrimStackTrace=false`. Les tests écrivent dans `tmp/` (ignoré par git).
 
