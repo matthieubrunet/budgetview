@@ -11,6 +11,9 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 
 - Remote : `budgetview` (pas `origin`) → `https://github.com/matthieubrunet/budgetview.git`.
 - Branche : `master` (celle du fork, suivie depuis `budgetview/master`).
+- Remote `upstream` → `https://github.com/MarcGuiot/budgetview.git` (dépôt de l'auteur, figé depuis avril 2025).
+- **Pas de licence** sur l'application tant que la PR #2 (Apache 2.0) n'est pas acceptée chez l'auteur :
+  ne rien redistribuer d'ici là. Droits, démarches et licences des sous-projets : [docs/licence.md](docs/licence.md).
 - Historiquement versionné sous Mercurial (`budgetview/howto/livraison.txt`
   parle encore de `hg`), puis migré vers git.
 
@@ -167,6 +170,10 @@ Adaptations des tests faites pour la 6.00 :
   signale de faux liens cassés (voir `DataCheckingServiceTest`).
 - Pour diagnostiquer : rapports dans `target/surefire-reports/*.txt`, pile complète avec
   `-DtrimStackTrace=false`. Les tests écrivent dans `tmp/` (ignoré par git).
+- La commande `timeout` n'existe pas sur ce Mac (pas de coreutils). Une commande
+  `timeout … mvn test | grep …` échoue sans message et sort avec le code 0 : on croit les tests passés
+  alors qu'ils n'ont pas tourné. Pour limiter la durée, utiliser le délai de l'outil qui lance la commande,
+  et vérifier la ligne `Tests run:` finale.
 
 Tests de `globs` : 873, tous verts depuis le 2026-11-15 (détail et commande dans [docs/etat-des-tests.md](docs/etat-des-tests.md)).
 Toujours poser une limite de temps et une JVM par classe ; `clean` après un changement de signature (le vieux
