@@ -81,7 +81,12 @@ mvn -f uispec4j/pom.xml install -DskipTests
 # 2. Build complet (~30 s)
 mvn clean install -DskipTests
 
-# 3. Jar livrable : budgetview/bv_desktop/budgetview.jar (~9 Mo, shrinké) + config.jar
+# 3. Une fois (et après tout changement du modèle) : générer les comptes de démo
+#    src/main/resources/demo/demo-{fr,en}.snapshot. Fichiers non versionnés ; sans eux le
+#    bouton « Compte de démo » ne marche pas et les tests du mode démo échouent.
+mvn -Pgen-demo install -pl budgetview/bv_desktop -DskipTests
+
+# 4. Jar livrable : budgetview/bv_desktop/budgetview.jar (~9 Mo, shrinké) + config.jar
 mvn -Pgen-version clean install -DskipTests
 ```
 
@@ -119,7 +124,10 @@ mvn test -pl budgetview/bv_desktop                     # ~15 min, 1 049 tests, 1
 mvn test -pl budgetview/bv_desktop -Dtest=LoginTest    # une classe (liste séparée par des virgules)
 ```
 
-Pour l'état actuel de la suite, le relancer : les chiffres changent à chaque correction.
+Tri des échecs (corrigés, désactivés, restants) : [docs/etat-des-tests.md](docs/etat-des-tests.md).
+Pour l'état actuel de la suite, la relancer : les chiffres changent à chaque correction.
+Désactiver un test : JUnit 3, donc renommer la méthode `disabled_test…` avec un commentaire
+(`@Ignore` est sans effet) ; exclure la classe dans le `pom` si plus aucun test n'y reste.
 Réglages du `pom.xml` (surefire) et leurs raisons :
 - `-Xmx1024m` : à 256 Mo, les tests s'enlisaient en `OutOfMemoryError`.
 - `forkCount=1` + `reuseForks=false` : une JVM par classe. Les tests fonctionnels laissent fuir
