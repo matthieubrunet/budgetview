@@ -21,6 +21,7 @@ Le tri ci-dessous s'appuie sur l'historique git.
 | `PlannedTransactionCreationTriggerTest` | libellé `picsou` → `budgetview` à moitié renommé | `e2a70a817` (2016) |
 | `LoginTest`, `SignpostSequenceTest` | séries par défaut « Income 1/2 » devenues « Income / Interest » | `b69993967` (2016) |
 | mode démo (`LoginTest` ×4, `SignpostSequenceTest`) | snapshots de démo non générés : `mvn -Pgen-demo install` | — |
+| `ColorTest` | **bug de l'appli** : clé `dashboard.title` (titre de l'import cloud) absente des 6 thèmes ; ajoutée avec `404040` comme le thème par défaut, le fond étant clair partout | — |
 
 ## Désactivés (méthode renommée `disabled_*`, raison en commentaire)
 
@@ -38,7 +39,7 @@ désactivée en la renommant, et une classe vide est exclue dans le `pom` (sinon
 **Décision à prendre :** faut-il restaurer les règles BNP pour les utilisateurs qui importent
 des fichiers OFX/QIF de la BNP ? Elles sont dans le commit parent de `501972923`.
 
-## Restent en échec : 39 tests, à investiguer
+## Restent en échec : 38 tests, à investiguer
 
 | Groupe | Tests | Piste |
 |---|---|---|
@@ -48,7 +49,6 @@ des fichiers OFX/QIF de la BNP ? Elles sont dans le commit parent de `501972923`
 | Comptes utilisateurs | `SetPasswordTest` ×2 | après déconnexion, l'utilisateur auto-connecté n'est plus proposé (« Create auto login user » au lieu de « Enter without password ») |
 | Projets / épargne | `ProjectTransferTest` ×2, `ProjectUpgradeTest` ×1, `SeriesUpgradeTest` ×1, `SavingsTest` ×1, `AccountDeletionTest` ×1 | — |
 | Divers | `RestartTest.testCorrupt`, `PrintTest` (NPE), `BudgetViewTest`, `NotesViewTest`, `AnalysisBudgetViewStackChartTest`, `TimeViewPanelUISpecTest` | — |
-| **Bug de l'appli** | `ColorTest` | la clé de couleur `dashboard.title`, présente dans `colors/color.properties`, manque dans les 6 thèmes `color_*.properties` (black, blue, green, orange, pink, turquoise) |
 
 `SeriesUpgradeTest` n'échouait pas à la passe précédente : il est peut-être instable.
 

@@ -174,3 +174,7 @@ Tests de `globs` : ~40 échecs (GlobPrinterTest, SQL) et blocage infini sur HSQL
 - Les `howto/` (livraison, serveur) décrivent l'infrastructure d'origine
   (IP, comptes SSH) : documentation historique, pas à rejouer telle quelle.
 - Fichiers IntelliJ anciens (`.ipr`, `.iws`, `.iml`) versionnés.
+- L'extension Java de VS Code (Red Hat) écrit dans le dépôt : `bin/` (classes compilées),
+  `.settings/`, modifications de `.project`. Ni le build ni les tests ne s'en servent ; elle a été
+  désinstallée le 2026-11-15. Si ces fichiers réapparaissent, ce n'est pas du travail en cours :
+  restaurer les fichiers versionnés (`git checkout`) et supprimer les autres.
