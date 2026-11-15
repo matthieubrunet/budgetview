@@ -60,21 +60,59 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 
 ## Build et tests
 
+**Il faut un JDK 8.** uispec4j (dont tout le build dépend, voir plus bas)
+sous-classe `sun.awt.SunToolkit` et des classes AWT internes de Java 8 :
+il ne compile pas sous Java 17, et les tests d'IHM en ont besoin à l'exécution.
+
+Sur ce poste (Mac ARM), installé le 2026-11-15 :
+- JDK 8 : Zulu 8 (archive Azul, sans sudo) dans `~/Library/Java/JavaVirtualMachines/zulu-8.jdk`.
+  Les casks Homebrew de JDK exigent sudo ; Temurin n'a pas de JDK 8 pour aarch64.
+- Maven 3.10 (`brew install maven`) — fonctionne sous Java 8.
+- `openjdk@17` (Homebrew) aussi présent, inutile tant qu'on reste en Java 8.
+
 ```sh
-mvn -Pgen-version clean install -DskipTests=true   # produit budgetview.jar (shrinké) + dump.jar + config.jar
+export JAVA_HOME=$HOME/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home
+
+# 1. Une fois : installer uispec4j dans ~/.m2 (retiré du réacteur racine,
+#    mais requis : même -DskipTests résout les dépendances de test de globs et bv_desktop).
+#    Les modules d'exemple addressbook/calculator échouent : sans importance.
+mvn -f uispec4j/pom.xml install -DskipTests
+
+# 2. Build complet (~30 s)
+mvn clean install -DskipTests
+
+# 3. Jar livrable : budgetview/bv_desktop/budgetview.jar (~9 Mo, shrinké) + config.jar
+mvn -Pgen-version clean install -DskipTests
 ```
 
+Lancer l'application de dev : **`./run-dev.sh`** (`--build` pour reconstruire le jar avant).
+Le script fixe le JDK 8, met `-DSINGLE_INSTANCE_DISABLED=true` et utilise les données de
+`~/.budgetview-dev` (modifiable avec `BV_DEV_DATA`). Il refuse les dossiers de données de
+l'application officielle, y compris celui désigné par son `redirect.txt`, qui est dans Dropbox.
+
+- Le serveur d'origine `register.budgetview.fr` ne répond plus (constaté le 2026-11-15) :
+  vérification de version, licences et cloud sont inopérants. L'appli démarre quand même.
+
+- Le log est écrit dans `<data.path>/logs/log.txt`.
+- **Cohabitation avec l'appli officielle** (BudgetView 5.01 installée dans
+  `/Applications`, utilisée en parallèle par Matthieu) :
+  - Instance unique : chaque instance écoute sur 127.0.0.1, ports 5454, 3474,
+    14457 et 9381. Si l'officielle tourne, la version de dev s'y connecte et sort aussitôt avec
+    le code 0, sans rien afficher. Toujours lancer la version de dev avec `-DSINGLE_INSTANCE_DISABLED=true`.
+    Elle n'écoute alors pas, et l'officielle peut démarrer après elle.
+  - Données : **ne jamais** faire pointer la version de dev sur les données réelles
+    (`~/Library/Application Support/BudgetView`, ou le dossier désigné par son
+    `redirect.txt`). La version de dev est en 6.00 : ses triggers d'upgrade migreraient le
+    format, peut-être de façon illisible pour la 5.01. Toujours passer `-Dbudgetview.data.path`.
 - Cible Java **1.8** (dernier commit amont : passage en 1.8, désactivation
   du look & feel Mac qui ne compilait plus faute de `apple.laf.AquaLookAndFeel`).
-- Packaging natif via `jpackage` (commandes dans `README.md`).
+- Packaging natif via `jpackage` (commandes dans `README.md`) — `jpackage`
+  n'existe qu'à partir de Java 14 : il faudra un second JDK pour cette étape.
 - Tests : JUnit 4, surefire inclut `**/*Test.java` et `**/*Tests.java`.
   Les tests fonctionnels (`src/test/java/com/budgetview/functests`, classes de base
-  `LoggedInFunctionalTestCase`…) pilotent l'IHM via **uispec4j 2.3-SNAPSHOT** :
-  ce module étant retiré du réacteur, il faut l'installer à part
-  (`mvn -f uispec4j/pom.xml install`) avant de lancer les tests — hypothèse non vérifiée.
-- Le `pom` de `bv_desktop` déclare un dépôt `http://download.java.net/maven/2/`
-  (HTTP, mort) : Maven récent le bloquera ; à retirer si le build échoue dessus.
-- Sur ce poste, au 2026-11-15 : **ni JDK ni Maven installés** — aucun build n'a encore été tenté.
+  `LoggedInFunctionalTestCase`…) pilotent l'IHM via uispec4j. Pas encore lancés.
+- Le dépôt `http://download.java.net/maven/2/` déclaré dans `bv_desktop/pom.xml`
+  est mort mais ne gêne pas : tout se résout depuis Maven Central.
 
 ## Conventions repérées
 
