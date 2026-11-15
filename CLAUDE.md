@@ -110,7 +110,42 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
   n'existe qu'à partir de Java 14 : il faudra un second JDK pour cette étape.
 - Tests : JUnit 4, surefire inclut `**/*Test.java` et `**/*Tests.java`.
   Les tests fonctionnels (`src/test/java/com/budgetview/functests`, classes de base
-  `LoggedInFunctionalTestCase`…) pilotent l'IHM via uispec4j. Pas encore lancés.
+  `FunctionalTestCase` → `LoggedInFunctionalTestCase`) pilotent l'IHM via uispec4j.
+
+## Tests de bv_desktop
+
+```sh
+mvn test -pl budgetview/bv_desktop                     # ~15 min, 1 049 tests, 166 classes
+mvn test -pl budgetview/bv_desktop -Dtest=LoginTest    # une classe (liste séparée par des virgules)
+```
+
+Pour l'état actuel de la suite, le relancer : les chiffres changent à chaque correction.
+Réglages du `pom.xml` (surefire) et leurs raisons :
+- `-Xmx1024m` : à 256 Mo, les tests s'enlisaient en `OutOfMemoryError`.
+- `forkCount=1` + `reuseForks=false` : une JVM par classe. Les tests fonctionnels laissent fuir
+  fenêtres et threads (700+) : en JVM partagée, l'`OutOfMemoryError` arrivait vers la 80e classe
+  et la JVM mourait (« forked VM terminated without saying goodbye »), emportant la suite.
+- `-Dapple.awt.UIElement=true` : sans cela, chaque JVM de test passe au premier plan sur macOS
+  (icône Dock, vol du focus toutes les 2 s) et certaines fenêtres (« choix du compte ») s'affichent.
+
+Adaptations des tests faites pour la 6.00 :
+- Licence : la 6.00 active toutes les extensions et supprime le menu « Activer les extensions… »
+  (`Register` en anglais). `LicenseChecker.register()` ne fait plus rien ; ne plus appeler
+  `LicenseActivationChecker.enterLicense`.
+- Langue : la 6.00 force le français au démarrage. `Application.LANG_PROPERTY`
+  (`budgetview.lang` = `fr` par défaut, `en`, ou `keep`) ; `FunctionalTestCase` met `keep` pour
+  que les tests restent dans la langue qu'ils fixent (anglais, `Lang.ROOT`).
+- `FunctionalTestCase` installe un `SecurityManager` qui transforme en exception tout
+  `Runtime.exit()` venant de `com.budgetview.desktop` (ex. `ShowDialogAndExitExceptionHandler`).
+  Il ne doit pas bloquer les simples `checkExit()` de Swing (`setDefaultCloseOperation(EXIT_ON_CLOSE)`),
+  sinon plus aucune fenêtre principale ne se crée.
+- `LoggedInFunctionalTestCase.setUp` referme la fenêtre partagée (`static mainWindow`) s'il échoue :
+  sinon tous les tests suivants de la classe échouent en cascade (« textBox 'name' not found »).
+- Pour diagnostiquer : rapports dans `target/surefire-reports/*.txt`, pile complète avec
+  `-DtrimStackTrace=false`. Les tests écrivent dans `tmp/` (ignoré par git).
+
+Tests de `globs` : ~40 échecs (GlobPrinterTest, SQL) et blocage infini sur HSQLDB dans
+`HsqlExceptionTest`. Toujours poser une limite de temps quand on les lance.
 - Le dépôt `http://download.java.net/maven/2/` déclaré dans `bv_desktop/pom.xml`
   est mort mais ne gêne pas : tout se résout depuis Maven Central.
 
