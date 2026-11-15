@@ -62,15 +62,19 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 
 ## Build et tests
 
-**Il faut un JDK 8.** uispec4j (dont tout le build dépend, voir plus bas)
-sous-classe `sun.awt.SunToolkit` et des classes AWT internes de Java 8 :
-il ne compile pas sous Java 17, et les tests d'IHM en ont besoin à l'exécution.
+**JDK de référence : 8.** Le build et les tests marchent aussi sous JDK 17 depuis le 2026-11-15
+(uispec4j a une variante `java-jdk17`, profils `jdk17` activés d'office à partir de Java 9), mais la
+référence reste Zulu 8 tant que la migration n'est pas finie ([docs/migration-java.md](docs/migration-java.md)).
+- uispec4j sous-classe `sun.awt.SunToolkit` : le jar installé dans `~/.m2` n'est utilisable qu'avec le JDK
+  qui l'a construit. **Changer de JDK pour les tests = réinstaller uispec4j avec ce JDK** (étape 1), puis
+  `clean install` du réacteur : des classes compilées par javac 17 en cible 1.8 peuvent appeler des
+  méthodes absentes de Java 8.
 
 Sur ce poste (Mac ARM), installé le 2026-11-15 :
 - JDK 8 : Zulu 8 (archive Azul, sans sudo) dans `~/Library/Java/JavaVirtualMachines/zulu-8.jdk`.
   Les casks Homebrew de JDK exigent sudo ; Temurin n'a pas de JDK 8 pour aarch64.
 - Maven 3.10 (`brew install maven`) — fonctionne sous Java 8.
-- `openjdk@17` (Homebrew) aussi présent, inutile tant qu'on reste en Java 8.
+- `openjdk@17` (Homebrew) : `/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home`.
 
 ```sh
 export JAVA_HOME=$HOME/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home

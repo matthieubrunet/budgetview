@@ -1,7 +1,8 @@
 # Migration de Java 8 vers un Java récent
 
-État au 2026-11-15 : analyse faite, essai d'exécution sous Java 17 réussi, étapes 1 et 2 faites (plugins
-Maven en 3.0.x, shrinker supprimé). Le code compile toujours en 1.8 avec Zulu 8.
+État au 2026-11-15 : analyse faite, essai d'exécution sous Java 17 réussi, étapes 1 à 3 faites (plugins
+Maven en 3.0.x, shrinker supprimé, uispec4j porté). Build et tests tournent sous JDK 8 et sous JDK 17 ;
+la référence reste Zulu 8, le code est toujours compilé en cible 1.8.
 
 ## Décision : rester sur la JVM
 
@@ -41,7 +42,7 @@ contributeurs, ou pour repenser le produit.
 | Shrinker | Lit les `.class` avec ASM 3.1 (2007), qui ne connaît pas `invokedynamic`. Ça marche aujourd'hui faute de lambdas, mais une compilation pour Java 9+ en met dans chaque concaténation de chaînes. Passer à ASM 9 (l'API a changé : `MethodAdapter` n'existe plus) ou supprimer le shrinker, qui n'a plus d'intérêt avec `jpackage`. **Supprimé** (2026-11-15), voir plus bas. | — |
 | JGoodies Looks 2.2.0 | Thème Windows/Linux de 2008, avec des classes du projet dans le paquet de JGoodies. Fonctionnera probablement, à vérifier à l'écran. | à tester |
 | `SecurityManager` de `FunctionalTestCase` | Il faut un drapeau en Java 17-23, et il est désactivé pour de bon en Java 24. À remplacer par un point de sortie unique, remplaçable dans les tests. | ½ jour |
-| **uispec4j** | Sous-classe `sun.awt.SunToolkit` et les peers AWT. Java 9 a retiré de `Toolkit` les méthodes qui créent ces peers et fermé `sun.awt`. Il existe déjà trois variantes `java-jdk15/16/18`. Les 1 049 tests de bv_desktop en dépendent. | **la vraie inconnue** : de quelques jours à quelques semaines |
+| **uispec4j** | Sous-classe `sun.awt.SunToolkit` et les peers AWT. **Porté** (2026-11-15) en une dizaine de lignes, variante `java-jdk17`, voir plus bas. Reste une instabilité de `PrintTest`. | — |
 
 N'empêchent pas la migration : log4j 1.2 (fin de vie, sans conséquence en local), joda-time, les
 `new Integer(...)` (avertissements).
@@ -50,12 +51,68 @@ N'empêchent pas la migration : log4j 1.2 (fin de vie, sans conséquence en loca
 
 1. ~~Plugins Maven en 3.x, sous Java 8.~~ Fait.
 2. ~~Sort du shrinker : le supprimer ou passer à ASM 9.~~ Supprimé.
-3. Essai sur uispec4j : le compiler sous Java 17 avec `--add-exports`/`--add-opens` et compter ce qui
-   ne compile pas. Le résultat décide entre :
-   - **option A** : exécuter sur Java 21 (via `jpackage`) en compilant toujours en Java 8, tests sous Zulu 8 ;
-   - **option B** : tout passer en Java 21 (compilation, exécution, tests).
+3. ~~Essai sur uispec4j sous Java 17.~~ Fait : porté, ce qui décide pour l'**option B** (tout passer à un
+   Java récent : compilation, exécution, tests), plutôt que l'option A (exécuter sur Java 21, mais
+   compiler et tester sous Zulu 8).
 4. Hooks Mac vers `java.awt.Desktop`, avec remise de `apple.laf.useScreenMenuBar` (voir plus bas).
-5. Ensuite seulement : FlatLaf.
+5. Passage effectif : stabiliser `PrintTest` sous 17, remplacer le `SecurityManager` de `FunctionalTestCase`
+   (indispensable avant Java 24), décider des formats CLDR, installer un JDK 21, compiler en `--release 21`
+   (compiler ≥ 3.6) et faire de ce JDK la référence.
+6. Ensuite seulement : FlatLaf.
+
+## Portage d'uispec4j et tests sous Java 17 (2026-11-15)
+
+**Compilation.** Sous javac 17 avec `--add-exports`, 8 erreurs seulement, toutes mécaniques :
+
+| Erreur | Correction |
+|---|---|
+| `sun.awt.CausedFocusEvent` n'est plus public | `java.awt.event.FocusEvent.Cause`, public depuis Java 9 |
+| `createComponent`, `getMouseInfoPeer`, `createDesktopPeer` sont publics dans `ComponentFactory` | passés en `public` (sans effet en Java 8) |
+| `Toolkit.createDragSourceContextPeer` a disparu | appel via `ComponentFactory` |
+| `SunToolkit.isTaskbarSupported()` abstraite | ajoutée, `false` |
+
+Les classes propres à Java 9+ sont dans `src/main/java-jdk17`, copie de `java-jdk18`, choisie par le profil
+`jdk17` (`<jdk>[9,)</jdk>`). Le reste est dans le code commun, compatible Java 8. Point utile : avec
+`-source 8 -target 8`, javac 17 ne contrôle pas les modules et compile les `sun.*` **sans aucun
+`--add-exports`** (il les refuse même : « not allowed with target 8 »). Seule l'exécution demande des
+`--add-opens` (liste dans le profil `jdk17` de `bv_desktop/pom.xml`, propriété `jdk.test.args`).
+
+**Exécution.** Un seul blocage : Java 9+ ne renseigne plus la propriété `awt.toolkit`, et uispec4j ne
+connaissait en repli que `WToolkit` (Windows) et `MToolkit` (Motif, disparu). Ajout de
+`sun.lwawt.macosx.LWCToolkit` et `sun.awt.X11.XToolkit`. Il faut aussi `-Djava.security.manager=allow`
+pour le `SecurityManager` de `FunctionalTestCase`.
+
+**Résultats.**
+
+| Suite | Java 8 | Java 17 |
+|---|---|---|
+| tests propres d'uispec4j (894, lancés hors Maven : TestNG 5.0 trop vieux pour surefire) | 31 échecs | les mêmes 31 + 5 |
+| bv_desktop (1 030) | tout passe | 1 028 ; les 2 échecs ne se reproduisent pas tels quels |
+
+- Les 5 échecs d'uispec4j propres à Java 17 : 4 descriptions de `JSpinner` (Swing nomme ses flèches
+  `Spinner.nextButton` depuis Java 9) et un format de date (CLDR, ci-dessous). Rien dans l'interception.
+- `TimeViewPanelUISpecTest.testScrollToVisibleDoNotScrollTooMuch_3` : échoue une fois, passe à la relance.
+- **`PrintTest` est instable sous 17** : en trois lancements, un échec sur un test, un autre sur un autre
+  test, puis tout vert ; 3 fois sur 3 vert sous Java 8. Premier échec : `NullPointerException` dans Swing
+  (`this.invokerRootPane` est null) à l'ouverture d'un menu déroulant par `PopupMenuInterceptor` ; second :
+  exception dans un trigger de catégorisation, `System.exit(10)` par `ShowDialogAndExitExceptionHandler`.
+  Une course entre le fil de test et celui de Swing, à creuser avant de passer à Java 17 pour de bon.
+
+**Formats régionaux (CLDR).** Depuis Java 9, les formats viennent des données CLDR. Relevé en français :
+
+| | Java 8 | Java 17 |
+|---|---|---|
+| séparateur de milliers de `NumberFormat` | U+00A0 (espace insécable) | **U+202F** (espace fine insécable) |
+| date courte | `15/11/26` | `15/11/2026` |
+| date moyenne, mois, jours | `15 nov. 2026`, `novembre 2026`, `dim. 15 nov.` | identiques |
+
+BudgetView fixe presque partout ses motifs (`SimpleDateFormat("…")`) et formate les montants avec
+`Locale.US` : aucun test de bv_desktop n'y a réagi. `-Djava.locale.providers=COMPAT` rétablit les formats
+de Java 8, mais cette option disparaît en Java 23 : mieux vaut accepter CLDR.
+
+**Changer de JDK** : le jar d'uispec4j dans `~/.m2` ne vaut que pour le JDK qui l'a construit (la variante
+Java 17 référence `FocusEvent.Cause`, absente de Java 8). Réinstaller uispec4j, puis `clean install` du
+réacteur, à chaque changement de JDK pour les tests.
 
 ## Suppression du shrinker (2026-11-15)
 
