@@ -10,10 +10,9 @@ Relevé du 2026-11-15, commande `mvn test -pl budgetview/bv_desktop` (JDK 8, ~15
 | Après le tri des 38 échecs restants (corrections de l'appli et des tests) | 1 038 | 1 021 |
 | Après `ProjectTransferTest` (attentes alignées, question ouverte notée) | 1 038 | 1 023 |
 | Après le contrôle des données (`DataCheckingServiceTest`, `DataCheckerTest`) | 1 038 | 1 029 |
-| Après désactivation des 9 échecs restants, mis de côté (2026-11-15) | 1 029 | 1 029 (attendu) |
+| Après désactivation des 9 échecs restants, mis de côté (2026-11-15) | 1 029 | **1 029** |
 
-La dernière ligne est déduite, pas relevée sur une suite complète : seules les trois classes touchées
-(`ProjectUpgradeTest`, `SeriesUpgradeTest`, `AnalysisBudgetViewStackChartTest`) ont été relancées, et passent.
+Dernière ligne relevée sur la suite complète lancée avec les corrections de globs (voir « Tests de globs »).
 
 Aucune version de référence : la 5.01 ne se reconstruit plus en l'état (casse d'un nom
 de fichier dans `globs`, `pom` à dépendances cassées, look & feel Mac, `Gui.setLookAndFeel`).
@@ -129,24 +128,48 @@ contenant des opérations passées (`ProjectTransferTest`, méthodes `createMain
 
 ## Tests de globs
 
-Relevé du 2026-11-15, aucune correction faite. Pour éviter le blocage HSQLDB, lancer avec une JVM par
-classe et une limite de temps (~3 min) :
+Lancer avec une JVM par classe et une limite de temps (~1 min 30) : des classes de test de l'IHM laissent un
+état partagé (`ColorServiceEditorTest` échoue derrière d'autres classes), et un blocage SQL reste toujours possible.
 
 ```sh
-mvn -o test -pl globs -DforkCount=1 -DreuseForks=false -Dsurefire.timeout=120 \
+mvn -o clean test -pl globs -DforkCount=1 -DreuseForks=false -Dsurefire.timeout=120 \
     -DargLine="-Dapple.awt.UIElement=true -Xmx512m"
 ```
 
-874 tests lancés, **42 échecs** (11 en échec, 31 en erreur) dans 17 classes, et un blocage :
+Toujours avec `clean` après un changement de signature dans `src/main` : le vieux `maven-compiler-plugin` (2.3.2)
+ne recompile que les sources modifiées, et une classe de test non touchée reste liée à l'ancienne méthode
+(constaté avec `MultiCreateBuilder.setValue`). bv_desktop prend globs dans `~/.m2` : `mvn -o install -pl globs
+-DskipTests` après toute modification de globs, avant de lancer ses tests.
 
-| Cause | Tests | Utile à l'appli ? |
+| Relevé (2026-11-15) | Lancés | En échec |
 |---|---|---|
-| `DummyObject` du test modifié en 2016 (`3a133bb2c`, rmedina) : champ `COUNT` renommé `COUNTER` (mot réservé SQL), index unique `NAME_INDEX` retiré. Les autres tests attendent encore `count` | `GlobPrinterTest` ×4, `GlobComboEditorTest` ×6, `DefaultGlobRepositoryTest` ×2 | oui (code utilisé, tests périmés) |
-| Utilitaire de test SQL faux : `MultiCreateBuilder` n'a que `setValue(Field, Object)`, et `GlobsDatabaseTestCase.populate` lui passe un `Accessor`, que `SqlCreateBuilder` convertit en `Integer` (`ClassCastException`, « On dummyObject.id ») | `SqlSelectQueryTest` ×10, `SqlUpdateBuilderTest` ×2, `SqlDeleteBuilderTest` ×2, `SqlGlobRepositoryBuilderTest`, `RemoteExecutorTest` | non : `sqlstreams` ne sert qu'à `bv_server`, hors build ; `remote` ne sert nulle part |
-| Ressources de test non copiées : `<testResources>` du `pom` n'inclut que `**/*.properties`, pas `.splits` ni `.colors` | `ColorServiceEditorTest` ×5, `ColorServiceTest`, `SplitsStyleImportTest` | oui (splits, couleurs) ; correction d'une ligne |
-| Environnement : police « Times » absente sur macOS, remplacée par « Dialog » | `FontsTest` | non |
-| Non examinés : `KeyBuilderTest` (clé simple et clé composite égales mais `hashCode` différents ?), `GlobTableViewTest`, `GlobSelectionToggleTest` ×2 (journal de sélection), `ReplacementInputStreamTest`, `SplitsRepeatTest` (classe `DummyRepeatLayout` du test non trouvée) | 6 | à voir |
-| Blocage : `HsqlExceptionTest`, tué par la limite de temps (deux connexions concurrentes) ; `MySqlExceptionTest` demande un serveur MySQL et n'a pas tourné | — | non (SQL) |
+| Premier tri, sans correction | 874 + 1 classe bloquée | 42 |
+| Après corrections | 873 | **0** |
+
+bv_desktop relancé en entier avec ces corrections (jar globs installé) : 1 029 tests, une seule erreur, due à l'essai
+sur `GlobTableView` (voir plus bas), abandonné depuis ; la classe en cause repasse.
+
+Corrections, par cause :
+
+| Cause | Tests | Correction |
+|---|---|---|
+| `DummyObject` du test modifié en 2016 (`3a133bb2c`, rmedina) : champ `COUNT` renommé `COUNTER` (mot réservé SQL), index unique `NAME_INDEX` retiré | `GlobPrinterTest` ×4, `GlobComboEditorTest` ×6, `DefaultGlobRepositoryTest` ×2, `XmlGlobParserTest` (passait, mais ne testait plus une valeur invalide) | tests passés à `counter` ; `testResetUpdateIndex`, converti à moitié vers `DummyObjectIndex` en 2013, terminé (index sur `uniqueName`, `name` distincts pour l'index multi-champs) |
+| `MultiCreateBuilder` n'avait que `setValue(Field, Object)` : un `Accessor` y était pris pour la valeur (`ClassCastException`, « On dummyObject.id ») | `SqlSelectQueryTest` ×10, `SqlUpdateBuilderTest` ×2, `SqlDeleteBuilderTest` ×2, `SqlGlobRepositoryBuilderTest`, `RemoteExecutorTest` | variante `setValue(Field, Accessor)` ajoutée. Code du seul `bv_server` |
+| `<testResources>` du `pom` limité à `**/*.properties` : `.splits` et `.colors` non copiés | `ColorServiceEditorTest` ×5, `ColorServiceTest`, `SplitsStyleImportTest` | tout `src/test/resources` copié |
+| **Bug de globs** : `SingleFieldKey` et `CompositeKey` égales (`equals`) mais de `hashCode` différents depuis le changement de formule de `CompositeKey` et des clés à 2, 3, 4 champs (`24c8bf275`, 2015). Sans effet visible dans l'appli : `KeyBuilder` ne crée jamais de `CompositeKey` pour un type à clé unique | `KeyBuilderTest` | `SingleFieldKey.hashCode` aligné (31 × hash du type + hash de la valeur). Le hash d'un `GlobType` est son hash d'identité : il changeait déjà à chaque lancement, l'ordre des `HashMap` n'était pas stable avant non plus |
+| Le bouton écoute les `ActionEvent` depuis 2014 (`740f2e340`, correctif de perfs) : `setSelected()` par le code ne change plus la sélection, seul un clic | `GlobSelectionToggleTest` ×2 | le test clique (`doClick`) |
+| Layouts de repeat personnalisés résolus par un `RepeatLayoutService` depuis 2014 (`d67e1dde5`), absent du contexte des tests de splits ; l'erreur était masquée en « Unknown layout type » | `SplitsRepeatTest.testCustomRepeatLayout` | service ajouté à `SplitsTestCase` |
+| Polices Times et Courier absentes pour le JDK 8 de ce Mac (remplacées par Dialog et Monospaced) ; le test devinait d'après le système | `FontsTest` | attente déduite des polices installées |
+| `getQuery()` referme la requête après le premier `getUnique()` (2008) ; le test la relisait. Jamais vu, la classe bloquant avant | `HsqlExceptionTest.testRollback` | `getNotAutoCloseQuery()` |
+
+Désactivés :
+
+| Tests | Raison |
+|---|---|
+| `SqlExceptionTest.testConcurrentModification` (pour HSQLDB et MySQL) | suppose une lecture non isolée, comme HSQLDB 1.8 ; depuis HSQLDB 2.3.4 (`fc89dcb0c`, 2016), la seconde connexion attend le verrou de la première, tenu par le même fil : **c'était le blocage sans fin** |
+| `MySqlExceptionTest` (classe exclue du `pom`) | demande un serveur MySQL local |
+| `GlobTableViewTest.testRefreshUpdatesTheSortingAndKeepsSelection` | **comportement réel, gardé exprès** : `refresh()` coupe les notifications de sélection, mais la remise à zéro du modèle (`globListPreReset` / `globListReset`) les rétablit avant la fin, et la sélection réappliquée part en événements transitoires (vide, puis ligne par ligne) vers le `SelectionService`. Essai d'une coupure imbriquable (compteur, demandes `sendPending` gardées pour la sortie) : `AnalysisSeriesGroupViewTest.testDeletingAndAddingGroupElements` échoue dans bv_desktop (graphique des enveloppes vide après « ajouter à un nouveau groupe »), donc l'appli dépend de ces événements. `GlobTableView` sert dans 57 fichiers de l'appli : non retouché |
+| `ReplacementInputStreamTest.testRegexp` | attente incohérente (le motif exige `</SCRIPT>\n</font>`, absent de l'entrée) ; `ReplacementInputStream` ne sert plus nulle part |
 
 Usage de globs par l'appli desktop (fichiers de `bv_desktop/src/main` qui importent le paquet) :
 `gui.splits` 235, `model.format` 87, `utils.serialization` 80, `gui.views` 57, `gui.editors` 25, `json` 2,
@@ -168,5 +191,6 @@ fichiers Java, dont 289 portent le même chemin que dans `globs/`. Parmi ces 289
 
 Il ne remplace donc pas `globs/` : les deux ont un ancêtre commun de 2017. Passer de l'un à l'autre voudrait dire
 réécrire chaque `GlobType` de l'appli, garder `gui`/`splits` à part et quitter Java 8, que uispec4j impose.
-Les échecs ci-dessus ne s'y retrouvent pas tels quels : ils viennent de tests du côté BudgetView (2016) ou de
-paquets que l'amont n'a pas repris.
+Les échecs ci-dessus ne s'y retrouvent pas tels quels : ils viennent de tests du côté BudgetView (2014-2016) ou de
+paquets que l'amont n'a pas repris. Le bug corrigé (`SingleFieldKey.hashCode`) et le comportement de `GlobTableView`
+n'ont pas été comparés avec l'amont.

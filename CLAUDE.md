@@ -165,8 +165,10 @@ Adaptations des tests faites pour la 6.00 :
 - Pour diagnostiquer : rapports dans `target/surefire-reports/*.txt`, pile complète avec
   `-DtrimStackTrace=false`. Les tests écrivent dans `tmp/` (ignoré par git).
 
-Tests de `globs` : 42 échecs sur 874, triés dans [docs/etat-des-tests.md](docs/etat-des-tests.md), et blocage infini sur HSQLDB dans
-`HsqlExceptionTest`. Toujours poser une limite de temps quand on les lance.
+Tests de `globs` : 873, tous verts depuis le 2026-11-15 (détail et commande dans [docs/etat-des-tests.md](docs/etat-des-tests.md)).
+Toujours poser une limite de temps et une JVM par classe ; `clean` après un changement de signature (le vieux
+compilateur ne recompile pas les tests non touchés) ; `mvn -o install -pl globs -DskipTests` avant de tester bv_desktop,
+qui prend globs dans `~/.m2`.
 - Le dépôt `http://download.java.net/maven/2/` déclaré dans `bv_desktop/pom.xml`
   est mort mais ne gêne pas : tout se résout depuis Maven Central.
 
