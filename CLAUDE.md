@@ -158,6 +158,10 @@ Adaptations des tests faites pour la 6.00 :
 - Ne jamais lancer deux `mvn test` en même temps : ils écrivent dans le même `target/`. Pendant une suite
   complète, lire ou éditer les sources reste possible (les classes sont déjà compilées).
 - Contrôle des données en échec : `OperationChecker.checkDataIsOk` affiche le détail des erreurs trouvées.
+- Test unitaire sur un repository globs construit à la main : y charger les constantes et les `MonthDay`
+  comme `PicsouInit` (`GlobRepositoryBuilder.init(…).add(DesktopModel.get().getConstants())`, puis
+  `PicsouInit.createTransientDataForNewUser`), sinon le contrôle des liens (`GlobCheck.linksAreAllConnected`)
+  signale de faux liens cassés (voir `DataCheckingServiceTest`).
 - Pour diagnostiquer : rapports dans `target/surefire-reports/*.txt`, pile complète avec
   `-DtrimStackTrace=false`. Les tests écrivent dans `tmp/` (ignoré par git).
 
