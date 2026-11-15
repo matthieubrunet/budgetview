@@ -1,7 +1,7 @@
 # Migration de Java 8 vers un Java récent
 
-État au 2026-11-15 : analyse faite et essai d'exécution sous Java 17 réussi. Rien n'est encore migré :
-le code compile toujours en 1.8 avec Zulu 8.
+État au 2026-11-15 : analyse faite, essai d'exécution sous Java 17 réussi, étapes 1 et 2 faites (plugins
+Maven en 3.0.x, shrinker supprimé). Le code compile toujours en 1.8 avec Zulu 8.
 
 ## Décision : rester sur la JVM
 
@@ -37,8 +37,8 @@ contributeurs, ou pour repenser le produit.
 |---|---|---|
 | Code de l'application | Presque aucune API interne de Java. Aucune lambda : le code est de style Java 6. | faible |
 | `MacOSXHooks` | `com.apple.eawt` a disparu en Java 9. Le chargement par réflexion échoue sans bruit (`Failed to register with OSX` dans le log) : sur Mac, plus de menus « À propos », « Préférences » ni « Quitter », plus d'ouverture de fichier par double-clic. À porter vers `java.awt.Desktop`. | ½ jour |
-| Plugins Maven | `maven-compiler-plugin` 2.3.2, surefire 2.19.1. Passer en 3.x avec `<release>`. Faisable dès maintenant, sous Java 8. | faible |
-| Shrinker | Lit les `.class` avec ASM 3.1 (2007), qui ne connaît pas `invokedynamic`. Ça marche aujourd'hui faute de lambdas, mais une compilation pour Java 9+ en met dans chaque concaténation de chaînes. Passer à ASM 9 (l'API a changé : `MethodAdapter` n'existe plus) ou supprimer le shrinker, qui n'a plus d'intérêt avec `jpackage`. | 1 jour, ou rien |
+| Plugins Maven | **Fait** (2026-11-15) : tous en 3.0.x. `<release>` attendra la compilation sous Java 9+ : l'option n'existe qu'à partir de compiler 3.6 et d'un JDK 9. | — |
+| Shrinker | Lit les `.class` avec ASM 3.1 (2007), qui ne connaît pas `invokedynamic`. Ça marche aujourd'hui faute de lambdas, mais une compilation pour Java 9+ en met dans chaque concaténation de chaînes. Passer à ASM 9 (l'API a changé : `MethodAdapter` n'existe plus) ou supprimer le shrinker, qui n'a plus d'intérêt avec `jpackage`. **Supprimé** (2026-11-15), voir plus bas. | — |
 | JGoodies Looks 2.2.0 | Thème Windows/Linux de 2008, avec des classes du projet dans le paquet de JGoodies. Fonctionnera probablement, à vérifier à l'écran. | à tester |
 | `SecurityManager` de `FunctionalTestCase` | Il faut un drapeau en Java 17-23, et il est désactivé pour de bon en Java 24. À remplacer par un point de sortie unique, remplaçable dans les tests. | ½ jour |
 | **uispec4j** | Sous-classe `sun.awt.SunToolkit` et les peers AWT. Java 9 a retiré de `Toolkit` les méthodes qui créent ces peers et fermé `sun.awt`. Il existe déjà trois variantes `java-jdk15/16/18`. Les 1 049 tests de bv_desktop en dépendent. | **la vraie inconnue** : de quelques jours à quelques semaines |
@@ -48,14 +48,37 @@ N'empêchent pas la migration : log4j 1.2 (fin de vie, sans conséquence en loca
 
 ## Ordre proposé
 
-1. Plugins Maven en 3.x, sous Java 8.
-2. Sort du shrinker : le supprimer ou passer à ASM 9.
+1. ~~Plugins Maven en 3.x, sous Java 8.~~ Fait.
+2. ~~Sort du shrinker : le supprimer ou passer à ASM 9.~~ Supprimé.
 3. Essai sur uispec4j : le compiler sous Java 17 avec `--add-exports`/`--add-opens` et compter ce qui
    ne compile pas. Le résultat décide entre :
    - **option A** : exécuter sur Java 21 (via `jpackage`) en compilant toujours en Java 8, tests sous Zulu 8 ;
    - **option B** : tout passer en Java 21 (compilation, exécution, tests).
 4. Hooks Mac vers `java.awt.Desktop`, avec remise de `apple.laf.useScreenMenuBar` (voir plus bas).
 5. Ensuite seulement : FlatLaf.
+
+## Suppression du shrinker (2026-11-15)
+
+Le profil `gen-version` produit maintenant `bv_desktop/target/dist` : `budgetview.jar` (les classes de
+bv_desktop, avec un `Class-Path` vers `lib/`), `lib/` (les bibliothèques, copiées par
+`maven-dependency-plugin`) et `config.jar`. C'est directement l'`--input` de `jpackage`.
+
+- **Taille** : 12 Mo au lieu de 9 Mo. Sans importance : un installeur `jpackage` embarque de toute façon un
+  Java de plusieurs dizaines de Mo.
+- **Bibliothèques écartées** du livrable : hsqldb, mysql-connector, joda-time, xercesImpl, xml-apis,
+  slf4j (×2), servlet-api. Le jar réduit par le shrinker n'en contenait aucune classe (sauf 3 classes de
+  `xml-apis` déjà présentes dans le JDK) : elles sont tirées par globs (`sqlstreams`) ou servent pour
+  des constantes (`HttpServletResponse` dans `MobileService`). Elles restent dans le classpath des tests.
+- **Contrôle fait** : les 5 044 classes du dernier jar réduit se retrouvent toutes dans `target/dist`,
+  sauf ces 3 classes de `xml-apis`. L'application démarre depuis `target/dist` sous Zulu 8 et OpenJDK 17.
+- **Disparus avec lui** : les listes `dev/ant/inputClient.txt` (classes chargées par réflexion, à tenir à
+  la main) et `ignoreClient.txt`, ainsi que `dump.jar`. Pour l'outil de dump :
+  `java -cp target/dist/budgetview.jar com.budgetview.persistence.direct.Dump`.
+- **ASM reste** une dépendance de l'application : `KeyService` s'en sert pour fabriquer à la volée la
+  classe qui vérifie les signatures de licence. Elle ne fait qu'écrire du bytecode ancien, ce qui marche
+  sur tout Java ; elle partira avec le code des licences, devenu inutile en usage local.
+- `generate_version.sh` et `bv_server/generate_release.sh` (chaîne de livraison d'origine, obfuscation
+  ZKM, `target/obfuscated`) étaient déjà hors service : ils n'ont pas été adaptés.
 
 ## Essai d'exécution sous Java 17 (2026-11-15)
 

@@ -25,7 +25,6 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 | `splits/` | Moteur de mise en page Swing déclaratif (fichiers `.splits` en XML) — son code est dans `globs` | via globs |
 | `saxstack/` | Parsing XML SAX | oui |
 | `prevayler/` | Prevayler (persistance par journal de transactions + snapshots), forké | oui |
-| `shrinker/` | `JarShrinker` : réduit le jar livré à partir de listes de classes | oui |
 | `siteweaver/` | Générateur du site web statique | oui |
 | `budgetview/bv_shared` | Code commun client/serveur | oui |
 | `budgetview/bv_desktop` | **L'application** (~1 100 classes, ~350 tests) | oui |
@@ -89,7 +88,10 @@ mvn clean install -DskipTests
 #    bouton « Compte de démo » ne marche pas et les tests du mode démo échouent.
 mvn -Pgen-demo install -pl budgetview/bv_desktop -DskipTests
 
-# 4. Jar livrable : budgetview/bv_desktop/budgetview.jar (~9 Mo, shrinké) + config.jar
+# 4. Livrable dans budgetview/bv_desktop/target/dist : budgetview.jar (classes de bv_desktop, Class-Path
+#    vers lib/) + lib/ (18 jars) + config.jar, ~12 Mo. C'est l'entrée de jpackage (voir README.md).
+#    Le shrinker qui réduisait le jar à 9 Mo a été supprimé le 2026-11-15 (docs/migration-java.md).
+#    Outil de dump : java -cp target/dist/budgetview.jar com.budgetview.persistence.direct.Dump
 #    N'embarque les comptes de démo que s'ils existent déjà (étape 3) : sinon, au clic sur
 #    « Compte de démo » : Could not find '/demo/demo-fr.snapshot' in classpath.
 mvn -Pgen-version clean install -DskipTests
