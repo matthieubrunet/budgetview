@@ -7,7 +7,8 @@ Relevé du 2026-11-15, commande `mvn test -pl budgetview/bv_desktop` (JDK 8, ~15
 | Premier lancement, réglages d'origine | 1 049 | 191 |
 | Après correction de l'infrastructure de test (voir CLAUDE.md) | 1 049 | 986 |
 | Après correction des attentes périmées et désactivation des obsolètes | 1 037 | 998 |
-| Après le tri des 38 échecs restants (corrections de l'appli et des tests) | 1 038 | **1 021** |
+| Après le tri des 38 échecs restants (corrections de l'appli et des tests) | 1 038 | 1 021 |
+| Après `ProjectTransferTest` (attentes alignées, question ouverte notée) | 1 038 | **1 023** |
 
 Le dernier relevé (1 039 lancés, 18 échecs) a été pris avant deux commits : `LaPosteTest.testDeferred`
 désactivé et `CsvImportTest` corrigé, chacun relancé seul depuis. D'où 1 038 / 1 021.
@@ -58,6 +59,7 @@ connexion directe (`faq/import/banques_francaises_connexion_directe.html`) est e
 | `MoneyExportTest.testStrictQifFile` | compte sans solde + fichier QIF sans solde : la fin de l'import demande la position, le test l'accepte | — |
 | `SetPasswordTest` ×2 | la déconnexion recrée la session, ce qui vide une base en mémoire : le test passe sur disque | — |
 | `CsvImportTest.testImportWithSeries` | attendait la boîte d'import des séries au réimport d'une série connue, effet du bug `TARGET_ACCOUNT` ci-dessous | — |
+| `ProjectTransferTest` ×2 | soldes attendus décalés de +1 000 pour suivre le comportement actuel (position saisie = solde d'ouverture) ; **question ouverte**, voir plus bas | — |
 | `BNPTest` ×4 | **régression de l'appli** : les 22 règles de libellés (`transactionMatcher`) de `banks/fr/bnp.xml` avaient été supprimées en marge du branchement Budgea, sans raison donnée ; restaurées depuis le parent de ce commit, car l'import OFX/QIF est le seul qui reste (Budgea arrêté) | `501972923` (2017) |
 
 Corrections de l'appli elle-même (le test passe sans modification) :
@@ -87,17 +89,38 @@ désactivée en la renommant, et une classe vide est exclue dans le `pom` (sinon
 | `DeferredTest.testCategorization` | test en chantier chez l'auteur (« en cours », 2015) : ses attentes de fin ne correspondent pas au fichier importé ; la partie catégorisation passe |
 | `LaPosteTest.testDeferred` | repose sur le plugin La Poste (inversion de signe des cartes à débit différé, relevé de 2011), volontairement laissé débranché : format actuel de La Poste inconnu, risque d'inverser des montants corrects |
 
-## Restent en échec : 17 tests
+## Restent en échec : 15 tests
 
 | Groupe | Tests | Piste |
 |---|---|---|
 | Instance unique | `SingleInstanceTest` ×6 | plusieurs instances lancées dans la même JVM, vrais ports 5454… ; fenêtres non interceptées |
 | Contrôle des données | `DataCheckingServiceTest` ×6, `DataCheckerTest` ×1 | service refondu en 2017 (`9b303cd8e`, « Intro BackupClinic »), tests adaptés en partie seulement |
-| Projets | `ProjectTransferTest` ×2 | toutes les positions décalées de +1 000 : le test attend des soldes partant de 0, l'appli part de la position saisie à la création du compte (1 000) avant l'import OFX. **Arbitrage métier** à faire : comment se combinent position saisie et solde du fichier |
 | Migration | `ProjectUpgradeTest.testProjectsWithVariousTranferItemsFromJar125` | après migration d'une base de 2014, une opération finit sur le compte de synthèse « Main accounts », sans enveloppe : contraire à `v3_14b_maj.html` |
 | Divers | `AnalysisBudgetViewStackChartTest.testPopupMenus` | « component must be showing on the screen » à l'ouverture d'un menu contextuel |
 
 `SeriesUpgradeTest` passe ou échoue selon les passes : instable.
+
+## Questions ouvertes (arbitrage métier)
+
+### Solde saisi à la création d'un compte, puis import OFX
+
+Cas : on crée un compte à la main en saisissant son « Solde » (1 000), puis on importe un OFX
+contenant des opérations passées (`ProjectTransferTest`, méthodes `createMainAccount` / `createSavingsAccount`).
+
+- **Comportement actuel** : le solde saisi devient un solde **d'ouverture** — transaction « open account »
+  placée avant la première opération (`AccountInitialPositionTrigger`) — et les opérations importées s'y
+  ajoutent (compte courant du test : 1 000 + 2 100 = 3 100). Le solde du fichier OFX est ignoré : il ne
+  compte que s'il est daté après `Account.POSITION_DATE` (`BankPluginService`), qui est ici la date de création.
+- **Aide du site** : `faq/import/banque_sans_export.html` demande le « solde **actuel** » à la création ;
+  `faq/comptes/solde_a_zero.html` parle du « dernier solde connu », que les imports suivants font évoluer.
+  Le compte devrait alors finir à 1 000, les soldes passés recalculés à rebours.
+- **Ancien test** : soldes partant de 0 (fin à 2 100), ce qui ne correspond à aucune des deux lectures
+  ni au solde des fichiers OFX du test (1 000 et 10 000). Le test porte sur les virements de projets,
+  pas sur les soldes : ses chiffres ont été alignés sur le comportement actuel, sans trancher.
+- **À décider** : (1) solde saisi = solde actuel ou d'ouverture ? (2) le solde d'un OFX importé ensuite
+  doit-il remplacer le solde saisi, même s'il est daté d'avant ?
+- Non vérifié sur la 5.01 (logique de 2013-2015, donc probablement identique) : à essayer sur un dossier de
+  données jetable — créer un compte avec un solde, puis importer un OFX d'opérations passées.
 
 ## Tests de globs
 
