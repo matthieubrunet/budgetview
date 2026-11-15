@@ -9,10 +9,11 @@ Relevé du 2026-11-15, commande `mvn test -pl budgetview/bv_desktop` (JDK 8, ~15
 | Après correction des attentes périmées et désactivation des obsolètes | 1 037 | 998 |
 | Après le tri des 38 échecs restants (corrections de l'appli et des tests) | 1 038 | 1 021 |
 | Après `ProjectTransferTest` (attentes alignées, question ouverte notée) | 1 038 | 1 023 |
-| Après le contrôle des données (`DataCheckingServiceTest`, `DataCheckerTest`) | 1 038 | **1 029** |
+| Après le contrôle des données (`DataCheckingServiceTest`, `DataCheckerTest`) | 1 038 | 1 029 |
+| Après désactivation des 9 échecs restants, mis de côté (2026-11-15) | 1 029 | 1 029 (attendu) |
 
-Le dernier relevé (1 039 lancés, 18 échecs) a été pris avant deux commits : `LaPosteTest.testDeferred`
-désactivé et `CsvImportTest` corrigé, chacun relancé seul depuis. D'où 1 038 / 1 021.
+La dernière ligne est déduite, pas relevée sur une suite complète : seules les trois classes touchées
+(`ProjectUpgradeTest`, `SeriesUpgradeTest`, `AnalysisBudgetViewStackChartTest`) ont été relancées, et passent.
 
 Aucune version de référence : la 5.01 ne se reconstruit plus en l'état (casse d'un nom
 de fichier dans `globs`, `pom` à dépendances cassées, look & feel Mac, `Gui.setLookAndFeel`).
@@ -92,15 +93,17 @@ désactivée en la renommant, et une classe vide est exclue dans le `pom` (sinon
 | `DeferredTest.testCategorization` | test en chantier chez l'auteur (« en cours », 2015) : ses attentes de fin ne correspondent pas au fichier importé ; la partie catégorisation passe |
 | `LaPosteTest.testDeferred` | repose sur le plugin La Poste (inversion de signe des cartes à débit différé, relevé de 2011), volontairement laissé débranché : format actuel de La Poste inconnu, risque d'inverser des montants corrects |
 
-## Restent en échec : 8 tests
+### Mis de côté durablement (2026-11-15), sans correction
 
-| Groupe | Tests | Piste |
-|---|---|---|
-| Instance unique | `SingleInstanceTest` ×6 | plusieurs instances lancées dans la même JVM, vrais ports 5454… ; fenêtres non interceptées |
-| Migration | `ProjectUpgradeTest.testProjectsWithVariousTranferItemsFromJar125` | après migration d'une base de 2014, une opération finit sur le compte de synthèse « Main accounts », sans enveloppe : contraire à `v3_14b_maj.html` |
-| Divers | `AnalysisBudgetViewStackChartTest.testPopupMenus` | « component must be showing on the screen » à l'ouverture d'un menu contextuel |
+Les derniers échecs, désactivés par décision et non parce qu'ils seraient obsolètes. Pistes conservées
+pour une éventuelle reprise :
 
-`SeriesUpgradeTest` passe ou échoue selon les passes : instable (en échec au relevé à 1 029, d'où 9 échecs pour 8 listés).
+| Tests | Piste |
+|---|---|
+| `SingleInstanceTest` ×6 (classe exclue) | plusieurs instances lancées dans la même JVM, vrais ports 5454… ; fenêtres non interceptées |
+| `ProjectUpgradeTest.testProjectsWithVariousTranferItemsFromJar125` | après migration d'une base de 2014, une opération finit sur le compte de synthèse « Main accounts », sans enveloppe : contraire à `v3_14b_maj.html`. **Seul des neuf à toucher les données réelles**, si elles passent un jour sur la 6.00 |
+| `AnalysisBudgetViewStackChartTest.testPopupMenus` | « component must be showing on the screen » à l'ouverture d'un menu contextuel |
+| `SeriesUpgradeTest.testNoMessagesDisplayedWhenConvertingASavingsSeriesWithNoTransactionsAndASingleMainAccount` | instable, passe ou échoue selon les passes (`expected:<MainA> but was:<SavingsA>`) |
 
 ## Questions ouvertes (arbitrage métier)
 
@@ -126,5 +129,44 @@ contenant des opérations passées (`ProjectTransferTest`, méthodes `createMain
 
 ## Tests de globs
 
-~40 échecs (`GlobPrinterTest`, tests SQL) et un blocage sans fin sur HSQLDB dans
-`HsqlExceptionTest`. Pas encore examinés.
+Relevé du 2026-11-15, aucune correction faite. Pour éviter le blocage HSQLDB, lancer avec une JVM par
+classe et une limite de temps (~3 min) :
+
+```sh
+mvn -o test -pl globs -DforkCount=1 -DreuseForks=false -Dsurefire.timeout=120 \
+    -DargLine="-Dapple.awt.UIElement=true -Xmx512m"
+```
+
+874 tests lancés, **42 échecs** (11 en échec, 31 en erreur) dans 17 classes, et un blocage :
+
+| Cause | Tests | Utile à l'appli ? |
+|---|---|---|
+| `DummyObject` du test modifié en 2016 (`3a133bb2c`, rmedina) : champ `COUNT` renommé `COUNTER` (mot réservé SQL), index unique `NAME_INDEX` retiré. Les autres tests attendent encore `count` | `GlobPrinterTest` ×4, `GlobComboEditorTest` ×6, `DefaultGlobRepositoryTest` ×2 | oui (code utilisé, tests périmés) |
+| Utilitaire de test SQL faux : `MultiCreateBuilder` n'a que `setValue(Field, Object)`, et `GlobsDatabaseTestCase.populate` lui passe un `Accessor`, que `SqlCreateBuilder` convertit en `Integer` (`ClassCastException`, « On dummyObject.id ») | `SqlSelectQueryTest` ×10, `SqlUpdateBuilderTest` ×2, `SqlDeleteBuilderTest` ×2, `SqlGlobRepositoryBuilderTest`, `RemoteExecutorTest` | non : `sqlstreams` ne sert qu'à `bv_server`, hors build ; `remote` ne sert nulle part |
+| Ressources de test non copiées : `<testResources>` du `pom` n'inclut que `**/*.properties`, pas `.splits` ni `.colors` | `ColorServiceEditorTest` ×5, `ColorServiceTest`, `SplitsStyleImportTest` | oui (splits, couleurs) ; correction d'une ligne |
+| Environnement : police « Times » absente sur macOS, remplacée par « Dialog » | `FontsTest` | non |
+| Non examinés : `KeyBuilderTest` (clé simple et clé composite égales mais `hashCode` différents ?), `GlobTableViewTest`, `GlobSelectionToggleTest` ×2 (journal de sélection), `ReplacementInputStreamTest`, `SplitsRepeatTest` (classe `DummyRepeatLayout` du test non trouvée) | 6 | à voir |
+| Blocage : `HsqlExceptionTest`, tué par la limite de temps (deux connexions concurrentes) ; `MySqlExceptionTest` demande un serveur MySQL et n'a pas tourné | — | non (SQL) |
+
+Usage de globs par l'appli desktop (fichiers de `bv_desktop/src/main` qui importent le paquet) :
+`gui.splits` 235, `model.format` 87, `utils.serialization` 80, `gui.views` 57, `gui.editors` 25, `json` 2,
+`sqlstreams` 0, `remote` 0.
+
+### Lien avec globsframework (projet actuel de MarcGuiot)
+
+[globsframework/globsframework](https://github.com/globsframework/globsframework) (Apache 2.0, version 5.14.0
+de 2026-11-11, Java 21) est **issu de ce même code**. Son README le dit (« version open source développée pour le
+projet BudgetView »), et son premier import (`2eeac91`, 2017-09-26, « import after split ») le confirme : 399
+fichiers Java, dont 289 portent le même chemin que dans `globs/`. Parmi ces 289, 129 sont identiques à l'espace près,
+100 diffèrent de moins de 20 lignes, et 60 davantage.
+
+- Il n'a gardé que le noyau (métamodèle, `model`, repository, `ChangeSet`) : aucun fichier `gui/` ni `splits`,
+  et le SQL, le JSON, le XML, etc. sont passés dans des dépôts séparés (`globs-db`, `globs-gson`…).
+- Depuis, l'API a changé : paquets `org.globsframework.core.*`, plus de `GlobTypeLoader` (types déclarés par
+  `GlobTypeBuilderFactory` au lieu de champs statiques remplis par réflexion), Java 11 en 2020, 17, puis 21.
+- Côté BudgetView, `globs/src` est quasi figé depuis la séparation (2 commits en 2018, 1 en 2025).
+
+Il ne remplace donc pas `globs/` : les deux ont un ancêtre commun de 2017. Passer de l'un à l'autre voudrait dire
+réécrire chaque `GlobType` de l'appli, garder `gui`/`splits` à part et quitter Java 8, que uispec4j impose.
+Les échecs ci-dessus ne s'y retrouvent pas tels quels : ils viennent de tests du côté BudgetView (2016) ou de
+paquets que l'amont n'a pas repris.
