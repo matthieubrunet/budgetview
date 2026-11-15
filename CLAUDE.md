@@ -28,7 +28,7 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 | `budgetview/bv_desktop` | **L'application** (~1 100 classes, ~350 tests) | oui |
 | `budgetview/bv_server` | Serveur (licences, cloud, mobile ; Jetty, MySQL, Stripe) | **commenté** |
 | `budgetview/bv_analytics` | Analyse de logs | **commenté** |
-| `budgetview/bv_website` | Contenu du site (fr/en) | hors Maven |
+| `budgetview/bv_website` | Contenu du site (fr/en). **Référence du comportement attendu** : aide utilisateur dans `fr/content/support/` (`faq/`, `guides/`) et journal des versions `support/derniers_changements.html` (5.0 du 2017-10-29 = Sync/Budgea ; 5.01 du 2017-11-12 = jar 156, la version officielle). À consulter avant de trancher entre le code et un test | hors Maven |
 | `uispec4j/` | Framework de tests d'IHM Swing (fork) | **commenté** |
 | `budgetview-android/` | Appli mobile (Gradle, à part) | hors Maven |
 | `functests/` | Ancien projet de tests IntelliJ (`.ipr`) | hors Maven |

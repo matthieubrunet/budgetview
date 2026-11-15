@@ -11,7 +11,14 @@ Relevé du 2026-11-15, commande `mvn test -pl budgetview/bv_desktop` (JDK 8, ~15
 Aucune version de référence : la 5.01 ne se reconstruit plus en l'état (casse d'un nom
 de fichier dans `globs`, `pom` à dépendances cassées, look & feel Mac, `Gui.setLookAndFeel`).
 On ne sait donc pas lesquels des échecs restants existaient déjà avant la 6.00.
-Le tri ci-dessous s'appuie sur l'historique git.
+Le tri ci-dessous s'appuie sur l'historique git et sur l'aide utilisateur du site
+(`budgetview/bv_website/fr/content/support/`), qui décrit le comportement attendu. Par exemple :
+- `faq/comptes/carte_debit_differe.html` : seul le prélèvement mensuel du compte courant se rattache
+  à la carte (poste « Autres ») ; les opérations de la carte se classent dans les enveloppes ordinaires.
+- `faq/comptes/solde_a_zero.html` : un fichier QIF ou CSV n'a pas de solde ; une fois le dernier solde
+  saisi à la main, les imports suivants le font évoluer. Un fichier OFX, lui, donne le solde de chaque compte.
+- `derniers_changements.html` : la 5.0 (2017-10-29) remplace les connexions directes aux banques par
+  Sync (Budgea) ; la 5.01 (2017-11-12, jar 156) contient donc déjà les débranchements de 2016.
 
 ## Corrigés : attentes en retard sur le code
 
