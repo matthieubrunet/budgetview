@@ -68,7 +68,7 @@ Corrections de l'appli elle-même (le test passe sans modification) :
 | `RestartTest.testCorrupt` | journal corrompu signalé comme « Impossible de se connecter au serveur » + fenêtre de pile : l'erreur de déchiffrement était enveloppée dans une `RuntimeException` | 2016 |
 | `AccountDeletionTest` | la suppression d'un compte laissait un `SeriesStat` orphelin, recréé par `ActualSeriesStatTrigger` (`findOrCreate` sur une suppression) | — |
 | `SavingsTest` | après saisie manuelle de la position, un import QIF redemandait la position | — |
-| `ImportTest` ×2 (alertes d'écart de position) | `BankPluginService` débranché en 2016 : le solde du fichier OFX n'était plus reporté sur un compte existant, plus aucune alerte d'écart. Rebranché, **sauf le plugin La Poste** | `03bb7182f`, `a05fe274b` (2016) |
+| `ImportTest` ×2 (alertes d'écart de position) | `BankPluginService` débranché en 2016 : le solde du fichier OFX n'était plus reporté sur un compte existant, plus aucune alerte d'écart. Rebranché, **sauf le plugin La Poste**. Confirmé en usage réel sur la 5.01 : plus aucune alerte d'écart de solde depuis longtemps. Si les données réelles passent un jour sur la 6.00, des alertes pourront signaler des écarts accumulés depuis 2016 | `03bb7182f`, `a05fe274b` (2016) |
 | `DeferredTest` (partie catégorisation) | une dépense de carte à débit différé se voyait proposer d'être le prélèvement de sa carte : le filtre ignorait `ORIGINAL_ACCOUNT` (opérations déplacées dans le compte courant depuis 2015) | `d4ec09c6a` (2015) |
 | `MoneyExportTest` ×2 | séries créées à l'import sans compte cible (`TARGET_ACCOUNT`), donc non reconnues et reproposées au réimport | `fa611f7fe` (2014) |
 
