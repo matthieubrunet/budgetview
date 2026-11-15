@@ -90,6 +90,8 @@ mvn clean install -DskipTests
 mvn -Pgen-demo install -pl budgetview/bv_desktop -DskipTests
 
 # 4. Jar livrable : budgetview/bv_desktop/budgetview.jar (~9 Mo, shrinké) + config.jar
+#    N'embarque les comptes de démo que s'ils existent déjà (étape 3) : sinon, au clic sur
+#    « Compte de démo » : Could not find '/demo/demo-fr.snapshot' in classpath.
 mvn -Pgen-version clean install -DskipTests
 ```
 
@@ -115,8 +117,22 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
     (`~/Library/Application Support/BudgetView`, ou le dossier désigné par son
     `redirect.txt`). La version de dev est en 6.00 : ses triggers d'upgrade migreraient le
     format, peut-être de façon illisible pour la 5.01. Toujours passer `-Dbudgetview.data.path`.
+  - Autorisations macOS : la version de dev hérite de celles de l'application qui la lance (VS Code
+    ou Terminal), alors que la 5.01 a les siennes. Sans accès à Dropbox (`~/Library/CloudStorage`),
+    Java reçoit `null` et le dialogue de fichiers affiche une liste vide, sans message ; `ls` répond
+    `Operation not permitted`. VS Code a reçu cet accès le 2026-11-15.
+- Diagnostic de l'IHM depuis Claude Code :
+  - `screencapture -l <id>` capture une fenêtre Java même cachée. L'identifiant s'obtient par
+    `CGWindowListCopyWindowInfo` (petit script Swift). Il faut l'autorisation d'enregistrement de l'écran.
+  - macOS empêche de passer l'appli Java au premier plan depuis un script (ni `AXRaise`, ni
+    `NSRunningApplication.activate`) : un vrai clic doit être fait par Matthieu.
+  - L'application redirige `System.out` vers son log : un harnais lancé dans sa JVM y écrit aussi.
+  - Le jar de la 5.01 (`/Applications/BudgetView.app/Contents/Resources/app/budgetview_bundle.jar`) est
+    obfusqué, avec des noms qui ne diffèrent que par la casse : ne pas l'extraire sur le disque du Mac,
+    qui ignore la casse. Le lire avec `zipfile` (Python).
 - Cible Java **1.8** (dernier commit amont : passage en 1.8, désactivation
   du look & feel Mac qui ne compilait plus faute de `apple.laf.AquaLookAndFeel`).
+  Migration vers un Java récent (analyse, essai sous Java 17, ordre des étapes) : [docs/migration-java.md](docs/migration-java.md).
 - Packaging natif via `jpackage` (commandes dans `README.md`) — `jpackage`
   n'existe qu'à partir de Java 14 : il faudra un second JDK pour cette étape.
 - Tests : JUnit 4, surefire inclut `**/*Test.java` et `**/*Tests.java`.
