@@ -20,6 +20,23 @@ Le tri ci-dessous s'appuie sur l'historique git et sur l'aide utilisateur du sit
 - `derniers_changements.html` : la 5.0 (2017-10-29) remplace les connexions directes aux banques par
   Sync (Budgea) ; la 5.01 (2017-11-12, jar 156) contient donc déjà les débranchements de 2016.
 
+Pages utiles pour les tests encore en échec :
+- `ProjectUpgradeTest` → `versions/v3_14b_maj.html` : à la migration vers la 3.14, chaque enveloppe et
+  chaque élément de projet reçoit un compte d'après les opérations déjà affectées ; s'il y en a sur plusieurs
+  comptes, l'enveloppe devient un groupe (une enveloppe par compte) et l'élément de projet est dupliqué.
+  Aucune opération ne devrait donc finir rattachée au compte de synthèse « Main accounts ».
+- `ProjectTransferTest` → rien de direct ; `faq/comptes/solde_a_zero.html` (solde saisi à la main = dernier
+  solde connu) et `guides/import.html` (l'OFX donne le solde de chaque compte).
+- `SingleInstanceTest` → `faq/donnees/deplacement_repertoire_donnees.html` : un seul BudgetView à la fois
+  sur un dossier de données ; la 3.07 protège contre la corruption dans ce cas, déclaré non supporté.
+- Le plugin La Poste servait le **téléchargement direct OFX** de La Banque Postale
+  (`faq/general/pourquoi_connexion.html`), supprimé avec les connecteurs en 2016.
+
+L'aide anglaise (`en/content/support/`) n'est pas une référence : `faq/categorization/internal_transfers.html`
+et `savings_transfers.html`, absentes en français, décrivent l'avant-4.0 (bloc « Savings », deux enveloppes
+créées d'office par compte d'épargne), en contradiction avec la FAQ française. La liste des banques en
+connexion directe (`faq/import/banques_francaises_connexion_directe.html`) est elle aussi périmée.
+
 ## Corrigés : attentes en retard sur le code
 
 | Tests | Cause | Commit d'origine |
