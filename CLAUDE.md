@@ -96,7 +96,10 @@ Le script fixe le JDK 8, met `-DSINGLE_INSTANCE_DISABLED=true` et utilise les do
 l'application officielle, y compris celui désigné par son `redirect.txt`, qui est dans Dropbox.
 
 - Le serveur d'origine `register.budgetview.fr` ne répond plus (constaté le 2026-11-15) :
-  vérification de version, licences et cloud sont inopérants. L'appli démarre quand même.
+  vérification de version, licences et cloud sont inopérants. Périmètre retenu : **usage local seulement**,
+  tout ce qui contacte un serveur est coupé par `Application.isServerEnabled()` (propriété
+  `budgetview.server.enabled`, fausse par défaut). Liste et raisons : [docs/perimetre-local.md](docs/perimetre-local.md).
+  Toute nouvelle fonction qui contacte un serveur doit passer par cet interrupteur.
 
 - Le log est écrit dans `<data.path>/logs/log.txt`.
 - **Cohabitation avec l'appli officielle** (BudgetView 5.01 installée dans

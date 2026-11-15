@@ -85,6 +85,12 @@ public class Application {
 
   public static final String DISABLE_BACKUP = APPNAME + ".disable.import";
   public static final String USER_FEEDBACK_DISABLED = APPNAME + ".userFeedback.disabled";
+  /**
+   * "true" réactive les fonctions qui passaient par les serveurs d'origine (register.budgetview.fr, Budgea) :
+   * licence et mises à jour, nouvelle version, envois de mails et de logs, synchro bancaire.
+   * Désactivées par défaut depuis la 6.00 (usage local seulement), voir docs/perimetre-local.md.
+   */
+  public static final String SERVER_ENABLED_PROPERTY = APPNAME + ".server.enabled";
 
   public static boolean EXIT_ON_DATA_ERROR = true;
 
@@ -253,6 +259,10 @@ public class Application {
 
   private static String getServerAddress() {
     return getSystemValue(DEFAULT_ADDRESS_PROPERTY, "");
+  }
+
+  public static boolean isServerEnabled() {
+    return "true".equalsIgnoreCase(System.getProperty(SERVER_ENABLED_PROPERTY));
   }
 
   public static boolean isDataInMemory() {

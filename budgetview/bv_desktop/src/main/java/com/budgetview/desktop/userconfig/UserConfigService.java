@@ -1,5 +1,7 @@
 package com.budgetview.desktop.userconfig;
 
+import com.budgetview.desktop.Application;
+
 import com.budgetview.bank.BankPluginService;
 import com.budgetview.client.ConnectionStatus;
 import com.budgetview.client.DataAccess;
@@ -72,7 +74,7 @@ public class UserConfigService {
                                                  byte[] signatureInByte, final String activationCode,
                                                  DataAccess dataAccess, boolean dataInMemory) {
     this.dataAccess = dataAccess;
-    if (dataInMemory) {
+    if (dataInMemory || !Application.isServerEnabled()) {
       final String mail = mailInBytes == null ? null : new String(mailInBytes);
       userState = UserStateFactory.localValidSignature(mail);
       return true;

@@ -1,5 +1,6 @@
 package com.budgetview.functests.general;
 
+import com.budgetview.desktop.Application;
 import com.budgetview.functests.utils.LoggedInFunctionalTestCase;
 import com.budgetview.functests.utils.OfxBuilder;
 import com.budgetview.model.TransactionType;
@@ -7,6 +8,18 @@ import org.globsframework.utils.TestUtils;
 import org.junit.Test;
 
 public class SendImportedFileTest extends LoggedInFunctionalTestCase {
+
+  // Les envois au support passent par le serveur d'origine : menu masqué sauf si on réactive le serveur.
+  // La fenêtre est partagée par les tests de la classe : le réglage vaut pour toute la classe.
+  protected void setUp() throws Exception {
+    System.setProperty(Application.SERVER_ENABLED_PROPERTY, "true");
+    super.setUp();
+  }
+
+  protected void tearDown() throws Exception {
+    System.clearProperty(Application.SERVER_ENABLED_PROPERTY);
+    super.tearDown();
+  }
 
   @Test
   public void testShow() throws Exception {

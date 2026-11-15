@@ -1,5 +1,7 @@
 package com.budgetview.desktop.cloud;
 
+import com.budgetview.desktop.Application;
+
 import com.budgetview.budgea.model.*;
 import com.budgetview.desktop.cloud.accounts.CloudAccountUpdates;
 import com.budgetview.model.*;
@@ -827,7 +829,7 @@ public class CloudService {
   }
 
   public void updateAccounts(final CloudAccountUpdates updates, GlobRepository repository, final Callback callback) {
-    if (updates.isEmpty()) {
+    if (updates.isEmpty() || !Application.isServerEnabled()) {
       return;
     }
 

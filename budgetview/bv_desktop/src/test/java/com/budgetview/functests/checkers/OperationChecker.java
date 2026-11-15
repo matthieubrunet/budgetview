@@ -480,6 +480,13 @@ public class OperationChecker {
     return FeedbackDialogChecker.init(feedbackMenu.triggerClick());
   }
 
+  public void checkHelpMenuWithoutServerActions() {
+    MenuItem help = getHelpMenu();
+    assertFalse(help.contains(Lang.get("feedback")));
+    assertFalse(help.contains(Lang.get("sendLogs.action")));
+    assertFalse(help.contains(Lang.get("sendImportedFile.action")));
+  }
+
   private MenuItem getHelpMenu() {
     return window.getMenuBar().getMenu(Lang.get("help"));
   }

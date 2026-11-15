@@ -306,7 +306,9 @@ public class MainWindow implements WindowManager {
 
     directory.get(LayoutConfigService.class).show(frame);
 
-    licenseCheckerThread = LicenseCheckerThread.launch(directory, repository);
+    if (Application.isServerEnabled()) {
+      licenseCheckerThread = LicenseCheckerThread.launch(directory, repository);
+    }
     synchronized (this) {
       initDone = true;
       notify();

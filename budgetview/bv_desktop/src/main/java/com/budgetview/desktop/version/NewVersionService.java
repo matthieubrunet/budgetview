@@ -15,6 +15,10 @@ public class NewVersionService {
   }
 
   public void update(final Listener listener) {
+    if (!Application.isServerEnabled()) {
+      listener.update(false, Application.APPLICATION_VERSION, "");
+      return;
+    }
     Thread thread = new Thread(new Runnable() {
       public void run() {
         LicenseAPI api = new LicenseAPI();

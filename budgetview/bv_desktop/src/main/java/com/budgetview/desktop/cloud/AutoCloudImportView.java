@@ -1,5 +1,7 @@
 package com.budgetview.desktop.cloud;
 
+import com.budgetview.desktop.Application;
+
 import com.budgetview.desktop.View;
 import com.budgetview.desktop.WindowManager;
 import com.budgetview.desktop.card.NavigationService;
@@ -54,7 +56,8 @@ public class AutoCloudImportView extends View {
   }
 
   private boolean shouldDisplay() {
-    return repository.contains(CloudDesktopUser.KEY) && repository.get(CloudDesktopUser.KEY).isTrue(CloudDesktopUser.REGISTERED);
+    return Application.isServerEnabled()
+           && repository.contains(CloudDesktopUser.KEY) && repository.get(CloudDesktopUser.KEY).isTrue(CloudDesktopUser.REGISTERED);
   }
 
   public void displayIfNeeded(final WindowManager windowManager, final JPanel mainPanel) {

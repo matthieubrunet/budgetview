@@ -1,5 +1,7 @@
 package com.budgetview.desktop.importer.steps;
 
+import com.budgetview.desktop.Application;
+
 import com.budgetview.desktop.card.NavigationService;
 import com.budgetview.desktop.components.dialogs.PicsouDialog;
 import com.budgetview.desktop.help.HyperlinkHandler;
@@ -134,6 +136,8 @@ public class ImportedFileSelectionPanel extends AbstractImportStepPanel implemen
 
   public void prepareForDisplay() {
     createPanelIfNeeded();
+    // Synchro bancaire (Budgea) : masque toute la section, titre compris (colonne parente dans le .splits)
+    cloudIntroPanel.getPanel().getParent().setVisible(Application.isServerEnabled());
     cloudIntroPanel.requestFocus();
   }
 

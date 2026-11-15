@@ -1,5 +1,7 @@
 package com.budgetview.desktop.utils;
 
+import com.budgetview.desktop.Application;
+
 import com.budgetview.desktop.WindowManager;
 import com.budgetview.desktop.about.AboutAction;
 import com.budgetview.desktop.accounts.actions.CreateAccountAction;
@@ -229,10 +231,12 @@ public class MenuBarBuilder {
     menu.addSeparator();
     menu.add(new GotoWebsiteAction(directory));
 
-    menu.addSeparator();
-    menu.add(openFeedbackAction);
-    menu.add(new SendLogsAction(directory));
-    menu.add(sendImportedFileAction);
+    if (Application.isServerEnabled()) {
+      menu.addSeparator();
+      menu.add(openFeedbackAction);
+      menu.add(new SendLogsAction(directory));
+      menu.add(sendImportedFileAction);
+    }
 
     if (!Gui.useMacOSMenu()) {
       menu.addSeparator();
