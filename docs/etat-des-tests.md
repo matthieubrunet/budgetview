@@ -8,7 +8,8 @@ Relevé du 2026-11-15, commande `mvn test -pl budgetview/bv_desktop` (JDK 8, ~15
 | Après correction de l'infrastructure de test (voir CLAUDE.md) | 1 049 | 986 |
 | Après correction des attentes périmées et désactivation des obsolètes | 1 037 | 998 |
 | Après le tri des 38 échecs restants (corrections de l'appli et des tests) | 1 038 | 1 021 |
-| Après `ProjectTransferTest` (attentes alignées, question ouverte notée) | 1 038 | **1 023** |
+| Après `ProjectTransferTest` (attentes alignées, question ouverte notée) | 1 038 | 1 023 |
+| Après le contrôle des données (`DataCheckingServiceTest`, `DataCheckerTest`) | 1 038 | **1 029** |
 
 Le dernier relevé (1 039 lancés, 18 échecs) a été pris avant deux commits : `LaPosteTest.testDeferred`
 désactivé et `CsvImportTest` corrigé, chacun relancé seul depuis. D'où 1 038 / 1 021.
@@ -60,6 +61,7 @@ connexion directe (`faq/import/banques_francaises_connexion_directe.html`) est e
 | `SetPasswordTest` ×2 | la déconnexion recrée la session, ce qui vide une base en mémoire : le test passe sur disque | — |
 | `CsvImportTest.testImportWithSeries` | attendait la boîte d'import des séries au réimport d'une série connue, effet du bug `TARGET_ACCOUNT` ci-dessous | — |
 | `ProjectTransferTest` ×2 | soldes attendus décalés de +1 000 pour suivre le comportement actuel (position saisie = solde d'ouverture) ; **question ouverte**, voir plus bas | — |
+| `DataCheckingServiceTest` ×6 | test unitaire sans les constantes (`DesktopModel.get().getConstants()`) ni les `MonthDay` que charge `PicsouInit`, exigées par le contrôle des liens `GlobCheck.linksAreAllConnected` ; libellés du rapport changés (« Creating months:[…] », « Missing series for seriesBudget … ») | `9b303cd8e` (2017) |
 | `BNPTest` ×4 | **régression de l'appli** : les 22 règles de libellés (`transactionMatcher`) de `banks/fr/bnp.xml` avaient été supprimées en marge du branchement Budgea, sans raison donnée ; restaurées depuis le parent de ce commit, car l'import OFX/QIF est le seul qui reste (Budgea arrêté) | `501972923` (2017) |
 
 Corrections de l'appli elle-même (le test passe sans modification) :
@@ -72,6 +74,7 @@ Corrections de l'appli elle-même (le test passe sans modification) :
 | `SavingsTest` | après saisie manuelle de la position, un import QIF redemandait la position | — |
 | `ImportTest` ×2 (alertes d'écart de position) | `BankPluginService` débranché en 2016 : le solde du fichier OFX n'était plus reporté sur un compte existant, plus aucune alerte d'écart. Rebranché, **sauf le plugin La Poste**. Confirmé en usage réel sur la 5.01 : plus aucune alerte d'écart de solde depuis longtemps. Si les données réelles passent un jour sur la 6.00, des alertes pourront signaler des écarts accumulés depuis 2016 | `03bb7182f`, `a05fe274b` (2016) |
 | `DeferredTest` (partie catégorisation) | une dépense de carte à débit différé se voyait proposer d'être le prélèvement de sa carte : le filtre ignorait `ORIGINAL_ACCOUNT` (opérations déplacées dans le compte courant depuis 2015) | `d4ec09c6a` (2015) |
+| `DataCheckerTest.testErrorDialog` | une exception levée dans l'IHM n'ouvrait plus le contrôle des données : `AwtExceptionHandler` passait par la propriété `sun.awt.exception.handler`, ignorée depuis Java 7. Relayé par `Thread.setDefaultUncaughtExceptionHandler`, limité au fil de l'IHM (EDT) ; suite complète sans régression | passage à Java 7+ |
 | `MoneyExportTest` ×2 | séries créées à l'import sans compte cible (`TARGET_ACCOUNT`), donc non reconnues et reproposées au réimport | `fa611f7fe` (2014) |
 
 ## Désactivés (méthode renommée `disabled_*`, raison en commentaire)
@@ -89,16 +92,15 @@ désactivée en la renommant, et une classe vide est exclue dans le `pom` (sinon
 | `DeferredTest.testCategorization` | test en chantier chez l'auteur (« en cours », 2015) : ses attentes de fin ne correspondent pas au fichier importé ; la partie catégorisation passe |
 | `LaPosteTest.testDeferred` | repose sur le plugin La Poste (inversion de signe des cartes à débit différé, relevé de 2011), volontairement laissé débranché : format actuel de La Poste inconnu, risque d'inverser des montants corrects |
 
-## Restent en échec : 15 tests
+## Restent en échec : 8 tests
 
 | Groupe | Tests | Piste |
 |---|---|---|
 | Instance unique | `SingleInstanceTest` ×6 | plusieurs instances lancées dans la même JVM, vrais ports 5454… ; fenêtres non interceptées |
-| Contrôle des données | `DataCheckingServiceTest` ×6, `DataCheckerTest` ×1 | service refondu en 2017 (`9b303cd8e`, « Intro BackupClinic »), tests adaptés en partie seulement |
 | Migration | `ProjectUpgradeTest.testProjectsWithVariousTranferItemsFromJar125` | après migration d'une base de 2014, une opération finit sur le compte de synthèse « Main accounts », sans enveloppe : contraire à `v3_14b_maj.html` |
 | Divers | `AnalysisBudgetViewStackChartTest.testPopupMenus` | « component must be showing on the screen » à l'ouverture d'un menu contextuel |
 
-`SeriesUpgradeTest` passe ou échoue selon les passes : instable.
+`SeriesUpgradeTest` passe ou échoue selon les passes : instable (en échec au relevé à 1 029, d'où 9 échecs pour 8 listés).
 
 ## Questions ouvertes (arbitrage métier)
 
