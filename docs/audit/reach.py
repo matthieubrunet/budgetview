@@ -19,18 +19,14 @@ for line in open(sys.argv[1]):
     a=a.split('$')[0][len(P):]; b=b.split('$')[0][len(P):]
     if a!=b: edges[a].add(b)
 cuts={
- 'desktop.utils.MenuBarBuilder':{'desktop.feedback.actions.SendFeedbackAction','desktop.feedback.actions.SendLogsAction','desktop.feedback.actions.SendImportedFileAction','EditMobileAccountAction','SimulateLicenseRegistrationAction','ShowLicenseExpirationAction','DumpMobileXmlAction','CloudDemoAction','ShowUserEvaluationDialogAction','DumpUsageDataAction'},
- 'desktop.actions.ExitAction':{'desktop.feedback.UserEvaluationDialog'},
+ # lots 1 à 4a supprimés le 2026-11-16 ; reste la licence (lot 5) et la synchro Budgea (1b).
+ 'desktop.utils.MenuBarBuilder':{'SimulateLicenseRegistrationAction','ShowLicenseExpirationAction','CloudDemoAction'},
  'desktop.importer.steps.ImportedFileSelectionPanel':{'desktop.cloud.CloudIntroPanel'},
- 'desktop.version.NewVersionService':{'shared.license.LicenseAPI'},
  'desktop.userconfig.UserConfigService':{'desktop.utils.KeyService','shared.http.Http','desktop.userconfig.download.DownloadThread','desktop.userconfig.download.JarReceivedCallback','desktop.userconfig.download.ConfigReceivedCallback'},
  'desktop.cloud.AutoCloudImportView':{'desktop.cloud.AutoImporter'},
- 'desktop.MainWindow':{'desktop.license.LicenseCheckerThread','client.http.AutoRetryDataAccess','client.http.HttpsDataTransport'},
- 'desktop.components.PicsouFrame':{'desktop.feedback.UsageDataSender','desktop.feedback.UserEvaluationDialog'},
- 'desktop.MainPanel':{'desktop.mobile.SendMobileDataAction','desktop.feedback.FeedbackService'},
- 'desktop.help.HyperlinkHandler':{'desktop.feedback.FeedbackService'},
+ 'desktop.MainWindow':{'desktop.license.LicenseCheckerThread'},
  'desktop.PicsouInit':{'triggers.LicenseRegistrationTrigger'},
- 'desktop.Application':{'desktop.mobile.MobileService','client.mail.ServerMailingService','desktop.cloud.CloudService'},
+ 'desktop.Application':{'client.mail.ServerMailingService','desktop.cloud.CloudService'},
 }
 # résoudre les noms courts des actions
 allc=set(edges)|{b for s in edges.values() for b in s}

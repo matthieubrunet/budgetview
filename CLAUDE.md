@@ -152,7 +152,7 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
 ## Tests de bv_desktop
 
 ```sh
-mvn test -pl budgetview/bv_desktop                     # ~15 min, 1 049 tests, 166 classes
+mvn test -pl budgetview/bv_desktop                     # ~14 min, 1 028 tests, 163 classes (2026-11-16)
 mvn test -pl budgetview/bv_desktop -Dtest=LoginTest    # une classe (liste séparée par des virgules)
 ```
 

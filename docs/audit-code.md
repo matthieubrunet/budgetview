@@ -39,7 +39,8 @@ Faire l'inventaire sans rien modifier, puis supprimer.
   vérification de version ([perimetre-local.md](perimetre-local.md)). Il est mort par
   construction, puisque le serveur ne répond plus. Lister les classes qui ne servent que là
   (`client/`, `mobile/`, `session/`…). C'est le plus gros gisement et le moins risqué.
-  Inventaire fait le 2026-11-16 (script [audit/reach.py](audit/reach.py)), suppression à faire : voir [1a, inventaire](#1a-inventaire) plus bas.
+  Inventaire fait le 2026-11-16 (script [audit/reach.py](audit/reach.py)), voir [1a, inventaire](#1a-inventaire) plus bas.
+  Lots 1 à 4a supprimés le 2026-11-16 ; reste la licence (lot 5), à valider avant d'y toucher.
 - [ ] **1b. Synchro bancaire Budgea** (`budgea/`, `bank/`, `io/budgea`) : vérifier si elle
   marche encore sans le serveur. Sinon, décider de la couper, voire de la supprimer.
 - [ ] **1c. Couverture JaCoCo de la suite fonctionnelle** : ajouter un profil Maven, lancer
@@ -175,9 +176,24 @@ par aucun chemin**. Une partie sont d'autres points d'entrée légitimes (`InMem
 classes que plus rien n'appelle (`AddOnsView`, `AddOnsSelector`, `BankEntityEditionDialog`, `PicsouButtonUI`,
 `LaPoste`…), à recouper avec la réflexion.
 
-**Ordre de suppression proposé** (un commit par lot, suite verte avant et après) : 1. mobile ;
-2. données sur le serveur ; 3. retours utilisateur et envois ; 4. téléchargement du jar et vérification
-de version ; 5. licence (trigger compris), puis le deuxième cercle.
+**Ordre de suppression** (un commit par lot, suite verte avant et après) :
+
+- [x] 1. mobile (`aa9740caf`). `PasswordEncryption` et `MobileConstants` restent : `bv_server` s'en sert.
+- [x] 2. données sur le serveur (`6a2b98561`).
+- [x] 3. retours utilisateur et envois (`37f48de6c`). `DisconnectionTip` y est passé, seul `FeedbackDialog` s'en servait.
+- [x] 4a. bandeau « nouvelle version » (`69a9a539f`), avec `LicenseAPI`, qui fait partie du deuxième cercle.
+- [ ] 5. licence et téléchargement du jar : ce n'est pas une simple suppression. `UserConfigService`, la machine
+  d'états `userconfig/states` (7 classes) et `LicenseRegistrationTrigger` écrivent `IS_REGISTERED_USER` et
+  `LICENSE_ACTIVATION_STATE` dans le modèle, et `ImportFileAction` ouvre `LicenseActivationDialog` quand
+  l'import n'est pas disponible. Approche proposée : « toujours enregistré », `UserConfigService` réduit au
+  chargement local de la config des banques, champs du modèle conservés. Le changement touche la
+  connexion : il faut le vérifier aussi dans l'appli (`./run-dev.sh`). Reste après ce lot la synchro Budgea (1b).
+
+Pendant ces suppressions, compiler dans un worktree séparé (`git worktree add`, puis
+`mvn -o test-compile -pl budgetview/bv_shared,budgetview/bv_desktop`). Cela permet de vérifier pendant
+qu'une suite tourne, sans toucher à son `target/` ni au `bv_shared` de `~/.m2`. Chercher les usages d'un
+checker de test par le nom de sa classe, et non par le nom du composant : `LoggedInFunctionalTestCase`
+crée plusieurs checkers pour tous les tests.
 
 ## Journal
 
@@ -185,3 +201,5 @@ de version ; 5. licence (trigger compris), puis le deuxième cercle.
 |---|---|---|
 | 2026-11-16 | Point de départ | 1 112 classes de premier niveau (`bv_desktop` et `bv_shared`, dont 1 069 accessibles depuis `DesktopApp`) ; 2 374 `.class` dans `bv_desktop/target/classes` ; `target/dist` 12,3 Mo, `budgetview.jar` 5,2 Mo |
 | 2026-11-16 | 1a, inventaire | 51 classes et 5 734 lignes mortes par construction ; 10 classes du deuxième cercle à examiner |
+| 2026-11-16 | Suite de référence | 1 034 tests, 0 échec, 165 classes de test, 11 min |
+| 2026-11-16 | 1a, lots 1 à 4a | 1 070 classes de premier niveau (−42), 2 302 `.class` (−72) ; `target/dist` 12,2 Mo, `budgetview.jar` 5,07 Mo (−110 Ko) ; 1 028 tests verts (−6, supprimés avec leur code), 163 classes, 14 min ; −4 056 lignes de Java net, −348 lignes de langue (3 fichiers). Reste 13 classes mortes par construction (licence : 9, cloud : 4) |
