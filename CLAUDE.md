@@ -166,6 +166,7 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
 ```sh
 mvn test -pl budgetview/bv_desktop                     # ~14 min, 1 028 tests, 163 classes (2026-11-16)
 mvn test -pl budgetview/bv_desktop -Dtest=LoginTest    # une classe (liste séparée par des virgules)
+mvn -Pcoverage test -pl budgetview/bv_desktop && docs/audit/coverage.sh   # couverture JaCoCo → target/coverage/
 ```
 
 Tri des échecs (corrigés, désactivés, restants) : [docs/etat-des-tests.md](docs/etat-des-tests.md).

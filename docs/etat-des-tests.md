@@ -104,6 +104,10 @@ pour une éventuelle reprise :
 | `AnalysisBudgetViewStackChartTest.testPopupMenus` | « component must be showing on the screen » à l'ouverture d'un menu contextuel |
 | `SeriesUpgradeTest.testNoMessagesDisplayedWhenConvertingASavingsSeriesWithNoTransactionsAndASingleMainAccount` | instable, passe ou échoue selon les passes (`expected:<MainA> but was:<SavingsA>`) |
 
+Instable mais actif : `SignpostSequenceTest.testSwitchingToTheDemoAccountAndBackPreservesSignposts` a échoué
+une fois sur la suite complète (2026-11-16, sous JaCoCo) : `homeCardToggle` introuvable alors qu'il figure dans
+la liste des composants disponibles, juste après le passage au compte de démo. La classe seule passe 3 fois sur 3.
+
 ## Questions ouvertes (arbitrage métier)
 
 ### Solde saisi à la création d'un compte, puis import OFX

@@ -19,11 +19,11 @@ for line in open(sys.argv[1]):
     a=a.split('$')[0][len(P):]; b=b.split('$')[0][len(P):]
     if a!=b: edges[a].add(b)
 cuts={
- # lots 1 à 5 supprimés le 2026-11-16 ; reste la synchro Budgea (1b).
+ # lots 1 à 6 supprimés le 2026-11-16 ; reste la synchro Budgea (1b).
  'desktop.utils.MenuBarBuilder':{'CloudDemoAction'},
  'desktop.importer.steps.ImportedFileSelectionPanel':{'desktop.cloud.CloudIntroPanel'},
  'desktop.cloud.AutoCloudImportView':{'desktop.cloud.AutoImporter'},
- 'desktop.Application':{'client.mail.ServerMailingService','desktop.cloud.CloudService'},
+ 'desktop.Application':{'desktop.cloud.CloudService'},
 }
 # résoudre les noms courts des actions
 allc=set(edges)|{b for s in edges.values() for b in s}

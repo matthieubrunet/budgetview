@@ -10,6 +10,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Options de JVM propres au JDK des tests : vide en Java 8, rempli par le profil jdk17. -->
     <jdk.test.args></jdk.test.args>
+    <!-- Agent JaCoCo des JVM de test : vide sauf avec le profil coverage. -->
+    <jacoco.args></jacoco.args>
   </properties>
   
   <repositories>
@@ -53,7 +55,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.0.0</version>
         <configuration>
-          <argLine>-Xmx1024m -Dapple.awt.UIElement=true ${jdk.test.args}</argLine>
+          <argLine>-Xmx1024m -Dapple.awt.UIElement=true ${jdk.test.args} @{jacoco.args}</argLine>
           <!-- Une JVM par classe de test : les tests fonctionnels laissent fuir fenêtres et threads,
                une JVM partagée finit en OutOfMemoryError et emporte tous les tests suivants. -->
           <forkCount>1</forkCount>
@@ -192,6 +194,39 @@
       <properties>
         <jdk.test.args>--add-opens java.desktop/java.awt=ALL-UNNAMED --add-opens java.desktop/javax.swing=ALL-UNNAMED --add-opens java.desktop/java.awt.peer=ALL-UNNAMED --add-opens java.desktop/java.awt.dnd.peer=ALL-UNNAMED --add-opens java.desktop/sun.awt=ALL-UNNAMED --add-opens java.desktop/sun.awt.datatransfer=ALL-UNNAMED --add-opens java.desktop/sun.awt.image=ALL-UNNAMED --add-opens java.desktop/sun.java2d=ALL-UNNAMED --add-opens java.desktop/sun.java2d.pipe=ALL-UNNAMED --add-opens java.desktop/sun.font=ALL-UNNAMED --add-opens java.desktop/sun.lwawt=ALL-UNNAMED --add-opens java.desktop/sun.lwawt.macosx=ALL-UNNAMED</jdk.test.args>
       </properties>
+    </profile>
+    <!-- Couverture de la suite (audit 1c, docs/audit-code.md) : mvn -Pcoverage test -pl budgetview/bv_desktop
+         → target/jacoco.exec, que docs/audit/coverage.sh transforme en rapport. Les classes de bv_shared,
+         globs, saxstack et prevayler sont mesurées aussi. -->
+    <profile>
+      <id>coverage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.13</version>
+            <executions>
+              <execution>
+                <id>agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                  <propertyName>jacoco.args</propertyName>
+                  <destFile>${project.build.directory}/jacoco.exec</destFile>
+                  <includes>
+                    <include>com.budgetview.*</include>
+                    <include>org.globsframework.*</include>
+                    <include>org.saxstack.*</include>
+                    <include>org.prevayler.*</include>
+                  </includes>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <id>gen-demo</id>

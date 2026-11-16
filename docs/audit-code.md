@@ -49,8 +49,10 @@ Faire l'inventaire sans rien modifier, puis supprimer.
   Toutes les méthodes réseau de `CloudService` passent désormais par l'interrupteur (`isDisabled`), et les
   deux actions cloud du menu de dev n'apparaissent qu'avec lui ([perimetre-local.md](perimetre-local.md)).
   `bank/` n'en fait pas partie : ce sont les plugins de banque de l'import de fichiers (`BankPluginService`).
-- [ ] **1c. Couverture JaCoCo de la suite fonctionnelle** : ajouter un profil Maven, lancer
+- [x] **1c. Couverture JaCoCo de la suite fonctionnelle** : ajouter un profil Maven, lancer
   `mvn test`, lister les classes à 0 %.
+  Fait le 2026-11-16 (profil `coverage`, script [audit/coverage.sh](audit/coverage.sh)), voir
+  [1c, résultats](#1c-résultats) plus bas.
 - [ ] **1d. Couverture JaCoCo en usage réel** : agent JaCoCo dans `run-dev.sh` (option), quelques
   sessions de travail habituelles. Une classe à 0 % dans 1c et dans 1d est candidate.
 - [ ] **1e. Code inaccessible depuis `DesktopApp`** : ProGuard en `-dontobfuscate -printusage`
@@ -218,6 +220,69 @@ qu'une suite tourne, sans toucher à son `target/` ni au `bv_shared` de `~/.m2`.
 checker de test par le nom de sa classe, et non par le nom du composant : `LoggedInFunctionalTestCase`
 crée plusieurs checkers pour tous les tests.
 
+## 1c, résultats
+
+Fait le 2026-11-16, sans rien modifier.
+
+**Méthode.** `mvn -Pcoverage test -pl budgetview/bv_desktop` pose l'agent JaCoCo 0.8.13 sur chaque JVM de test
+(propriété `jacoco.args`, lue par l'`argLine` de surefire en `@{…}`, donc vide hors profil). Il mesure
+`com.budgetview`, `globs`, `saxstack` et `prevayler`, et cumule tout dans `target/jacoco.exec` (16 Mo).
+`docs/audit/coverage.sh` en tire un rapport HTML et CSV par module, et `zero.txt` : les classes de premier
+niveau dont aucune instruction, classes internes comprises, n'a tourné. Les classes sans code exécutable
+(interfaces) ne sont pas comptées. La suite dure 11 min sous l'agent, comme sans lui. Une erreur sur 1 028
+tests, `SignpostSequenceTest.testSwitchingToTheDemoAccountAndBackPreservesSignposts`, instable : elle passe
+3 fois sur 3 quand on relance la classe seule, avec ou sans l'agent.
+
+| Module | Classes | À 0 % | Lignes | À 0 % |
+|---|---|---|---|---|
+| bv_desktop | 972 | 89 | 45 873 | 2 317 |
+| bv_shared | 32 | 14 | 1 380 | 415 |
+| globs | 468 | 164 | 18 150 | 4 324 |
+| prevayler | 80 | 52 | 1 838 | 897 |
+| saxstack | 32 | 22 | 750 | 415 |
+
+Les chiffres de `globs`, `prevayler` et `saxstack` sont l'entrée de l'étape 2 : ils ne mesurent que ce que
+l'application utilise, pas les tests propres à ces modules.
+
+**Recoupement avec l'accessibilité statique** (`reach.py`, même méthode qu'en 1a). Les 103 classes à 0 % de
+`bv_desktop` et `bv_shared` se répartissent en deux groupes.
+
+*Jamais exécutées et inaccessibles depuis `DesktopApp` : 35 classes.*
+- Outils et points d'entrée hors application, à garder : `InMemoryDesktopApp`, `AppCore` (servi par
+  `DevDesktopApp` et `BackupClinic`), `persistence.direct.Dump`, `tools.BackupClinic` et
+  `DataCheckExceptionHandler`, `utils.generator.*` (5 classes, dont `PicsouSampleGenerator`).
+- Démos : `experiment.DeltaGaugeDemo`, `GaugeDemo`, `HistoButtonChartDemo`, `HistoChartDemo`, `io.budgea.BudgeaDemo`.
+- Budgea, gardé par décision (1b) : `BudgeaCategory`, `BudgeaSeriesConverter`.
+- Faux positif : `plaf.PicsouButtonUI`, appelé par les look & feel Windows et Linux du paquet `com.jgoodies`,
+  que le graphe de `reach.py` ignore.
+- **Candidates à la suppression, 17 classes, 373 lignes** : `bank.plugins.LaPoste` (le chargement des plugins
+  de banque, `Loader.loadBank`, ne fait plus rien depuis le lot 5 : `BankPluginService` n'applique que son
+  plugin par défaut), `accounts.position.SavingsAccountPositionLabels`, `budget.AccountThresholdMessage`,
+  `budget.BudgetToggle`, `charts.stack.StackChartSelection`, `filtering.FilterSet` et `FilterSetBuilder`,
+  `stringifiers.ColoredAmountStringifier`, `SeriesPeriodicityAndScopeStringifier`,
+  `importer.components.OfxSecurityInfoButton`, `importer.edition.BankEntityEditionDialog`,
+  `BankEntityEditionPanel`, `CardTypeChooserDialog`, `projects.utils.ProjectFilter`,
+  `signpost.actions.SetSignpostStatusAction`, `utils.dev.GotoPastTrialExpirationAction` (période d'essai,
+  reste de la licence ; son appel dans `OperationChecker.gotoPastTrialExpiration` n'a aucun appelant),
+  `triggers.savings.UpdateMirrorSeriesBudgetChangeSetVisitor`.
+
+*Jamais exécutées mais accessibles : 68 classes*, à confronter à l'usage réel (1d) :
+- propres à Windows ou Linux : `UnixBrowsingService`, `WindowsBrowsingService`, `PicsouWindows*`,
+  `PicsouLinuxLookAndFeel`, `PicsouWindowsLookAndFeel`, `LafUtils`, `PicsouRootPaneUI`, `PicsouOptionPaneUI` ;
+- Budgea et cloud, gardés (1b) : `desktop.cloud.*`, `CloudConnection*FieldEditor`, `SynchroErrorDialog`,
+  `ShowSynchroErrorAction`, `shared.cloud.*` ;
+- client serveur et constantes que `bv_server` garde : `client.exceptions.*`, `shared.http.Http`,
+  `shared.json.Json`, `PasswordEncryption`, `PasswordBasedEncryptor`, `LicenseConstants`, `MobileConstants` ;
+- impression, jamais testée : `PrintStyle` et les `*Metrics` de `printing` ;
+- le reste, petites classes d'IHM ou utilitaires sans test : `JRoundedPanel`, `RoundButtonUI`,
+  `SelectionToggleUI`, `PieChartPainter`, `HistoDailyBlockPainter`, `SplitPaneDotsPainter`, `WavePanelUI`,
+  `AddOnPanelLayout`, `ReadOnlyGlobTextFieldView`, `BlankAction`, `JsonImporter` (tests désactivés),
+  `DataExchangeService`, `FloatingAverage`, `Chronometer`… La liste complète est dans `zero.txt`.
+
+Quatre classes sont inaccessibles mais exécutées, donc servies par les seuls tests : `ComponentTextDisplay`,
+`HistoLinePainter`, `OfxBeautifier`, `model.LicenseActivationState` (type du modèle, à garder pour les
+données 5.01).
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -227,3 +292,4 @@ crée plusieurs checkers pour tous les tests.
 | 2026-11-16 | Suite de référence | 1 034 tests, 0 échec, 165 classes de test, 11 min |
 | 2026-11-16 | 1a, lots 1 à 4a | 1 070 classes de premier niveau (−42), 2 302 `.class` (−72) ; `target/dist` 12,2 Mo, `budgetview.jar` 5,07 Mo (−110 Ko) ; 1 028 tests verts (−6, supprimés avec leur code), 163 classes, 14 min ; −4 056 lignes de Java net, −348 lignes de langue (3 fichiers). Reste 13 classes mortes par construction (licence : 9, cloud : 4) |
 | 2026-11-16 | 1a, lot 5 (licence) | 1 045 classes de premier niveau (−25), 2 226 `.class` (−76) ; `target/dist` 12,1 Mo, `budgetview.jar` 4,95 Mo (−117 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −4 492 lignes de Java net, −299 lignes de langue. Reste 4 classes mortes par construction, toutes du cloud (1b) |
+| 2026-11-16 | 1c, couverture de la suite | bv_desktop + bv_shared : 103 classes de premier niveau à 0 % sur 1 004 (2 732 lignes sur 47 253) ; 17 candidates à la suppression (373 lignes). globs 164/468, prevayler 52/80, saxstack 22/32 à 0 %. 1 028 tests, 1 erreur instable, 11 min sous JaCoCo |
