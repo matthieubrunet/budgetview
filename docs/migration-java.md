@@ -95,6 +95,10 @@ Il est remplacé par `com.budgetview.desktop.utils.AppExit` : toutes les sorties
 `System.exit` par défaut. `FunctionalTestCase` installe un `Handler` qui lève une `IllegalStateException`.
 Le drapeau `-Djava.security.manager=allow` a disparu du profil `jdk17`.
 
+- **Vérifié** : suite complète sous Zulu 8 (1 034 tests, tous verts) ; sous OpenJDK 17 sans le drapeau,
+  `DataCheckerTest` et `PrintTest` (7 tests, verts, plus d'avertissement sur `setSecurityManager`).
+  Les piles `RuntimeException: Exception test` du log viennent de `DataCheckerTest`, qui les provoque exprès.
+
 - **Règle** : une nouvelle sortie dans `com.budgetview.desktop` passe par `AppExit.exit`, jamais par `System.exit`.
 - Restent sur `System.exit`, hors du périmètre de l'ancien `SecurityManager` : la fermeture de la fenêtre
   par `EXIT_ON_CLOSE` (`PicsouFrame`, appel venant de `JFrame`), les outils en ligne de commande
