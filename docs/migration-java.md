@@ -41,7 +41,7 @@ contributeurs, ou pour repenser le produit.
 | Plugins Maven | **Fait** (2026-11-15) : tous en 3.0.x. `<release>` attendra la compilation sous Java 9+ : l'option n'existe qu'à partir de compiler 3.6 et d'un JDK 9. | — |
 | Shrinker | Lit les `.class` avec ASM 3.1 (2007), qui ne connaît pas `invokedynamic`. Ça marche aujourd'hui faute de lambdas, mais une compilation pour Java 9+ en met dans chaque concaténation de chaînes. Passer à ASM 9 (l'API a changé : `MethodAdapter` n'existe plus) ou supprimer le shrinker, qui n'a plus d'intérêt avec `jpackage`. **Supprimé** (2026-11-15), voir plus bas. | — |
 | JGoodies Looks 2.2.0 | Thème Windows/Linux de 2008, avec des classes du projet dans le paquet de JGoodies. Fonctionnera probablement, à vérifier à l'écran. | à tester |
-| `SecurityManager` de `FunctionalTestCase` | Il faut un drapeau en Java 17-23, et il est désactivé pour de bon en Java 24. À remplacer par un point de sortie unique, remplaçable dans les tests. | ½ jour |
+| `SecurityManager` de `FunctionalTestCase` | Il fallait un drapeau en Java 17-23, et il est désactivé pour de bon en Java 24. **Remplacé** (2026-11-16) par un point de sortie unique, `AppExit`, voir plus bas. | — |
 | **uispec4j** | Sous-classe `sun.awt.SunToolkit` et les peers AWT. **Porté** (2026-11-15) en une dizaine de lignes, variante `java-jdk17`, voir plus bas. L'instabilité de `PrintTest` est corrigée (2026-11-16). | — |
 
 N'empêchent pas la migration : log4j 1.2 (fin de vie, sans conséquence en local), joda-time, les
@@ -55,8 +55,8 @@ N'empêchent pas la migration : log4j 1.2 (fin de vie, sans conséquence en loca
    Java récent : compilation, exécution, tests), plutôt que l'option A (exécuter sur Java 21, mais
    compiler et tester sous Zulu 8).
 4. ~~Hooks Mac vers `java.awt.Desktop`, avec remise de `apple.laf.useScreenMenuBar`.~~ Fait.
-5. Passage effectif : ~~stabiliser `PrintTest` sous 17~~ (fait), remplacer le `SecurityManager` de `FunctionalTestCase`
-   (indispensable avant Java 24), décider des formats CLDR, installer un JDK 21, compiler en `--release 21`
+5. Passage effectif : ~~stabiliser `PrintTest` sous 17~~ (fait), ~~remplacer le `SecurityManager` de `FunctionalTestCase`~~
+   (fait), décider des formats CLDR, installer un JDK 21, compiler en `--release 21`
    (compiler ≥ 3.6) et faire de ce JDK la référence.
 6. Ensuite seulement : FlatLaf.
 
@@ -83,6 +83,23 @@ deux API ont les mêmes noms de méthodes (`handleAbout`, `handlePreferences`, `
 - **Pas vérifié** : l'ouverture d'un fichier par le Finder, qui demande un `.app` déclarant ses types
   de fichiers (étape `jpackage`).
 
+## Sortie de l'application : `AppExit` (2026-11-16)
+
+Les tests ne doivent pas laisser l'application tuer la JVM de surefire. `FunctionalTestCase` installait
+pour cela un `SecurityManager` dont `checkExit` levait une exception, à condition de trouver
+`Runtime.exit` puis une classe `com.budgetview.desktop` dans la pile : Swing appelle aussi `checkExit()`
+sans quitter (`setDefaultCloseOperation(EXIT_ON_CLOSE)`).
+
+Il est remplacé par `com.budgetview.desktop.utils.AppExit` : toutes les sorties de l'application
+(`Application`, `ExitAction`, `ShowDialogAndExitExceptionHandler`) appellent `AppExit.exit(code)`, qui fait
+`System.exit` par défaut. `FunctionalTestCase` installe un `Handler` qui lève une `IllegalStateException`.
+Le drapeau `-Djava.security.manager=allow` a disparu du profil `jdk17`.
+
+- **Règle** : une nouvelle sortie dans `com.budgetview.desktop` passe par `AppExit.exit`, jamais par `System.exit`.
+- Restent sur `System.exit`, hors du périmètre de l'ancien `SecurityManager` : la fermeture de la fenêtre
+  par `EXIT_ON_CLOSE` (`PicsouFrame`, appel venant de `JFrame`), les outils en ligne de commande
+  (`tools/BackupClinic`) et les `main` de test (`DevDesktopApp`, `DemoGenerationTest`).
+
 ## Portage d'uispec4j et tests sous Java 17 (2026-11-15)
 
 **Compilation.** Sous javac 17 avec `--add-exports`, 8 erreurs seulement, toutes mécaniques :
@@ -102,8 +119,8 @@ Les classes propres à Java 9+ sont dans `src/main/java-jdk17`, copie de `java-j
 
 **Exécution.** Un seul blocage : Java 9+ ne renseigne plus la propriété `awt.toolkit`, et uispec4j ne
 connaissait en repli que `WToolkit` (Windows) et `MToolkit` (Motif, disparu). Ajout de
-`sun.lwawt.macosx.LWCToolkit` et `sun.awt.X11.XToolkit`. Il faut aussi `-Djava.security.manager=allow`
-pour le `SecurityManager` de `FunctionalTestCase`.
+`sun.lwawt.macosx.LWCToolkit` et `sun.awt.X11.XToolkit`. Il fallait aussi `-Djava.security.manager=allow`
+pour le `SecurityManager` de `FunctionalTestCase`, retiré depuis (section suivante).
 
 **Résultats.**
 

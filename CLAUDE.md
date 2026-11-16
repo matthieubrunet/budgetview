@@ -171,10 +171,9 @@ Adaptations des tests faites pour la 6.00 :
 - Langue : la 6.00 force le français au démarrage. `Application.LANG_PROPERTY`
   (`budgetview.lang` = `fr` par défaut, `en`, ou `keep`) ; `FunctionalTestCase` met `keep` pour
   que les tests restent dans la langue qu'ils fixent (anglais, `Lang.ROOT`).
-- `FunctionalTestCase` installe un `SecurityManager` qui transforme en exception tout
-  `Runtime.exit()` venant de `com.budgetview.desktop` (ex. `ShowDialogAndExitExceptionHandler`).
-  Il ne doit pas bloquer les simples `checkExit()` de Swing (`setDefaultCloseOperation(EXIT_ON_CLOSE)`),
-  sinon plus aucune fenêtre principale ne se crée.
+- Sorties de l'application : toujours `AppExit.exit(code)`, jamais `System.exit`. `FunctionalTestCase` le
+  remplace par une exception, pour que la JVM de surefire survive (ex. `ShowDialogAndExitExceptionHandler`).
+  Il remplace le `SecurityManager`, désactivé en Java 24 ([docs/migration-java.md](docs/migration-java.md)).
 - `LoggedInFunctionalTestCase.setUp` referme la fenêtre partagée (`static mainWindow`) s'il échoue :
   sinon tous les tests suivants de la classe échouent en cascade (« textBox 'name' not found »).
 - Fenêtre partagée, suite : un test qui passe seul mais échoue dans sa classe vient presque toujours
