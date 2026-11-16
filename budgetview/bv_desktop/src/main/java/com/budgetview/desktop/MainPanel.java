@@ -46,7 +46,6 @@ import com.budgetview.desktop.undo.UndoRedoService;
 import com.budgetview.desktop.utils.MacOSXHooks;
 import com.budgetview.desktop.utils.MainPanelContainer;
 import com.budgetview.desktop.utils.MenuBarBuilder;
-import com.budgetview.desktop.version.NewVersionView;
 import com.budgetview.model.LayoutConfig;
 import com.budgetview.model.Month;
 import com.budgetview.model.SignpostStatus;
@@ -88,7 +87,6 @@ public class MainPanel {
   private DashboardView dashboardView;
   private BudgetView budgetView;
   private AutoCloudImportView autoCloudImportView;
-  private NewVersionView newVersionView;
 
   public static MainPanel init(GlobRepository repository, Directory directory, WindowManager mainWindow) {
     LayoutConfig.init(repository, directory);
@@ -170,7 +168,6 @@ public class MainPanel {
     analysisSelector = new AnalysisSelector(repository, directory);
     signpostView = new SignpostView(replicationGlobRepository, directory);
     dashboardView = new DashboardView(repository, directory);
-    newVersionView = new NewVersionView(repository, directory);
     autoCloudImportView = new AutoCloudImportView(repository, directory);
     createPanel(
       periodView,
@@ -179,7 +176,6 @@ public class MainPanel {
       new LicenseInfoView(repository, directory),
       transactionView,
       timeView,
-      newVersionView,
       new DemoMessageView(repository, directory),
       categorizationSelector,
       categorizationView,
@@ -227,7 +223,6 @@ public class MainPanel {
     cardView.showInitialCard();
     budgetView.reset();
     dashboardView.reset();
-    newVersionView.reset();
     transactionView.reset();
     categorizationSelector.reset();
     directory.get(NavigationService.class).reset();

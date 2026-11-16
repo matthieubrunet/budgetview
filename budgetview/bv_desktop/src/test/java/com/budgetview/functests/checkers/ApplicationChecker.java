@@ -17,7 +17,6 @@ public class ApplicationChecker extends GuiChecker {
   private static Window window;
   private static DummyPrinterService printService = new DummyPrinterService();
 
-  private NewVersionChecker newVersion;
   private OperationChecker operations;
   private ViewSelectionChecker views;
   private TransactionChecker transactions;
@@ -93,7 +92,6 @@ public class ApplicationChecker extends GuiChecker {
 
   private void clearCheckers() {
     operations = null;
-    newVersion = null;
     views = null;
     transactions = null;
     addOns = null;
@@ -136,14 +134,6 @@ public class ApplicationChecker extends GuiChecker {
       addOns = new AddOnsChecker(window);
     }
     return addOns;
-  }
-
-  public NewVersionChecker getNewVersionFooter() {
-    checkApplicationStarted();
-    if (newVersion == null) {
-      newVersion = new NewVersionChecker(window);
-    }
-    return newVersion;
   }
 
   public void checkClosed() {

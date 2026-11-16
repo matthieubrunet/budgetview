@@ -18,7 +18,6 @@ de la 5.01, sans garantie, puisque les serveurs sont morts.
 |---|---|---|
 | Statut de licence, config banques et **téléchargement de jar** depuis le serveur | `UserConfigService.retrieveUserStatus` (même branche que les données en mémoire) | aucun thread réseau ; l'utilisateur est considéré enregistré |
 | Contrôle de licence après la connexion | `MainWindow` : `LicenseCheckerThread` non lancé | `User.CONNECTED` reste faux |
-| Bandeau « nouvelle version » | `NewVersionService.update` | jamais affiché |
 | Synchro bancaire, section de l'import | `ImportedFileSelectionPanel.prepareForDisplay` | section masquée, titre compris |
 | Synchro bancaire, import automatique au démarrage | `AutoCloudImportView.shouldDisplay` | jamais affiché |
 | Synchro bancaire, mise à jour des comptes après un import | `CloudService.updateAccounts` | aucun appel |
@@ -28,7 +27,8 @@ menu mobile (commenté dans `MenuBarBuilder`).
 
 **Supprimé depuis** (audit du code, chantier 1a, [audit-code.md](audit-code.md)) : l'accès mobile, le
 stockage des données sur le serveur (propriété `budgetview.server.url`), et les envois au support (avis,
-logs, fichier importé anonymisé, demande d'évaluation, statistiques d'usage).
+logs, fichier importé anonymisé, demande d'évaluation, statistiques d'usage), et le bandeau « nouvelle
+version ».
 
 Le téléchargement automatique du jar mérite une attention particulière. Si le domaine
 `budgetview.fr` changeait de mains, un serveur tiers pourrait livrer un jar exécuté au démarrage

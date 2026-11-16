@@ -17,8 +17,6 @@ public class InitialImportTest extends LoggedInFunctionalTestCase {
 
   @Test
   public void testInitialImport() throws Exception {
-    newVersion.checkHidden();
-
     views.selectBudget();
     timeline.checkMonthTooltip("2008/08", "August 2008");
 

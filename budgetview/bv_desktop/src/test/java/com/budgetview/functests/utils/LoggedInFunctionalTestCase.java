@@ -44,7 +44,6 @@ public abstract class LoggedInFunctionalTestCase extends FunctionalTestCase {
   public UncategorizedSummaryViewChecker uncategorized;
   public CategorizationChecker categorization;
   public AnalysisChecker analysis;
-  public NewVersionChecker newVersion;
   public DemoMessageChecker demoMessage;
   public ImportPanelChecker importPanel;
   public NotesViewChecker notes;
@@ -178,7 +177,6 @@ public abstract class LoggedInFunctionalTestCase extends FunctionalTestCase {
     categorization = new CategorizationChecker(mainWindow);
     analysis = new AnalysisChecker(mainWindow);
     license = new LicenseChecker(mainWindow);
-    newVersion = new NewVersionChecker(mainWindow);
     demoMessage = new DemoMessageChecker(mainWindow);
     importPanel = new ImportPanelChecker(mainWindow);
     notes = new NotesViewChecker(operations, mainWindow);
@@ -245,7 +243,6 @@ public abstract class LoggedInFunctionalTestCase extends FunctionalTestCase {
     operations = null;
     addOns = null;
     screen = null;
-    newVersion = null;
     demoMessage = null;
     budgetView = null;
     uncategorized = null;
