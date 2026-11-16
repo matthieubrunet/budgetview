@@ -216,6 +216,9 @@ qui prend globs dans `~/.m2`.
 - Checklist d'une nouvelle fonctionnalité : `budgetview/howto/checklist_nouvelle_feature.txt`
   (upgrade des données utilisateur, couleurs pour tous les thèmes, traduction EN, focus…).
 - Annotation `@NoObfuscation` : vestige de l'obfuscation Zelix (ZKM), désormais commentée.
+- Simplification du code ancien (code mort, frameworks forkés, ce que Java 21 fournit, contournements,
+  tests) : plan découpé en petits chantiers à cocher dans [docs/audit-code.md](docs/audit-code.md).
+  Y cocher chaque chantier terminé et en noter les chiffres dans son journal.
 
 ## Points d'attention
 
