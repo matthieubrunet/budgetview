@@ -11,5 +11,8 @@ Le livrable est dans budgetview/bv_desktop/target/dist (budgetview.jar + lib/ + 
 generate an exe ; under windows do 
 jpackage --input budgetview/bv_desktop/target/dist --main-jar budgetview.jar --name budgetview --app-version 6.0 --win-menu  --win-dir-chooser
 
+Pour macOS : `./package-mac.sh` (`--build` pour reconstruire le livrable avant) produit
+`BudgetView 6.app`, Java 21 embarqué, et l'installe dans `~/Applications`.
+
 Pour linux :
 jpackage --input budgetview/bv_desktop/target/dist --dest version --main-jar budgetview.jar --name budgetview --app-version 6.0 --type rpm

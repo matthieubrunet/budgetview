@@ -139,6 +139,12 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
 - Cible Java **21** depuis le 2026-11-16 (l'amont s'était arrêté en 1.8). Migration, étapes et
   mesures : [docs/migration-java.md](docs/migration-java.md).
 - Packaging natif via `jpackage` (commandes dans `README.md`), fourni par le JDK 21.
+  Sur Mac : `./package-mac.sh` → `~/Applications/BudgetView 6.app` (~160 Mo, runtime Java compris, signature
+  ad hoc). Contrairement à `run-dev.sh`, l'app empaquetée garde l'instance unique et **les données par défaut,
+  donc celles de la 5.01** : Matthieu l'a choisie le 2026-11-16 pour l'usage quotidien à la place de la 5.01
+  (sauvegarde préalable des données dans `~/BudgetView-sauvegardes/5.01-avant-6.00-2026-11-16`).
+  Pour essayer le paquet sans toucher à ces données : `JAVA_TOOL_OPTIONS="-Dbudgetview.data.path=<dossier>
+  -DSINGLE_INSTANCE_DISABLED=true" "~/Applications/BudgetView 6.app/Contents/MacOS/BudgetView 6"`.
 - Tests : JUnit 4, surefire inclut `**/*Test.java` et `**/*Tests.java`.
   Les tests fonctionnels (`src/test/java/com/budgetview/functests`, classes de base
   `FunctionalTestCase` → `LoggedInFunctionalTestCase`) pilotent l'IHM via uispec4j.
