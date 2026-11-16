@@ -46,6 +46,18 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
   `~/Library/Application Support/BudgetView` (macOS) — voir `desktop/startup/AppPaths.java`.
   Surcharges par propriétés système préfixées `budgetview.` (`budgetview.prevayler.path`,
   `budgetview.prevayler.delete`, date forcée…).
+- Utilisateurs et dossiers de données (vérifié le 2026-11-16) :
+  - Un dossier peut contenir **plusieurs utilisateurs**, chacun avec son propre jeu de données (identifiant
+    distinct, données chiffrées par son mot de passe). On passe de l'un à l'autre par l'écran de connexion
+    (« Fichier → Ouvrir un autre compte utilisateur »), sans relancer. Création : y cocher « Créer un nouveau
+    compte » ; suppression : « Fichier → Supprimer » une fois connecté. C'est l'usage que décrit la FAQ
+    (`faq/comptes/utiliser_plusieurs_comptes.html`, qui cite encore l'ancien nom du menu).
+  - L'application n'utilise **qu'un dossier à la fois** : le défaut, ou celui de `redirect.txt`. « Préférences →
+    Stockage » en change au lancement suivant (copie de la session, ou reprise des données déjà présentes).
+    L'aide le présente pour déplacer les données, pas pour tenir deux jeux en parallèle.
+  - Sur ce poste, la séparation dev / réel tient aux dossiers : `run-dev.sh` force le sien (`~/.budgetview-dev`
+    ou `BV_DEV_DATA`), l'app empaquetée suit `redirect.txt` (Dropbox). Pour essayer un premier démarrage :
+    `BV_DEV_DATA=/tmp/bv-essai ./run-dev.sh` (dossier vide → compte sans mot de passe créé d'office).
 - Paquets principaux sous `com.budgetview` :
   - `model/` : les `GlobType` métier (Account, Transaction, Series, SeriesBudget,
     Project, Month…) ; `model/upgrade` pour la migration des données.
