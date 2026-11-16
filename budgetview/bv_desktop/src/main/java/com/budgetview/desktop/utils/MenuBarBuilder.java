@@ -13,9 +13,6 @@ import com.budgetview.desktop.cloud.actions.CloudDemoAction;
 import com.budgetview.desktop.components.PicsouFrame;
 import com.budgetview.desktop.help.actions.GotoSupportAction;
 import com.budgetview.desktop.help.actions.GotoWebsiteAction;
-import com.budgetview.desktop.license.activation.ActivateLicenseAction;
-import com.budgetview.desktop.license.dev.ShowLicenseExpirationAction;
-import com.budgetview.desktop.license.dev.SimulateLicenseRegistrationAction;
 import com.budgetview.desktop.notes.ShowNotesAction;
 import com.budgetview.desktop.preferences.PreferencesAction;
 import com.budgetview.desktop.preferences.dev.DevOptionsAction;
@@ -52,7 +49,6 @@ public class MenuBarBuilder {
   private RestoreSnapshotMenuAction restoreSnapshotMenuAction;
   private PreferencesAction preferencesAction;
   private DeleteUserAction deleteUserAction;
-//  private ActivateLicenseAction activateLicenseAction;
   private Action threadsAction;
   private PrintBudgetAction printBudgetAction;
   private ExitAction exitAction;
@@ -74,7 +70,6 @@ public class MenuBarBuilder {
     this.restoreActionFileAction = new RestoreFileAction(repository, directory);
     this.restoreSnapshotMenuAction = new RestoreSnapshotMenuAction(directory, repository);
     this.preferencesAction = new PreferencesAction(repository, directory);
-//    this.activateLicenseAction = new ActivateLicenseAction(repository, directory);
     this.setPasswordAction = new SetPasswordAction(repository, directory);
     this.deleteUserAction = deleteUserAction;
     this.printBudgetAction = new PrintBudgetAction(replicationGlobRepository, directory);
@@ -178,8 +173,6 @@ public class MenuBarBuilder {
     devMenu.addSeparator();
     devMenu.add(new HideSignpostsAction(repository));
     devMenu.addSeparator();
-    devMenu.add(new SimulateLicenseRegistrationAction(repository));
-    devMenu.add(new ShowLicenseExpirationAction(repository, directory));
     devMenu.addSeparator();
     devMenu.add(ToggleAllAddOnsAction.enableAll(repository));
     devMenu.add(ToggleAllAddOnsAction.disableAll(repository));

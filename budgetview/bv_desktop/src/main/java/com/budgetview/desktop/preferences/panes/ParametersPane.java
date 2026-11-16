@@ -3,7 +3,7 @@ package com.budgetview.desktop.preferences.panes;
 import com.budgetview.desktop.preferences.PreferencesDialog;
 import com.budgetview.desktop.preferences.PreferencesPane;
 import com.budgetview.desktop.preferences.PreferencesResult;
-import com.budgetview.desktop.userconfig.UserConfigService;
+import com.budgetview.client.DataAccess;
 import com.budgetview.model.UserPreferences;
 import com.budgetview.utils.Lang;
 import org.globsframework.gui.GlobsPanelBuilder;
@@ -72,10 +72,10 @@ public class ParametersPane implements PreferencesPane {
       public void actionPerformed(ActionEvent e) {
         String lang = langCombo.getSelectedItem().toString();
         if (lang.equalsIgnoreCase(langEn)) {
-          directory.get(UserConfigService.class).setLang("en");
+          directory.get(DataAccess.class).setLang("en");
         }
         else {
-          directory.get(UserConfigService.class).setLang("fr");
+          directory.get(DataAccess.class).setLang("fr");
         }
       }
     });

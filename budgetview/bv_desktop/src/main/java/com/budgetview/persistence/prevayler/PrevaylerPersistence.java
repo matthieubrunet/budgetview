@@ -53,8 +53,7 @@ public class PrevaylerPersistence implements Persistence {
 
   public void register(byte[] mail, byte[] signature, String activationCode) {
     if (rootDataManager != null){
-      // le thread LicenseCheckerThread fini par passé mais dans le test d'apres alors que
-      // le closed a été appelé.
+      // L'ancien LicenseCheckerThread (supprimé en 6.0.1) pouvait arriver ici après la fermeture.
       rootDataManager.register(mail, signature, activationCode);
     }
   }

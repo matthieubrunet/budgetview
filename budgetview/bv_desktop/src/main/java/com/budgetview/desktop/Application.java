@@ -23,7 +23,6 @@ import com.budgetview.desktop.startup.components.OpenRequestManager;
 import com.budgetview.desktop.startup.components.SingleApplicationInstanceListener;
 import com.budgetview.desktop.time.TimeService;
 import com.budgetview.desktop.upgrade.UpgradeService;
-import com.budgetview.desktop.userconfig.UserConfigService;
 import com.budgetview.desktop.utils.*;
 import com.budgetview.shared.encryption.MD5PasswordBasedEncryptor;
 import com.budgetview.shared.encryption.PasswordBasedEncryptor;
@@ -56,7 +55,6 @@ import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class Application {
 
@@ -65,8 +63,6 @@ public class Application {
   public static final Long BANK_CONFIG_VERSION = 7L;
 
   public static final String APPNAME = "budgetview";
-  private static final String CONFIG = "config";
-  private static final Pattern CONFIG_FILTER = Pattern.compile(CONFIG + "[0-9][0-9]*" + "\\.jar");
 
   public static final String LOG_TO_SOUT = APPNAME + ".log.sout";
   public static final String LOCAL_PREVAYLER_PATH_PROPERTY = APPNAME + ".prevayler.path";
@@ -325,7 +321,6 @@ public class Application {
     wrapper.add(FontLocator.class, Gui.FONT_LOCATOR);
     wrapper.add(ExceptionHandler.class, new ShowDialogAndExitExceptionHandler(directory));
     wrapper.add(PasswordBasedEncryptor.class, new RedirectPasswordBasedEncryptor());
-    wrapper.add(createConfigService());
     wrapper.add(new ServerMailingService());
     wrapper.add(new CloudService());
     // Retire par erreur en 2016 (03bb7182f) : utilise par ImportSession et les plugins de banque (LaPoste...).
@@ -340,45 +335,5 @@ public class Application {
   }
 
   protected void preinitDirectory(Directory directory) {
-  }
-
-  private static UserConfigService createConfigService() {
-    Long localConfigVersion;
-    String configPath = AppPaths.getBankConfigPath();
-    File lastJar = findLastJar(configPath);
-    if (lastJar != null) {
-      localConfigVersion = extractVersion(lastJar.getName());
-    }
-    else {
-      localConfigVersion = BANK_CONFIG_VERSION;
-    }
-    return new UserConfigService(APPLICATION_VERSION, JAR_VERSION, localConfigVersion, lastJar);
-  }
-
-  private static File findLastJar(String path) {
-    File directory = new File(path);
-    File[] files = directory.listFiles(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        return CONFIG_FILTER.matcher(name).matches();
-      }
-    });
-    if (files == null || files.length == 0) {
-      return null;
-    }
-    Arrays.sort(files, new Comparator<File>() {
-      public int compare(File s1, File s2) {
-        return extractVersion(s1.getName()).compareTo(extractVersion(s2.getName()));
-      }
-    });
-
-    return files[files.length - 1];
-  }
-
-  private static Long extractVersion(String fileName) {
-    if (fileName != null && CONFIG_FILTER.matcher(fileName).matches()) {
-      return Long.parseLong(fileName.substring(fileName.indexOf(CONFIG) + CONFIG.length(),
-                                               fileName.indexOf(".")));
-    }
-    return null;
   }
 }

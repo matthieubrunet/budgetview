@@ -45,8 +45,8 @@ public class AppCore {
                                          directory);
       dataAccess.connect(Application.JAR_VERSION);
 
-      boolean registered = isRegistered(user, password, dataAccess);
-      PicsouInit init = PicsouInit.init(dataAccess, directory, registered, false);
+      connectUser(user, password, dataAccess);
+      PicsouInit init = PicsouInit.init(dataAccess, directory);
       init.loadUserData(user, false, false).load();
       return new AppCore(init);
     }
@@ -81,14 +81,12 @@ public class AppCore {
     return sessionDirectory;
   }
 
-  private static boolean isRegistered(String user, String password, DataAccess dataAccess) {
-    boolean registered = false;
+  private static void connectUser(String user, String password, DataAccess dataAccess) {
     try {
-      registered = dataAccess.createUser(user, password.toCharArray(), false);
+      dataAccess.createUser(user, password.toCharArray(), false);
     }
     catch (UserAlreadyExists e) {
-      registered = dataAccess.initConnection(user, password.toCharArray(), false);
+      dataAccess.initConnection(user, password.toCharArray(), false);
     }
-    return registered;
   }
 }

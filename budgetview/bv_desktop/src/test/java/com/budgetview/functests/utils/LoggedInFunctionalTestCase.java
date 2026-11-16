@@ -9,7 +9,6 @@ import com.budgetview.desktop.time.TimeService;
 import com.budgetview.desktop.time.TimeViewPanel;
 import com.budgetview.functests.checkers.*;
 import com.budgetview.functests.checkers.components.TimeViewChecker;
-import com.budgetview.functests.checkers.license.LicenseChecker;
 import com.budgetview.functests.checkers.printing.PrinterChecker;
 import com.budgetview.model.SignpostStatus;
 import com.budgetview.model.initial.DefaultSeriesFactory;
@@ -39,7 +38,6 @@ public abstract class LoggedInFunctionalTestCase extends FunctionalTestCase {
   public TransactionChecker transactions;
   public TransactionDetailsChecker transactionDetails;
   public TransactionCreationChecker transactionCreation;
-  public LicenseChecker license;
   public BudgetViewChecker budgetView;
   public UncategorizedSummaryViewChecker uncategorized;
   public CategorizationChecker categorization;
@@ -85,7 +83,6 @@ public abstract class LoggedInFunctionalTestCase extends FunctionalTestCase {
     System.setProperty(Application.USER_FEEDBACK_DISABLED, Boolean.toString(true));
     System.setProperty(SingleApplicationInstanceListener.SINGLE_INSTANCE_DISABLED, "true");
     System.setProperty(LicenseConstants.LICENSE_URL_PROPERTY, "");
-    System.setProperty(LicenseConstants.FTP_URL_PROPERTY, "");
     DefaultSeriesFactory.AUTO_CREATE_DEFAULT_SERIES = createDefaultSeries;
 
     application = new ApplicationChecker();
@@ -118,7 +115,6 @@ public abstract class LoggedInFunctionalTestCase extends FunctionalTestCase {
       initCheckers();
 
       if (registered) {
-        license.register();
         operations.openPreferences()
           .setFutureMonthsCount(0)
           .validate();
@@ -176,7 +172,6 @@ public abstract class LoggedInFunctionalTestCase extends FunctionalTestCase {
     uncategorized = new UncategorizedSummaryViewChecker(mainWindow);
     categorization = new CategorizationChecker(mainWindow);
     analysis = new AnalysisChecker(mainWindow);
-    license = new LicenseChecker(mainWindow);
     demoMessage = new DemoMessageChecker(mainWindow);
     importPanel = new ImportPanelChecker(mainWindow);
     notes = new NotesViewChecker(operations, mainWindow);
@@ -248,7 +243,6 @@ public abstract class LoggedInFunctionalTestCase extends FunctionalTestCase {
     uncategorized = null;
     categorization = null;
     analysis = null;
-    license = null;
     importPanel = null;
     notes = null;
     projects = null;
@@ -345,9 +339,6 @@ public abstract class LoggedInFunctionalTestCase extends FunctionalTestCase {
     repository = ((PicsouFrame) mainWindow.getAwtComponent()).getRepository();
 
     initCheckers();
-    if (registered) {
-      license.register();
-    }
   }
 
   public static void resetWindow() {
@@ -370,9 +361,6 @@ public abstract class LoggedInFunctionalTestCase extends FunctionalTestCase {
     LoginChecker loginChecker = new LoginChecker(mainWindow);
     loginChecker.logNewUser(user, password);
     initCheckers();
-    if (registered) {
-      license.register();
-    }
   }
 
   public String getLocalPrevaylerPath() {

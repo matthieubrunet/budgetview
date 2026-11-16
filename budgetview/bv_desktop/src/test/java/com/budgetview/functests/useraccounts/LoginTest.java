@@ -2,7 +2,6 @@ package com.budgetview.functests.useraccounts;
 
 import com.budgetview.functests.checkers.*;
 import com.budgetview.functests.checkers.components.TimeViewChecker;
-import com.budgetview.functests.checkers.license.LicenseChecker;
 import com.budgetview.functests.utils.OfxBuilder;
 import com.budgetview.functests.utils.StartUpFunctionalTestCase;
 import com.budgetview.desktop.Application;
@@ -358,7 +357,6 @@ public class LoginTest extends StartUpFunctionalTestCase {
   @Test
   public void testLoginInDemoMode() throws Exception {
     login.clickDemoLink();
-    getLicense().checkInfoMessageHidden();
     checkDemoMode().exit();
     login.checkComponentsVisible();
   }
@@ -507,11 +505,6 @@ public class LoginTest extends StartUpFunctionalTestCase {
     return new CategorizationChecker(window);
   }
 
-  private LicenseChecker getLicense() {
-    ViewSelectionChecker views = new ViewSelectionChecker(window);
-    views.selectHome();
-    return new LicenseChecker(window);
-  }
 
   private void checkBankOnImport(final String path) {
     UISpecAssert.waitUntil(window.containsMenuBar(), 2000);

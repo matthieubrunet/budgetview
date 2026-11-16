@@ -13,12 +13,10 @@ import com.budgetview.desktop.components.dialogs.MessageAndDetailsDialog;
 import com.budgetview.desktop.components.dialogs.MessageDialog;
 import com.budgetview.desktop.components.dialogs.MessageType;
 import com.budgetview.desktop.components.layoutconfig.LayoutConfigService;
-import com.budgetview.desktop.license.activation.LicenseCheckerThread;
 import com.budgetview.desktop.startup.LoginPanel;
 import com.budgetview.desktop.startup.SlaValidationDialog;
 import com.budgetview.desktop.time.TimeService;
 import com.budgetview.desktop.undo.UndoRedoService;
-import com.budgetview.desktop.userconfig.UserConfigService;
 import com.budgetview.desktop.utils.FrameSize;
 import com.budgetview.model.CurrentMonth;
 import com.budgetview.model.User;
@@ -62,7 +60,6 @@ public class MainWindow implements WindowManager {
   private DataAccessDecorator serverAccess = new DataAccessDecorator(null);
   private PicsouInit picsouInit;
   private MainPanel mainPanel;
-  private boolean registered = true;
   static private ShutDownThread thread;
 
   // Il faut etre sur qu'on ne fera plus de modif dans le repository en dehors du thread de dispath swing
@@ -70,8 +67,6 @@ public class MainWindow implements WindowManager {
   // on a des concurrent modification
   private boolean initDone = false;
   private List<DataAccess.UserInfo> localUsers;
-  private LicenseCheckerThread licenseCheckerThread;
-  private boolean badJarVersion = false;
 
   public MainWindow(Application application,
                     String prevaylerPath, boolean dataInMemory, Directory directory) throws Exception {
@@ -89,7 +84,6 @@ public class MainWindow implements WindowManager {
     this.frame = new PicsouFrame(Lang.get("application"), directory);
     this.frame.setSize(FrameSize.init(frame).targetFrameSize);
 
-    UserConfigService userConfigService = directory.get(UserConfigService.class);
     DataAccess.LocalInfo info;
     try {
       info = initServerAccess(prevaylerPath, dataInMemory);
@@ -109,79 +103,12 @@ public class MainWindow implements WindowManager {
       if (Strings.isNotEmpty(info.getLang())) {
         Lang.setLang(info.getLang());
       }
-      registered = userConfigService.retrieveUserStatus(info.getRepoId(), info.getCount(), info.getMail(),
-                                                        info.getSignature(), info.getActivationCode(), serverAccess, dataInMemory);
-
-// -- Mécanique pour éviter qu'un utilisateur pirate le système en restant toujours offline et en faisant des
-// -- mises à jour manuelles - désactivé pour éviter les faux positifs
-//      long downloadVersion = info.getDownloadVersion();
-//      if (downloadVersion != -1) {
-//        if (downloadVersion < Application.JAR_VERSION && downloadVersion > 57L) {
-//          badJarVersion = true;
-//          registered = false;
-//        }
-//      }
-
+      // Données enregistrées par une version plus récente du programme : ne pas les ouvrir.
       if (info.getJarVersion() > Application.JAR_VERSION) {
-        showDownloadJar(directory, userConfigService);
+        Log.write("[Main] Data written by jar " + info.getJarVersion() + ", this is jar " + Application.JAR_VERSION);
+        MessageDialog.show("jar.version.title", MessageType.ERROR, null, directory, "jar.version.message");
         throw new RuntimeException("End bad jar version");
       }
-    }
-    else {
-      userConfigService.retrieveUserStatus(null, 0, null, null, null, serverAccess, dataInMemory);
-    }
-  }
-
-  private static void showDownloadJar(Directory directory, final UserConfigService userConfigService) throws InvocationTargetException, InterruptedException {
-    if (userConfigService.downloadStep() < 0) {
-      Log.write("[Main] Invalid version, no download");
-      MessageDialog.show("jar.version.title", MessageType.ERROR, null, directory,
-                         "jar.version.message");
-    }
-    else {
-      final MessageDialog messageDialog = MessageDialog.create("jar.version.title", MessageType.INFO, null, directory,
-                                                               "jar.version.step", "" + userConfigService.downloadStep());
-      Executors.newSingleThreadExecutor()
-        .submit(new Runnable() {
-          public void run() {
-            try {
-              int current = userConfigService.downloadStep();
-              while (current >= 0) {
-                if (current == 100) {
-                  changeMessage(Lang.get("jar.version.step.complete"));
-                  return;
-                }
-                else {
-                  messageDialog.changeMessage(Lang.get("jar.version.step", "" + current));
-                }
-                Thread.sleep(200);
-                int newValue = userConfigService.downloadStep();
-                int count = 0;
-                while (newValue != 100 && newValue == current && count < 10) {
-                  Thread.sleep(500);
-                  count++;
-                  newValue = userConfigService.downloadStep();
-                }
-                if (newValue != 100 && newValue == current) {
-                  messageDialog.changeMessage(Lang.get("jar.version.message"));
-                  return;
-                }
-                current = userConfigService.downloadStep();
-              }
-            }
-            catch (InterruptedException e) {
-            }
-          }
-
-          public void changeMessage(final String message) {
-            SwingUtilities.invokeLater(new Runnable() {
-              public void run() {
-                messageDialog.changeMessage(message);
-              }
-            });
-          }
-        });
-      messageDialog.show();
     }
   }
 
@@ -198,23 +125,6 @@ public class MainWindow implements WindowManager {
     if (thread == null) {
       return;
     }
-    if (licenseCheckerThread != null) {
-      try {
-        LicenseCheckerThread local = licenseCheckerThread;
-        local.interrupt();
-        local.join(2000);
-        if (local.isAlive()) {
-          StackTraceElement[] stackTraceElements = local.getStackTrace();
-          for (StackTraceElement element : stackTraceElements) {
-            System.out.println(element.toString());
-          }
-          Thread.dumpStack();
-        }
-      }
-      catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
     thread.run();
     Runtime.getRuntime().removeShutdownHook(thread);
     thread = null;
@@ -223,7 +133,7 @@ public class MainWindow implements WindowManager {
   public void show() {
     loginPanel = new LoginPanel(this, directory);
     directory.add(JFrame.class, frame);
-    picsouInit = PicsouInit.init(serverAccess, directory, registered, badJarVersion);
+    picsouInit = PicsouInit.init(serverAccess, directory);
     final GlobRepository repository = picsouInit.getRepository();
     mainPanel = MainPanel.init(repository, picsouInit.getDirectory(), this);
 
@@ -300,9 +210,6 @@ public class MainWindow implements WindowManager {
 
     directory.get(LayoutConfigService.class).show(frame);
 
-    if (Application.isServerEnabled()) {
-      licenseCheckerThread = LicenseCheckerThread.launch(directory, repository);
-    }
     synchronized (this) {
       initDone = true;
       notify();

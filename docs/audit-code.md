@@ -40,7 +40,7 @@ Faire l'inventaire sans rien modifier, puis supprimer.
   construction, puisque le serveur ne répond plus. Lister les classes qui ne servent que là
   (`client/`, `mobile/`, `session/`…). C'est le plus gros gisement et le moins risqué.
   Inventaire fait le 2026-11-16 (script [audit/reach.py](audit/reach.py)), voir [1a, inventaire](#1a-inventaire) plus bas.
-  Lots 1 à 4a supprimés le 2026-11-16 ; reste la licence (lot 5), à valider avant d'y toucher.
+  Lots 1 à 5 supprimés le 2026-11-16 ; reste la synchro Budgea (1b) et `ServerMailingService`.
 - [ ] **1b. Synchro bancaire Budgea** (`budgea/`, `bank/`, `io/budgea`) : vérifier si elle
   marche encore sans le serveur. Sinon, décider de la couper, voire de la supprimer.
 - [ ] **1c. Couverture JaCoCo de la suite fonctionnelle** : ajouter un profil Maven, lancer
@@ -183,12 +183,22 @@ classes que plus rien n'appelle (`AddOnsView`, `AddOnsSelector`, `BankEntityEdit
 - [x] 3. retours utilisateur et envois (`37f48de6c`). `DisconnectionTip` y est passé, seul `FeedbackDialog` s'en servait.
 - [x] 4a. bandeau « nouvelle version » (`69a9a539f`), avec `LicenseAPI`, qui fait partie du deuxième cercle.
   Lots 1 à 4a vérifiés aussi dans l'appli (`./run-dev.sh`) par Matthieu le 2026-11-16 : rien d'anormal.
-- [ ] 5. licence et téléchargement du jar : ce n'est pas une simple suppression. `UserConfigService`, la machine
-  d'états `userconfig/states` (7 classes) et `LicenseRegistrationTrigger` écrivent `IS_REGISTERED_USER` et
-  `LICENSE_ACTIVATION_STATE` dans le modèle, et `ImportFileAction` ouvre `LicenseActivationDialog` quand
-  l'import n'est pas disponible. Approche proposée : « toujours enregistré », `UserConfigService` réduit au
-  chargement local de la config des banques, champs du modèle conservés. Le changement touche la
-  connexion : il faut le vérifier aussi dans l'appli (`./run-dev.sh`). Reste après ce lot la synchro Budgea (1b).
+- [x] 5. licence et téléchargement du jar (2026-11-16). Décision de Matthieu : supprimer **tout** le système, pas
+  seulement le figer à « toujours enregistré ». Que l'appli reste personnelle ou soit distribuée sous Apache 2,
+  l'ancien système ne servirait plus. Sa clé privée de signature est publique (`bv_server`). Un verrou dans un
+  logiciel libre ne protège rien. Une offre payante future (accès à un agrégateur, par exemple) passerait par
+  un compte et un abonnement vérifiés côté serveur. Supprimés : `desktop/license` (8 classes),
+  `desktop/userconfig` (14, dont `UserConfigService`), `KeyService`, `LicenseRegistrationTrigger`, l'écran des
+  extensions (`AddOnsView`, `AddOnsSelector`, déjà débranché), 58 clés de langue. Effets de bord :
+  - la configuration des banques ne se charge plus depuis `configs/` du dossier de données (classes exécutées
+    depuis un jar téléchargé). Vide chez Matthieu : elle vient toujours de celle intégrée au programme ;
+  - le refus d'ouvrir des données écrites par un jar plus récent est gardé, avec un message réécrit ;
+  - les préférences changent la langue par `DataAccess`, enregistré dans le `Directory` par `PicsouInit` ;
+  - champs de licence de `User` conservés dans le modèle (données 5.01), plus lus ni écrits. Reste mort dans la
+    couche de persistance : `DataAccess.register` et `LocalInfo.getMail/getSignature/getActivationCode`
+    (à traiter en 1e, sans changer le format sur disque).
+  Reste après ce lot la synchro Budgea (1b) et le deuxième cercle : `SendStackTracesAction` →
+  `ServerMailingService`.
 
 Pendant ces suppressions, compiler dans un worktree séparé (`git worktree add`, puis
 `mvn -o test-compile -pl budgetview/bv_shared,budgetview/bv_desktop`). Cela permet de vérifier pendant
@@ -204,3 +214,4 @@ crée plusieurs checkers pour tous les tests.
 | 2026-11-16 | 1a, inventaire | 51 classes et 5 734 lignes mortes par construction ; 10 classes du deuxième cercle à examiner |
 | 2026-11-16 | Suite de référence | 1 034 tests, 0 échec, 165 classes de test, 11 min |
 | 2026-11-16 | 1a, lots 1 à 4a | 1 070 classes de premier niveau (−42), 2 302 `.class` (−72) ; `target/dist` 12,2 Mo, `budgetview.jar` 5,07 Mo (−110 Ko) ; 1 028 tests verts (−6, supprimés avec leur code), 163 classes, 14 min ; −4 056 lignes de Java net, −348 lignes de langue (3 fichiers). Reste 13 classes mortes par construction (licence : 9, cloud : 4) |
+| 2026-11-16 | 1a, lot 5 (licence) | 1 045 classes de premier niveau (−25), 2 226 `.class` (−76) ; `target/dist` 12,1 Mo, `budgetview.jar` 4,95 Mo (−117 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −4 492 lignes de Java net, −299 lignes de langue. Reste 4 classes mortes par construction, toutes du cloud (1b) |

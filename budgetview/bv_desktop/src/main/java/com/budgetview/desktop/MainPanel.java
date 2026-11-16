@@ -3,8 +3,6 @@ package com.budgetview.desktop;
 import com.budgetview.desktop.accounts.AccountView;
 import com.budgetview.desktop.actions.DeleteUserAction;
 import com.budgetview.desktop.actions.ImportFileAction;
-import com.budgetview.desktop.addons.AddOnsSelector;
-import com.budgetview.desktop.addons.AddOnsView;
 import com.budgetview.desktop.analysis.AnalysisSelector;
 import com.budgetview.desktop.analysis.AnalysisView;
 import com.budgetview.desktop.backup.BackupService;
@@ -20,7 +18,6 @@ import com.budgetview.desktop.components.layoutconfig.LayoutConfigService;
 import com.budgetview.desktop.dashboard.DashboardStatUpdater;
 import com.budgetview.desktop.dashboard.DashboardView;
 import com.budgetview.desktop.help.HelpService;
-import com.budgetview.desktop.license.activation.LicenseInfoView;
 import com.budgetview.desktop.model.PeriodAccountStat;
 import com.budgetview.desktop.model.PeriodBudgetAreaStat;
 import com.budgetview.desktop.model.PeriodSeriesStat;
@@ -173,7 +170,6 @@ public class MainPanel {
       periodView,
       new AccountView(replicationGlobRepository, directory),
       dashboardView,
-      new LicenseInfoView(repository, directory),
       transactionView,
       timeView,
       new DemoMessageView(repository, directory),
@@ -186,8 +182,6 @@ public class MainPanel {
       new ProjectSelector(repository, directory),
       projectView,
       new WelcomeView(replicationGlobRepository, directory),
-//      new AddOnsSelector(repository, directory),
-//      new AddOnsView(repository, directory),
       signpostView,
       new NotificationsFlagView(repository, directory),
       autoCloudImportView

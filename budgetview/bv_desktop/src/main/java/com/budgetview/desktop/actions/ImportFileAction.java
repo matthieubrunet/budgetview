@@ -3,7 +3,6 @@ package com.budgetview.desktop.actions;
 import com.budgetview.desktop.components.dialogs.MessageDialog;
 import com.budgetview.desktop.components.dialogs.MessageType;
 import com.budgetview.desktop.importer.ImportDialog;
-import com.budgetview.desktop.license.activation.LicenseActivationDialog;
 import com.budgetview.desktop.startup.components.OpenRequestManager;
 import com.budgetview.model.SignpostStatus;
 import com.budgetview.model.User;
@@ -99,14 +98,8 @@ public class ImportFileAction extends AbstractAction {
         importDialog.show();
       }
       else {
-        if (User.isDemoUser(repository.get(User.KEY))) {
-          MessageDialog.show("demo.import.title", MessageType.INFO, directory.get(JFrame.class), directory, "demo.import.content");
-        }
-        else {
-          LicenseActivationDialog dialog = new LicenseActivationDialog(directory.get(JFrame.class),
-                                                                       repository, directory);
-          dialog.showExpiration();
-        }
+        // Pas de dialogue d'import pour le compte de démo (voir le constructeur).
+        MessageDialog.show("demo.import.title", MessageType.INFO, directory.get(JFrame.class), directory, "demo.import.content");
       }
     }
   }

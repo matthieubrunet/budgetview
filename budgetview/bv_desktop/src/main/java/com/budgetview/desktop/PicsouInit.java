@@ -11,8 +11,6 @@ import com.budgetview.desktop.series.view.SeriesWrapperUpdateTrigger;
 import com.budgetview.desktop.time.TimeService;
 import com.budgetview.desktop.upgrade.triggers.ConfigUpgradeTrigger;
 import com.budgetview.desktop.upgrade.triggers.UpgradeTrigger;
-import com.budgetview.desktop.userconfig.UserConfigService;
-import com.budgetview.desktop.userconfig.triggers.LicenseActivationTrigger;
 import com.budgetview.desktop.utils.AwtExceptionHandler;
 import com.budgetview.desktop.utils.datacheck.DataCheckingService;
 import com.budgetview.io.importer.ImportService;
@@ -56,11 +54,11 @@ public class PicsouInit {
   private ServerChangeSetListener changeSetListenerToDb;
   private ExceptionHandler exceptionHandler;
 
-  public static PicsouInit init(DataAccess dataAccess, Directory directory, boolean registeredUser, boolean badJarVersion) {
-    return new PicsouInit(dataAccess, directory, registeredUser, badJarVersion);
+  public static PicsouInit init(DataAccess dataAccess, Directory directory) {
+    return new PicsouInit(dataAccess, directory);
   }
 
-  private PicsouInit(DataAccess dataAccess, final Directory directory, boolean registeredUser, boolean badJarVersion) {
+  private PicsouInit(DataAccess dataAccess, final Directory directory) {
     this.dataAccess = dataAccess;
     this.directory = directory;
 
@@ -71,12 +69,9 @@ public class PicsouInit {
         .add(directory.get(GlobModel.class).getConstants())
         .get();
 
-    repository.findOrCreate(User.KEY,
-            value(User.LICENSE_ACTIVATION_STATE, LicenseActivationState.ACTIVATION_OK.getId()),
-            value(User.IS_REGISTERED_USER, registeredUser));
-    repository.update(User.KEY,
-            value(User.LICENSE_ACTIVATION_STATE, LicenseActivationState.ACTIVATION_OK.getId()),
-            value(User.IS_REGISTERED_USER, registeredUser));
+    // Les champs de licence de User (IS_REGISTERED_USER, LICENSE_ACTIVATION_STATE…) restent dans le modèle pour
+    // relire les données de la 5.01, mais plus rien ne les lit ni ne les écrit depuis la 6.0.1.
+    repository.findOrCreate(User.KEY);
     repository.findOrCreate(AppVersionInformation.KEY,
                             value(AppVersionInformation.LATEST_AVALAIBLE_JAR_VERSION, Application.JAR_VERSION),
                             value(AppVersionInformation.LATEST_BANK_CONFIG_SOFTWARE_VERSION, Application.BANK_CONFIG_VERSION),
@@ -106,10 +101,8 @@ public class PicsouInit {
   }
 
   private void initBank(Directory directory) {
-    if (!directory.get(UserConfigService.class).loadConfigFileFromLastestJar(directory, this.repository)) {
-      directory.get(TransactionAnalyzerFactory.class)
-        .load(this.getClass().getClassLoader(), Application.BANK_CONFIG_VERSION, repository, directory);
-    }
+    directory.get(TransactionAnalyzerFactory.class)
+      .load(this.getClass().getClassLoader(), Application.BANK_CONFIG_VERSION, repository, directory);
   }
 
   public static void initTriggers(DataAccess dataAccess, Directory directory, final GlobRepository repository) {
@@ -140,8 +133,6 @@ public class PicsouInit {
     repository.addTrigger(new AccountSequenceTrigger());
     repository.addTrigger(new SeriesDeletionTrigger());
     repository.addTrigger(new SubSeriesDeletionTrigger());
-    repository.addTrigger(new LicenseActivationTrigger(directory));
-    repository.addTrigger(new LicenseRegistrationTrigger(dataAccess));
     repository.addTrigger(new AddOnTrigger());
     repository.addTrigger(new DayTrigger());
     repository.addTrigger(new DeferredAccountTrigger());
@@ -308,6 +299,7 @@ public class PicsouInit {
     directory.add(BrowsingService.class, BrowsingService.createService());
     directory.add(TransactionAnalyzerFactory.class, new TransactionAnalyzerFactory(DesktopModel.get()));
     directory.add(ImportService.class, new ImportService());
+    directory.add(DataAccess.class, dataAccess);
     directory.add(new BackupService(dataAccess, directory, repository, idGenerator, upgradeTrigger));
   }
 

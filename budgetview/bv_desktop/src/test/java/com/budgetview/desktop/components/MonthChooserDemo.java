@@ -20,7 +20,7 @@ public class MonthChooserDemo {
     Directory directory = Application.createDirectory();
     JFrame frame = new JFrame();
     directory.add(JFrame.class, frame);
-    GlobRepository repository = PicsouInit.init(DataAccess.NULL, directory, true, false).getRepository();
+    GlobRepository repository = PicsouInit.init(DataAccess.NULL, directory).getRepository();
     for (int monthId = 200701; monthId < 200809; monthId = Month.next(monthId)) {
       repository.findOrCreate(Key.create(Month.TYPE, monthId));
     }

@@ -225,6 +225,10 @@ qui prend globs dans `~/.m2`.
 - Les clés privées du serveur (`ssl/bv.key`, `bv.jks`, `bv.keystore`) ont été retirées de l'arbre
   le 2026-11-15 mais restent dans l'historique git, public : elles sont compromises, ne jamais les
   réutiliser. Le `.gitignore` bloque désormais `*.key`, `*.jks`, `*.keystore`, `*.p12`, `*.pem`.
+- La clé privée DSA qui signait les licences est écrite en dur dans
+  `bv_server/.../license/generator/LicenseGenerator.java`, public : n'importe qui peut fabriquer une licence
+  valide pour la 5.01. Le système de licence a été supprimé de l'application en 6.0.1 (audit 1a, lot 5) ;
+  une future offre payante passerait par un compte et un abonnement vérifiés côté serveur, pas par une licence.
 - Les `howto/` (livraison, serveur) décrivent l'infrastructure d'origine
   (IP, comptes SSH) : documentation historique, pas à rejouer telle quelle.
 - Fichiers d'IDE (IntelliJ `.ipr`/`.iws`/`.iml`, Eclipse `.project`/`.classpath`/`.settings/`,

@@ -9,7 +9,6 @@ import com.budgetview.shared.encryption.PasswordBasedEncryptor;
 import com.budgetview.shared.encryption.RedirectPasswordBasedEncryptor;
 import com.budgetview.functests.utils.FunctionalTestCase;
 import com.budgetview.functests.utils.LoggedInFunctionalTestCase;
-import com.budgetview.desktop.userconfig.UserConfigService;
 import com.budgetview.shared.encryption.MD5PasswordBasedEncryptor;
 import com.budgetview.model.Account;
 import com.budgetview.model.deprecated.Category;
@@ -45,7 +44,6 @@ public class EncryptToTransportServerAccessTest extends FunctionalTestCase {
   protected void setUp() throws Exception {
     super.setUp();
     url = initServerEnvironment(inMemory);
-    directory.add(new UserConfigService("1", 1L, 1L, null));
     directory.add(PasswordBasedEncryptor.class, new RedirectPasswordBasedEncryptor());
     LoggedInFunctionalTestCase.resetWindow();
   }

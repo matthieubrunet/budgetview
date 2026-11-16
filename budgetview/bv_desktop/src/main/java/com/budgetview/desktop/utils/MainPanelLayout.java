@@ -131,9 +131,6 @@ public class MainPanelLayout implements LayoutManager {
       else if ("projectSelector".equals(name)) {
         sidebars[PROJECTS_SELECTOR] = comp;
       }
-//      else if ("addonsSelector".equals(name)) {
-//        sidebars[ADDONS_SELECTOR] = comp;
-//      }
       else if ("home".equals(name)) {
         contentPanels[HOME] = comp;
       }
