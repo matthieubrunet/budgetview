@@ -39,7 +39,7 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 ## Application desktop (`budgetview/bv_desktop`)
 
 - Point d'entrée : `com.budgetview.desktop.DesktopApp` → `Application.main`.
-  Version courante : `Application.APPLICATION_VERSION = "6.00"`, `JAR_VERSION = 156`.
+  Version courante : `Application.APPLICATION_VERSION = "6.0.1"` (6.00 jusqu'au 2026-11-16), `JAR_VERSION = 156`.
 - Variantes utiles au dev : `InMemoryDesktopApp` (données en mémoire),
   `src/test/java/.../desktop/DevDesktopApp.java`.
 - Données utilisateur : `~/.budgetview` (Linux/Windows),
@@ -121,7 +121,7 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
     Elle n'écoute alors pas, et l'officielle peut démarrer après elle.
   - Données : **ne jamais** faire pointer la version de dev sur les données réelles
     (`~/Library/Application Support/BudgetView`, ou le dossier désigné par son
-    `redirect.txt`). La version de dev est en 6.00 : ses triggers d'upgrade migreraient le
+    `redirect.txt`). La version de dev est en 6.0.1 : ses triggers d'upgrade migreraient le
     format, peut-être de façon illisible pour la 5.01. Toujours passer `-Dbudgetview.data.path`.
   - Autorisations macOS : la version de dev hérite de celles de l'application qui la lance (VS Code
     ou Terminal), alors que la 5.01 a les siennes. Sans accès à Dropbox (`~/Library/CloudStorage`),

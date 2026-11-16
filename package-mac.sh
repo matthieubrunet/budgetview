@@ -58,7 +58,7 @@ iconutil -c icns "$ICONSET" -o "$OUT/BudgetView.icns"
   --main-jar budgetview.jar \
   --main-class com.budgetview.desktop.DesktopApp \
   --name "$NAME" \
-  --app-version 6.0 \
+  --app-version 6.0.1 \
   --icon "$OUT/BudgetView.icns" \
   --mac-package-identifier fr.budgetview.desktop6 \
   --mac-package-name "BudgetView" \

@@ -60,7 +60,7 @@ import java.util.regex.Pattern;
 
 public class Application {
 
-  public static final String APPLICATION_VERSION = "6.00";
+  public static final String APPLICATION_VERSION = "6.0.1";
   public static Long JAR_VERSION = 156L;
   public static final Long BANK_CONFIG_VERSION = 7L;
 
