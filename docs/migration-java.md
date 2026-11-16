@@ -1,7 +1,7 @@
 # Migration de Java 8 vers un Java récent
 
-État au 2026-11-15 : analyse faite, essai d'exécution sous Java 17 réussi, étapes 1 à 3 faites (plugins
-Maven en 3.0.x, shrinker supprimé, uispec4j porté). Build et tests tournent sous JDK 8 et sous JDK 17 ;
+État au 2026-11-16 : analyse faite, essai d'exécution sous Java 17 réussi, étapes 1 à 4 faites (plugins
+Maven en 3.0.x, shrinker supprimé, uispec4j porté, hooks Mac sur `java.awt.Desktop`). Build et tests tournent sous JDK 8 et sous JDK 17 ;
 la référence reste Zulu 8, le code est toujours compilé en cible 1.8.
 
 ## Décision : rester sur la JVM
@@ -37,7 +37,7 @@ contributeurs, ou pour repenser le produit.
 | Point | Constat | Effort estimé |
 |---|---|---|
 | Code de l'application | Presque aucune API interne de Java. Aucune lambda : le code est de style Java 6. | faible |
-| `MacOSXHooks` | `com.apple.eawt` a disparu en Java 9. Le chargement par réflexion échoue sans bruit (`Failed to register with OSX` dans le log) : sur Mac, plus de menus « À propos », « Préférences » ni « Quitter », plus d'ouverture de fichier par double-clic. À porter vers `java.awt.Desktop`. | ½ jour |
+| `MacOSXHooks` | `com.apple.eawt` a disparu en Java 9 : plus de menus « À propos », « Préférences » ni « Quitter », plus d'ouverture de fichier par double-clic. **Porté** (2026-11-16) vers `java.awt.Desktop`, voir plus bas. | — |
 | Plugins Maven | **Fait** (2026-11-15) : tous en 3.0.x. `<release>` attendra la compilation sous Java 9+ : l'option n'existe qu'à partir de compiler 3.6 et d'un JDK 9. | — |
 | Shrinker | Lit les `.class` avec ASM 3.1 (2007), qui ne connaît pas `invokedynamic`. Ça marche aujourd'hui faute de lambdas, mais une compilation pour Java 9+ en met dans chaque concaténation de chaînes. Passer à ASM 9 (l'API a changé : `MethodAdapter` n'existe plus) ou supprimer le shrinker, qui n'a plus d'intérêt avec `jpackage`. **Supprimé** (2026-11-15), voir plus bas. | — |
 | JGoodies Looks 2.2.0 | Thème Windows/Linux de 2008, avec des classes du projet dans le paquet de JGoodies. Fonctionnera probablement, à vérifier à l'écran. | à tester |
@@ -54,11 +54,34 @@ N'empêchent pas la migration : log4j 1.2 (fin de vie, sans conséquence en loca
 3. ~~Essai sur uispec4j sous Java 17.~~ Fait : porté, ce qui décide pour l'**option B** (tout passer à un
    Java récent : compilation, exécution, tests), plutôt que l'option A (exécuter sur Java 21, mais
    compiler et tester sous Zulu 8).
-4. Hooks Mac vers `java.awt.Desktop`, avec remise de `apple.laf.useScreenMenuBar` (voir plus bas).
+4. ~~Hooks Mac vers `java.awt.Desktop`, avec remise de `apple.laf.useScreenMenuBar`.~~ Fait.
 5. Passage effectif : ~~stabiliser `PrintTest` sous 17~~ (fait), remplacer le `SecurityManager` de `FunctionalTestCase`
    (indispensable avant Java 24), décider des formats CLDR, installer un JDK 21, compiler en `--release 21`
    (compiler ≥ 3.6) et faire de ce JDK la référence.
 6. Ensuite seulement : FlatLaf.
+
+## Hooks Mac sur `java.awt.Desktop` (2026-11-16)
+
+`MacOSXHooks` passe d'abord par `java.awt.Desktop` (Java 9+), sinon par `com.apple.eawt` (Java 8). Les
+deux API ont les mêmes noms de méthodes (`handleAbout`, `handlePreferences`, `handleQuitRequestWith`,
+`openFiles`) : un seul `InvocationHandler` sert aux deux. Tout reste en réflexion, pour compiler en cible 1.8.
+
+- **Plein écran** : sous Java 9+, propriété `apple.awt.fullscreenable` du `JRootPane`.
+  `com.apple.eawt.FullScreenUtilities` existe encore en Java 17, mais `java.desktop` ne l'exporte plus
+  (`IllegalAccessException`) : il n'est appelé que sous Java 8.
+- **Méthodes des événements** (`getFiles`, `cancelQuit`) lues sur le type déclaré du paramètre, public,
+  et non sur la classe réelle de l'objet, qui peut être interne au JDK.
+- **Quitter** : `ExitAction` termine la JVM ; si elle revient (sortie déjà en cours, `realExit=false`),
+  la demande est annulée (`cancelQuit`) pour que macOS n'attende pas de réponse.
+- **Barre de menus en haut de l'écran** : `apple.laf.useScreenMenuBar`, posée dans `Application.main`
+  seulement. Les tests n'y passent pas : uispec4j remplace le toolkit, sans barre de menus native.
+- **Nom de l'application** : `apple.awt.application.name` (l'ancienne propriété `com.apple.mrj…` est ignorée).
+- **Vérifié à l'écran** sous Zulu 8 et OpenJDK 17, comportement identique : barre en haut, À propos, Préférences, plein écran, ⌘Q.
+  Les entrées du menu application (« About », « Preferences… », « Quit ») sont en anglais : macOS les
+  nomme d'après la langue que déclare le bundle, et le lanceur `java` n'en déclare pas. À régler dans
+  l'`Info.plist` du `.app` produit par `jpackage` (`CFBundleDevelopmentRegion` = `fr`).
+- **Pas vérifié** : l'ouverture d'un fichier par le Finder, qui demande un `.app` déclarant ses types
+  de fichiers (étape `jpackage`).
 
 ## Portage d'uispec4j et tests sous Java 17 (2026-11-15)
 
@@ -182,6 +205,6 @@ En 5.01, `PicsouMacLookAndFeel` étendait `apple.laf.AquaLookAndFeel` : une sous
 standard, embarquée dans le jar de la 5.01. Elle positionnait `apple.laf.useScreenMenuBar=true`. Le dernier
 commit amont a commenté son installation ([Gui.java:71](../budgetview/bv_desktop/src/main/java/com/budgetview/desktop/utils/Gui.java#L71)),
 parce que la classe ne compilait plus. Java retombe de toute façon sur le thème Aqua. Il suffit donc de
-remettre la propriété système avant de créer la première fenêtre, sans le look & feel.
+remettre la propriété système avant de créer la première fenêtre, sans le look & feel. **Fait** le 2026-11-16.
 
 La 5.01 utilisait elle aussi le `JFileChooser` de Swing, et non le sélecteur natif `java.awt.FileDialog`.
