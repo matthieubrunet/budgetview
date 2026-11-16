@@ -53,6 +53,7 @@ Faire l'inventaire sans rien modifier, puis supprimer.
   `mvn test`, lister les classes à 0 %.
   Fait le 2026-11-16 (profil `coverage`, script [audit/coverage.sh](audit/coverage.sh)), voir
   [1c, résultats](#1c-résultats) plus bas.
+  Les 17 classes candidates sont supprimées (2026-11-16).
 - [ ] **1d. Couverture JaCoCo en usage réel** : agent JaCoCo dans `run-dev.sh` (option), quelques
   sessions de travail habituelles. Une classe à 0 % dans 1c et dans 1d est candidate.
 - [ ] **1e. Code inaccessible depuis `DesktopApp`** : ProGuard en `-dontobfuscate -printusage`
@@ -265,6 +266,10 @@ l'application utilise, pas les tests propres à ces modules.
   `signpost.actions.SetSignpostStatusAction`, `utils.dev.GotoPastTrialExpirationAction` (période d'essai,
   reste de la licence ; son appel dans `OperationChecker.gotoPastTrialExpiration` n'a aucun appelant),
   `triggers.savings.UpdateMirrorSeriesBudgetChangeSetVisitor`.
+  **Supprimées le 2026-11-16**, avec leurs trois `.splits` (`bankEntityEdition*`, `cardTypeChooserDialog`) et
+  leurs clés de langue (`cardTypeChooser.*`, `synchro.security.info.*`, `bankEntityEdition.title`). Les clés se
+  retirent des **trois** fichiers, `lang.properties` compris : `LangTest` vérifie que `lang_fr` et `lang_en`
+  contiennent toutes les clés de cette racine.
 
 *Jamais exécutées mais accessibles : 68 classes*, à confronter à l'usage réel (1d) :
 - propres à Windows ou Linux : `UnixBrowsingService`, `WindowsBrowsingService`, `PicsouWindows*`,
@@ -293,3 +298,4 @@ données 5.01).
 | 2026-11-16 | 1a, lots 1 à 4a | 1 070 classes de premier niveau (−42), 2 302 `.class` (−72) ; `target/dist` 12,2 Mo, `budgetview.jar` 5,07 Mo (−110 Ko) ; 1 028 tests verts (−6, supprimés avec leur code), 163 classes, 14 min ; −4 056 lignes de Java net, −348 lignes de langue (3 fichiers). Reste 13 classes mortes par construction (licence : 9, cloud : 4) |
 | 2026-11-16 | 1a, lot 5 (licence) | 1 045 classes de premier niveau (−25), 2 226 `.class` (−76) ; `target/dist` 12,1 Mo, `budgetview.jar` 4,95 Mo (−117 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −4 492 lignes de Java net, −299 lignes de langue. Reste 4 classes mortes par construction, toutes du cloud (1b) |
 | 2026-11-16 | 1c, couverture de la suite | bv_desktop + bv_shared : 103 classes de premier niveau à 0 % sur 1 004 (2 732 lignes sur 47 253) ; 17 candidates à la suppression (373 lignes). globs 164/468, prevayler 52/80, saxstack 22/32 à 0 %. 1 028 tests, 1 erreur instable, 11 min sous JaCoCo |
+| 2026-11-16 | 1c, 17 classes supprimées | 1 028 classes de premier niveau (−17), 2 186 `.class` (−40) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,90 Mo (−50 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −917 lignes de Java net, −71 lignes de `.splits`, −37 lignes de langue (3 fichiers) |

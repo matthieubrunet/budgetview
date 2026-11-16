@@ -689,10 +689,6 @@ public class OperationChecker {
     getDevMenu().getSubMenu(Goto10OfNextMonthAction.LABEL).click();
   }
 
-  public void gotoPastTrialExpiration() {
-    getDevMenu().getSubMenu(GotoPastTrialExpirationAction.LABEL).click();
-  }
-
   public void enableAllAddOns() {
     getDevMenu().getSubMenu(ToggleAllAddOnsAction.ENABLE_ALL).click();
   }

@@ -97,6 +97,9 @@ export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
 mvn -f uispec4j/pom.xml install -DskipTests
 
 # 2. Build complet (~30 s)
+#    clean efface target/dist/budgetview.jar, que run-dev.sh utilise : fermer l'appli de dev avant.
+#    « Failed to delete …/target » : une fenêtre du Finder ouverte dessus y recrée des .DS_Store ;
+#    la fermer, ou rm -rf target puis relancer sans clean.
 mvn clean install -DskipTests
 
 # 3. Une fois (et après tout changement du modèle) : générer les comptes de démo

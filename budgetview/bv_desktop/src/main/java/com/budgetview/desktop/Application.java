@@ -321,7 +321,7 @@ public class Application {
     wrapper.add(ExceptionHandler.class, new ShowDialogAndExitExceptionHandler(directory));
     wrapper.add(PasswordBasedEncryptor.class, new RedirectPasswordBasedEncryptor());
     wrapper.add(new CloudService());
-    // Retire par erreur en 2016 (03bb7182f) : utilise par ImportSession et les plugins de banque (LaPoste...).
+    // Retire par erreur en 2016 (03bb7182f) : utilise par ImportSession (position du compte importe).
     wrapper.add(new BankPluginService());
     wrapper.add(PrinterService.class, new DefaultPrinterService());
     wrapper.add(new AddOnService());
