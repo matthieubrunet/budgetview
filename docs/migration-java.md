@@ -1,7 +1,8 @@
 # Migration de Java 8 vers un Java récent
 
 État au 2026-11-16 : étapes 1 à 5 faites. **Le code est compilé en `--release 21` et la référence est
-OpenJDK 21** (Homebrew). Java 8 ne peut plus ni construire ni exécuter l'application. Reste l'étape 6 (FlatLaf).
+OpenJDK 21** (Homebrew). Java 8 ne peut plus ni construire ni exécuter l'application. L'étape 6 (apparence) est
+à réévaluer : voir « Apparence (look & feel) » plus bas.
 
 ## Décision : rester sur la JVM
 
@@ -16,7 +17,7 @@ La question d'une réécriture dans un langage « plus moderne » (Rust/Flutter,
 Ce qui a vieilli, c'est Swing, pas Java. Le plan retenu :
 
 1. passer à un Java récent (cible **Java 21**, LTS ; 25 ensuite sans grande difficulté) ;
-2. moderniser l'apparence sans réécrire les écrans (FlatLaf à la place de JGoodies Looks) ;
+2. moderniser l'apparence sans réécrire les écrans, si le besoin se confirme (voir « Apparence ») ;
 3. ne trancher qu'ensuite sur une IHM réécrite. Si on la réécrit, ce serait avec **Kotlin + Compose
    Multiplatform**, sur la même JVM, écran par écran, en gardant le modèle, les triggers et les imports.
 
@@ -39,7 +40,7 @@ contributeurs, ou pour repenser le produit.
 | `MacOSXHooks` | `com.apple.eawt` a disparu en Java 9 : plus de menus « À propos », « Préférences » ni « Quitter », plus d'ouverture de fichier par double-clic. **Porté** (2026-11-16) vers `java.awt.Desktop`, voir plus bas. | — |
 | Plugins Maven | **Fait** (2026-11-15) : tous en 3.0.x ; compiler en 3.13.0 avec `<release>21</release>` depuis le 2026-11-16. | — |
 | Shrinker | Lit les `.class` avec ASM 3.1 (2007), qui ne connaît pas `invokedynamic`. Ça marche aujourd'hui faute de lambdas, mais une compilation pour Java 9+ en met dans chaque concaténation de chaînes. Passer à ASM 9 (l'API a changé : `MethodAdapter` n'existe plus) ou supprimer le shrinker, qui n'a plus d'intérêt avec `jpackage`. **Supprimé** (2026-11-15), voir plus bas. | — |
-| JGoodies Looks 2.2.0 | Thème Windows/Linux de 2008, avec des classes du projet dans le paquet de JGoodies. Fonctionnera probablement, à vérifier à l'écran. | à tester |
+| JGoodies Looks 2.2.0 | Thème Windows/Linux de 2008, avec des classes du projet dans le paquet de JGoodies. Inutilisé sur macOS (Aqua). Fonctionnera probablement, à vérifier à l'écran. Voir « Apparence ». | à tester |
 | `SecurityManager` de `FunctionalTestCase` | Il fallait un drapeau en Java 17-23, et il est désactivé pour de bon en Java 24. **Remplacé** (2026-11-16) par un point de sortie unique, `AppExit`, voir plus bas. | — |
 | **uispec4j** | Sous-classe `sun.awt.SunToolkit` et les peers AWT. **Porté** (2026-11-15) en une dizaine de lignes, variante `java-jdk17`, voir plus bas. L'instabilité de `PrintTest` est corrigée (2026-11-16). | — |
 
@@ -56,7 +57,38 @@ N'empêchent pas la migration : log4j 1.2 (fin de vie, sans conséquence en loca
 4. ~~Hooks Mac vers `java.awt.Desktop`, avec remise de `apple.laf.useScreenMenuBar`.~~ Fait.
 5. ~~Passage effectif : stabiliser `PrintTest`, remplacer le `SecurityManager`, décider des formats CLDR,
    installer un JDK 21, compiler en `--release 21`, en faire la référence.~~ Fait (2026-11-16), voir plus bas.
-6. Ensuite seulement : FlatLaf.
+6. Apparence : d'abord constater à l'écran, sur Mac sous Java 21, ce qui cloche ; FlatLaf seulement si un
+   besoin le justifie (voir ci-dessous).
+
+## Apparence (look & feel)
+
+Constat du 2026-11-16 (`Gui.init`) :
+
+- **macOS** : aucun look & feel n'est posé (`PicsouMacLookAndFeel` est commenté). L'application garde
+  **Aqua**, le thème natif du JDK, maintenu et à jour. JGoodies n'y sert pas.
+- **Windows et Linux** : `PicsouWindowsLookAndFeel`, sous-classe de `Plastic3DLookAndFeel` (JGoodies Looks
+  2.2.0, 2008), placée dans le paquet `com.jgoodies.looks.plastic`. Elle y ajoute deux rendus maison :
+  `PicsouButtonUI` (boutons arrondis en dégradé, couleurs du `ColorService`) et `PicsouWindowsLabelUI`
+  (simple anticrénelage des libellés).
+- Les composants propres à l'application (`WavePanelUI`, `FlatButtonUI`, onglets verticaux…) passent par
+  l'`UIService` de splits (`ApplicationLAF.initUiService`), **indépendant du look & feel**. Le thème ne touche
+  que les composants standard : menus, listes déroulantes, défilement, champs, tableaux, dialogues.
+
+Défauts de Plastic, sous Windows et Linux seulement : apparence datée, dessin en pixels fixes (bordures et
+flèches minuscules ou floues à 150-200 %), bibliothèque sans maintenance, pas de mode sombre, classes du projet
+dans un paquet tiers (incompatible avec les modules Java).
+
+Options, si une distribution Windows/Linux se présente :
+
+- **Ne rien poser** : Swing prend alors **Metal**, son thème multiplateforme de 1998, et non celui du système.
+  Seul macOS prend Aqua par défaut.
+- **Thème du système** (`UIManager.getSystemLookAndFeelClassName()`) : Aqua sur Mac, le thème Windows du JDK
+  sous Windows (correct, suit l'échelle de l'écran), mais sous Linux GTK seulement sur un bureau GNOME
+  détecté, Metal sinon, et le thème GTK de Swing a des défauts de rendu connus. On perd `PicsouButtonUI`,
+  comme aujourd'hui sur Mac.
+- **FlatLaf** : même apparence moderne partout, nette à toute résolution, mode sombre, maintenu. Sur Mac,
+  il remplacerait l'apparence native, ce qui n'est pas forcément un gain. Risques : marges des composants
+  dessinés à la main, tests uispec4j.
 
 ## Passage à Java 21 (2026-11-16)
 
