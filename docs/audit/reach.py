@@ -2,9 +2,11 @@
 # Voir docs/audit-code.md, section « 1a, inventaire ».
 #
 # Usage (depuis budgetview/, après un build) :
-#   jdeps -verbose:class -filter:none -e 'com\.budgetview\..*' \
-#     bv_desktop/target/classes bv_shared/target/classes 2>/dev/null \
+#   jdeps -verbose:class -filter:none bv_desktop/target/classes bv_shared/target/classes 2>/dev/null \
 #     | grep -- '->' | awk '{print $1, $3}' | grep '^com.budgetview' | sort -u > deps.txt
+# Pas de filtre `-e` sur les cibles : les arêtes vers le JDK ou les bibliothèques servent à recenser toutes
+# les classes, même celles qui ne dépendent d'aucune autre classe de com.budgetview et n'ont aucun appelant
+# (sans elles, ces classes n'apparaissaient dans aucune des deux listes, voir 1d).
 #   python3 -I ../docs/audit/reach.py deps.txt mortes.txt inaccessibles.txt [Classe …]
 #
 # mortes.txt : classes accessibles seulement par les arêtes de `cuts` (code mort en local).
@@ -14,9 +16,12 @@
 import sys, collections
 P='com.budgetview.'
 edges=collections.defaultdict(set)
+nodes=set()
 for line in open(sys.argv[1]):
     a,b=line.split()
-    a=a.split('$')[0][len(P):]; b=b.split('$')[0][len(P):]
+    a=a.split('$')[0][len(P):]; nodes.add(a)
+    if not b.startswith(P): continue
+    b=b.split('$')[0][len(P):]
     if a!=b: edges[a].add(b)
 cuts={
  # lots 1 à 6 supprimés le 2026-11-16 ; reste la synchro Budgea (1b).
@@ -26,7 +31,7 @@ cuts={
  'desktop.Application':{'desktop.cloud.CloudService'},
 }
 # résoudre les noms courts des actions
-allc=set(edges)|{b for s in edges.values() for b in s}
+allc=nodes|{b for s in edges.values() for b in s}
 def fix(n):
     if n in allc: return n
     m=[c for c in allc if c.endswith('.'+n.split('.')[-1])]
