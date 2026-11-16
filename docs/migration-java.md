@@ -42,7 +42,7 @@ contributeurs, ou pour repenser le produit.
 | Shrinker | Lit les `.class` avec ASM 3.1 (2007), qui ne connaît pas `invokedynamic`. Ça marche aujourd'hui faute de lambdas, mais une compilation pour Java 9+ en met dans chaque concaténation de chaînes. Passer à ASM 9 (l'API a changé : `MethodAdapter` n'existe plus) ou supprimer le shrinker, qui n'a plus d'intérêt avec `jpackage`. **Supprimé** (2026-11-15), voir plus bas. | — |
 | JGoodies Looks 2.2.0 | Thème Windows/Linux de 2008, avec des classes du projet dans le paquet de JGoodies. Fonctionnera probablement, à vérifier à l'écran. | à tester |
 | `SecurityManager` de `FunctionalTestCase` | Il faut un drapeau en Java 17-23, et il est désactivé pour de bon en Java 24. À remplacer par un point de sortie unique, remplaçable dans les tests. | ½ jour |
-| **uispec4j** | Sous-classe `sun.awt.SunToolkit` et les peers AWT. **Porté** (2026-11-15) en une dizaine de lignes, variante `java-jdk17`, voir plus bas. Reste une instabilité de `PrintTest`. | — |
+| **uispec4j** | Sous-classe `sun.awt.SunToolkit` et les peers AWT. **Porté** (2026-11-15) en une dizaine de lignes, variante `java-jdk17`, voir plus bas. L'instabilité de `PrintTest` est corrigée (2026-11-16). | — |
 
 N'empêchent pas la migration : log4j 1.2 (fin de vie, sans conséquence en local), joda-time, les
 `new Integer(...)` (avertissements).
@@ -55,7 +55,7 @@ N'empêchent pas la migration : log4j 1.2 (fin de vie, sans conséquence en loca
    Java récent : compilation, exécution, tests), plutôt que l'option A (exécuter sur Java 21, mais
    compiler et tester sous Zulu 8).
 4. Hooks Mac vers `java.awt.Desktop`, avec remise de `apple.laf.useScreenMenuBar` (voir plus bas).
-5. Passage effectif : stabiliser `PrintTest` sous 17, remplacer le `SecurityManager` de `FunctionalTestCase`
+5. Passage effectif : ~~stabiliser `PrintTest` sous 17~~ (fait), remplacer le `SecurityManager` de `FunctionalTestCase`
    (indispensable avant Java 24), décider des formats CLDR, installer un JDK 21, compiler en `--release 21`
    (compiler ≥ 3.6) et faire de ce JDK la référence.
 6. Ensuite seulement : FlatLaf.
@@ -96,7 +96,31 @@ pour le `SecurityManager` de `FunctionalTestCase`.
   test, puis tout vert ; 3 fois sur 3 vert sous Java 8. Premier échec : `NullPointerException` dans Swing
   (`this.invokerRootPane` est null) à l'ouverture d'un menu déroulant par `PopupMenuInterceptor` ; second :
   exception dans un trigger de catégorisation, `System.exit(10)` par `ShowDialogAndExitExceptionHandler`.
-  Une course entre le fil de test et celui de Swing, à creuser avant de passer à Java 17 pour de bon.
+  **Corrigé le 2026-11-16** : deux défauts distincts, aucun propre à Java 17 (détail ci-dessous).
+
+### Stabilisation de `PrintTest` (2026-11-16)
+
+Mesures sous JDK 17 : 1 échec sur 6 passages avant correction, 3 sur 12 après le premier correctif,
+0 sur 15 après les deux.
+
+1. **Comparateur incohérent, bogue de l'application.** L'« exception dans un trigger » était un
+   `IllegalArgumentException: Comparison method violates its general contract!` levé par TimSort dans le tri
+   du panneau de rapprochement (`ReferenceTransactionComparator`). Le départage par libellé lisait deux fois
+   le libellé de la première opération et répondait -1 dès qu'elle portait le libellé de référence, sans
+   regarder la seconde. Deux opérations au même libellé donnaient donc `compare(a,b) = compare(b,a) = -1`.
+   TimSort ne le détecte que pour certains ordres d'entrée, d'où l'échec aléatoire. Java 8 a la même
+   vérification : il passait par chance. En usage réel, l'erreur ferme l'application (`System.exit(10)`).
+   Couvert par `ReferenceTransactionComparatorTest`, qui contrôle le contrat sur toutes les paires et tous
+   les triplets.
+2. **Menu fermé hors de l'EDT, défaut des tests.** `PopupChecker.close` faisait `setVisible(false)` sur le
+   menu depuis le fil du test, ce qui modifie le `MenuSelectionManager` de Swing. Après un `click()` qui
+   ouvre une fenêtre modale, ce fil ne reprend qu'à la fermeture de la fenêtre, alors que le test ouvre
+   déjà le menu suivant dans l'EDT. Les deux modifient la même liste en même temps :
+   `ArrayIndexOutOfBoundsException: 0 >= 0` dans `MenuSelectionManager.setSelectedPath` (vu dans
+   `SavingsSetup`, deux éditions de compte de suite), ou la `NullPointerException` sur `invokerRootPane`.
+   La fermeture (et le `doClick` de `select`) passe maintenant par `TriggerRunner.runInSwingThread`.
+   À retenir : dans un checker, **toute action Swing passe par l'EDT**. Les `setVisible(false)` de la
+   fenêtre principale dans `LoggedInFunctionalTestCase` ont encore ce défaut.
 
 **Formats régionaux (CLDR).** Depuis Java 9, les formats viennent des données CLDR. Relevé en français :
 
