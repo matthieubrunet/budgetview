@@ -197,6 +197,8 @@ classes que plus rien n'appelle (`AddOnsView`, `AddOnsSelector`, `BankEntityEdit
   - champs de licence de `User` conservés dans le modèle (données 5.01), plus lus ni écrits. Reste mort dans la
     couche de persistance : `DataAccess.register` et `LocalInfo.getMail/getSignature/getActivationCode`
     (à traiter en 1e, sans changer le format sur disque).
+  Vérifié dans l'appli (`./run-dev.sh`) par Matthieu le 2026-11-16 : connexion, création d'utilisateur, import,
+  compte de démo, changement de langue, rien d'anormal.
   Reste après ce lot la synchro Budgea (1b) et le deuxième cercle : `SendStackTracesAction` →
   `ServerMailingService`.
 
