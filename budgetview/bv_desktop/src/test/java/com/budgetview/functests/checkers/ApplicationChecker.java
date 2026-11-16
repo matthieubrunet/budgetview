@@ -1,7 +1,5 @@
 package com.budgetview.functests.checkers;
 
-import com.budgetview.functests.checkers.mobile.CreateMobileAccountChecker;
-import com.budgetview.functests.checkers.mobile.EditMobileAccountChecker;
 import com.budgetview.functests.checkers.printing.PrinterChecker;
 import com.budgetview.functests.checkers.utils.DummyPrinterService;
 import com.budgetview.desktop.Application;
@@ -165,22 +163,6 @@ public class ApplicationChecker extends GuiChecker {
 
   public void enableAllAddOns() {
     getOperations().enableAllAddOns();
-  }
-
-  public void checkMobileAccessEnabled() {
-    getOperations().checkMobileAccessEnabled();
-  }
-
-  public void checkMobileAccessDisabled() {
-    getOperations().checkMobileAccessDisabled();
-  }
-
-  public CreateMobileAccountChecker openMobileAccountDialog() {
-    return getOperations().openCreateMobileUser();
-  }
-
-  public EditMobileAccountChecker openDeleteMobileAccountDialog() {
-    return getOperations().deleteMobileAccountUser();
   }
 
   public void resetPrint() {

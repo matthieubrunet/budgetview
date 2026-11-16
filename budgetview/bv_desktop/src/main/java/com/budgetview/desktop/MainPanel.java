@@ -22,7 +22,6 @@ import com.budgetview.desktop.dashboard.DashboardView;
 import com.budgetview.desktop.feedback.FeedbackService;
 import com.budgetview.desktop.help.HelpService;
 import com.budgetview.desktop.license.activation.LicenseInfoView;
-import com.budgetview.desktop.mobile.SendMobileDataAction;
 import com.budgetview.desktop.model.PeriodAccountStat;
 import com.budgetview.desktop.model.PeriodBudgetAreaStat;
 import com.budgetview.desktop.model.PeriodSeriesStat;
@@ -63,7 +62,6 @@ import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.Key;
 import org.globsframework.model.repository.ReplicationGlobRepository;
-import org.globsframework.utils.Ref;
 import org.globsframework.utils.directory.DefaultDirectory;
 import org.globsframework.utils.directory.Directory;
 
@@ -280,10 +278,6 @@ public class MainPanel {
 
   private void prepareForLogout() {
     directory.get(OpenRequestManager.class).popCallback();
-  }
-
-  public void updateMobile() {
-    SendMobileDataAction.sendToMobile(repository, directory, new Ref<String>(), false);
   }
 
   private class MainPanelLogoutService implements LogoutService {

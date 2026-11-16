@@ -8,8 +8,6 @@ import com.budgetview.desktop.utils.DumpDataAction;
 import com.budgetview.desktop.utils.DumpUndoStackAction;
 import com.budgetview.desktop.utils.dev.*;
 import com.budgetview.functests.checkers.license.LicenseActivationChecker;
-import com.budgetview.functests.checkers.mobile.CreateMobileAccountChecker;
-import com.budgetview.functests.checkers.mobile.EditMobileAccountChecker;
 import com.budgetview.functests.checkers.printing.PrintDialogChecker;
 import com.budgetview.utils.Lang;
 import junit.framework.TestCase;
@@ -717,30 +715,6 @@ public class OperationChecker {
 
   public void changeDate() {
     getDevMenu().getSubMenu(ChangeDateAction.LABEL).click();
-  }
-
-  public void checkMobileAccessEnabled() {
-    assertThat(getMobileCreationMenu().isEnabled());
-  }
-
-  public void checkMobileAccessDisabled() {
-    assertFalse(getMobileCreationMenu().isEnabled());
-  }
-
-  public CreateMobileAccountChecker openCreateMobileUser() {
-    return CreateMobileAccountChecker.open(getMobileCreationMenu().triggerClick());
-  }
-
-  public MenuItem getMobileCreationMenu() {
-    return getFileMenu().getSubMenu(Lang.get("mobile.user.create.action.name"));
-  }
-
-  public EditMobileAccountChecker deleteMobileAccountUser() {
-    return EditMobileAccountChecker.open(getMobileCreationMenu().triggerClick());
-  }
-
-  public MessageDialogChecker sendDataToServer() {
-    return MessageDialogChecker.open(getFileMenu().getSubMenu(Lang.get("mobile.menu.send.data")).triggerClick());
   }
 
   public void addSixDays() {

@@ -20,9 +20,6 @@ import com.budgetview.desktop.help.actions.SendLogsAction;
 import com.budgetview.desktop.license.activation.ActivateLicenseAction;
 import com.budgetview.desktop.license.dev.ShowLicenseExpirationAction;
 import com.budgetview.desktop.license.dev.SimulateLicenseRegistrationAction;
-import com.budgetview.desktop.mobile.DumpMobileXmlAction;
-import com.budgetview.desktop.mobile.EditMobileAccountAction;
-import com.budgetview.desktop.mobile.SendMobileDataAction;
 import com.budgetview.desktop.notes.ShowNotesAction;
 import com.budgetview.desktop.preferences.PreferencesAction;
 import com.budgetview.desktop.preferences.dev.DevOptionsAction;
@@ -63,7 +60,6 @@ public class MenuBarBuilder {
   private DeleteUserAction deleteUserAction;
 //  private ActivateLicenseAction activateLicenseAction;
   private Action threadsAction;
-  private EditMobileAccountAction editMobileAccountAction;
   private PrintBudgetAction printBudgetAction;
   private ExitAction exitAction;
   private LogoutAction logoutAction;
@@ -90,7 +86,6 @@ public class MenuBarBuilder {
     this.setPasswordAction = new SetPasswordAction(repository, directory);
     this.deleteUserAction = deleteUserAction;
     this.printBudgetAction = new PrintBudgetAction(replicationGlobRepository, directory);
-    this.editMobileAccountAction = new EditMobileAccountAction(repository, directory);
     this.threadsAction = new SendStackTracesAction(repository, directory);
     this.aboutAction = new AboutAction(directory);
     this.exitAction = new ExitAction(windowManager, repository, directory);
@@ -137,10 +132,6 @@ public class MenuBarBuilder {
 
     menu.addSeparator();
     menu.add(printBudgetAction);
-
-//    menu.addSeparator();
-//    menu.add(editMobileAccountAction);
-//    menu.add(new SendMobileDataAction(repository, directory));
 
     if (!Gui.useMacOSMenu()) {
       menu.addSeparator();
@@ -203,7 +194,6 @@ public class MenuBarBuilder {
     devMenu.add(ToggleAllAddOnsAction.enableAll(repository));
     devMenu.add(ToggleAllAddOnsAction.disableAll(repository));
     devMenu.addSeparator();
-    devMenu.add(new DumpMobileXmlAction(repository));
     devMenu.add(new CloudDemoAction(repository, directory));
     devMenu.addSeparator();
     devMenu.add(threadsAction);

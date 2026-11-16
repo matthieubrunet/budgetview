@@ -9,7 +9,6 @@ import com.budgetview.desktop.cloud.CloudService;
 import com.budgetview.desktop.components.dialogs.MessageDialog;
 import com.budgetview.desktop.components.dialogs.MessageType;
 import com.budgetview.desktop.description.PicsouDescriptionService;
-import com.budgetview.desktop.mobile.MobileService;
 import com.budgetview.desktop.model.DesktopModel;
 import com.budgetview.desktop.notifications.NotificationService;
 import com.budgetview.desktop.notifications.standard.StandardMessageNotificationHandler;
@@ -333,7 +332,6 @@ public class Application {
     wrapper.add(ExceptionHandler.class, new ShowDialogAndExitExceptionHandler(directory));
     wrapper.add(PasswordBasedEncryptor.class, new RedirectPasswordBasedEncryptor());
     wrapper.add(createConfigService());
-    wrapper.add(new MobileService());
     wrapper.add(new ServerMailingService());
     wrapper.add(new CloudService());
     // Retire par erreur en 2016 (03bb7182f) : utilise par ImportSession et les plugins de banque (LaPoste...).
