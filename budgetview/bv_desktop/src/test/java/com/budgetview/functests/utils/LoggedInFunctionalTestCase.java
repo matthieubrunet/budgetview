@@ -80,7 +80,6 @@ public abstract class LoggedInFunctionalTestCase extends FunctionalTestCase {
     TimeService.setCurrentDate(currentDate);
     BrowsingService.setDummyBrowser(true);
     System.setProperty(Application.LOCAL_PREVAYLER_PATH_PROPERTY, localPrevaylerPath);
-    System.setProperty(Application.DEFAULT_ADDRESS_PROPERTY, "");
     System.setProperty(Application.DELETE_LOCAL_PREVAYLER_PROPERTY, Boolean.toString(deleteLocalPrevayler));
     System.setProperty(Application.IS_DATA_IN_MEMORY, Boolean.toString(isInMemory));
     System.setProperty(Application.LOG_TO_SOUT, "true");

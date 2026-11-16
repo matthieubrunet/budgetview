@@ -28,7 +28,6 @@ public class LoginTest extends StartUpFunctionalTestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
-    System.setProperty(Application.DEFAULT_ADDRESS_PROPERTY, "");
     System.setProperty(Application.DELETE_LOCAL_PREVAYLER_PROPERTY, "");
     System.setProperty(Application.IS_DATA_IN_MEMORY, "");
     System.setProperty(Application.LOG_TO_SOUT, "true");

@@ -73,7 +73,6 @@ public class Application {
   public static final String LOCAL_PREVAYLER_PATH_PROPERTY = APPNAME + ".prevayler.path";
   public static final String LOCAL_DATA_PATH_PROPERTY = APPNAME + ".data.path";
   public static final String LOCAL_CODE_PROPERTY = APPNAME + ".jar.path";
-  public static final String DEFAULT_ADDRESS_PROPERTY = APPNAME + ".server.url";
   public static String DELETE_LOCAL_PREVAYLER_PROPERTY = APPNAME + ".prevayler.delete";
   public static String IS_DATA_IN_MEMORY = APPNAME + ".data.in.memory";
   /** Langue au démarrage : "fr" (défaut), "en", ou "keep" pour conserver la langue déjà en place (tests). */
@@ -195,7 +194,7 @@ public class Application {
     try {
       final String currentDataPath = AppPaths.getCurrentDataPath();
       Log.write("Path is " + currentDataPath);
-      final MainWindow mainWindow = new MainWindow(this, getServerAddress(), currentDataPath, isDataInMemory(), directory);
+      final MainWindow mainWindow = new MainWindow(this, currentDataPath, isDataInMemory(), directory);
       mainWindow.show();
     }
     catch (InvalidState e) {
@@ -255,10 +254,6 @@ public class Application {
       }
     }
     return args;
-  }
-
-  private static String getServerAddress() {
-    return getSystemValue(DEFAULT_ADDRESS_PROPERTY, "");
   }
 
   public static boolean isServerEnabled() {

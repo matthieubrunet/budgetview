@@ -6,9 +6,7 @@ import com.budgetview.client.exceptions.BadPassword;
 import com.budgetview.client.exceptions.RemoteException;
 import com.budgetview.client.exceptions.UserAlreadyExists;
 import com.budgetview.client.exceptions.UserNotRegistered;
-import com.budgetview.client.http.AutoRetryDataAccess;
 import com.budgetview.client.http.EncryptToTransportDataAccess;
-import com.budgetview.client.http.HttpsDataTransport;
 import com.budgetview.client.local.LocalSessionDataTransport;
 import com.budgetview.desktop.components.PicsouFrame;
 import com.budgetview.desktop.components.dialogs.MessageAndDetailsDialog;
@@ -56,7 +54,6 @@ public class MainWindow implements WindowManager {
   private PicsouFrame frame;
   private WindowAdapter windowOpenListener;
   private Application application;
-  private String serverAddress;
   private String prevaylerPath;
   private boolean dataInMemory;
   private Directory directory;
@@ -76,10 +73,9 @@ public class MainWindow implements WindowManager {
   private LicenseCheckerThread licenseCheckerThread;
   private boolean badJarVersion = false;
 
-  public MainWindow(Application application, String serverAddress,
+  public MainWindow(Application application,
                     String prevaylerPath, boolean dataInMemory, Directory directory) throws Exception {
     this.application = application;
-    this.serverAddress = serverAddress;
     this.prevaylerPath = prevaylerPath;
     this.dataInMemory = dataInMemory;
     this.directory = directory;
@@ -96,7 +92,7 @@ public class MainWindow implements WindowManager {
     UserConfigService userConfigService = directory.get(UserConfigService.class);
     DataAccess.LocalInfo info;
     try {
-      info = initServerAccess(serverAddress, prevaylerPath, dataInMemory);
+      info = initServerAccess(prevaylerPath, dataInMemory);
     }
     catch (RuntimeException e) {
       StringWriter writer = new StringWriter();
@@ -330,7 +326,7 @@ public class MainWindow implements WindowManager {
   public void logout() {
     //  TODO il faudrait pouvoir faire un reset sinon le repository n'est pas deconnecté
     // mais probleme avec les bank qui ne sont initialisé qu'une fois.
-    initServerAccess(serverAddress, prevaylerPath, dataInMemory);
+    initServerAccess(prevaylerPath, dataInMemory);
     picsouInit.partialReset();
     frame.setJMenuBar(null);
     setPanel(loginPanel.prepareForDisplay(localUsers));
@@ -338,7 +334,7 @@ public class MainWindow implements WindowManager {
   }
 
   public void logOutAndDeleteUser(String name, char[] password) {
-    initServerAccess(serverAddress, prevaylerPath, dataInMemory);
+    initServerAccess(prevaylerPath, dataInMemory);
     try {
       serverAccess.deleteUser(name, password);
     }
@@ -355,32 +351,23 @@ public class MainWindow implements WindowManager {
   }
 
   public void logOutAndAutoLogin() {
-    initServerAccess(serverAddress, prevaylerPath, dataInMemory);
+    initServerAccess(prevaylerPath, dataInMemory);
     login(LoginPanel.AUTOLOG_USER, LoginPanel.AUTOLOG_USER.toCharArray(), false, false, true);
     directory.get(UndoRedoService.class).reset();
   }
 
-  private DataAccess.LocalInfo initServerAccess(String remoteAdress, String prevaylerPath, boolean dataInMemory) {
-    if (remoteAdress.startsWith("http")) {
-      this.serverAccess.takeSnapshot();
-      this.serverAccess.disconnect();
-      DataAccess dataAccess = new AutoRetryDataAccess(
-        new EncryptToTransportDataAccess(new HttpsDataTransport(remoteAdress), directory));
-      this.serverAccess.setDataAccess(dataAccess);
+  private DataAccess.LocalInfo initServerAccess(String prevaylerPath, boolean dataInMemory) {
+    this.serverAccess.takeSnapshot();
+    this.serverAccess.disconnect();
+    if (sessionDirectory != null) {
+      sessionDirectory.close();
     }
-    else {
-      this.serverAccess.takeSnapshot();
-      this.serverAccess.disconnect();
-      if (sessionDirectory != null) {
-        sessionDirectory.close();
-      }
-      sessionDirectory = new SessionDirectory(prevaylerPath, dataInMemory);
-      thread.sessionDirectory = sessionDirectory;
-      DataAccess dataAccess =
-        new EncryptToTransportDataAccess(new LocalSessionDataTransport(sessionDirectory.getServiceDirectory()),
-                                         directory);
-      this.serverAccess.setDataAccess(dataAccess);
-    }
+    sessionDirectory = new SessionDirectory(prevaylerPath, dataInMemory);
+    thread.sessionDirectory = sessionDirectory;
+    DataAccess dataAccess =
+      new EncryptToTransportDataAccess(new LocalSessionDataTransport(sessionDirectory.getServiceDirectory()),
+                                       directory);
+    this.serverAccess.setDataAccess(dataAccess);
     DataAccess.LocalInfo info = serverAccess.connect(Application.JAR_VERSION);
     localUsers = serverAccess.getLocalUsers();
     return info;
@@ -430,13 +417,13 @@ public class MainWindow implements WindowManager {
 
     public void showPasswordErrorMessage(String key, String complement) {
       serverAccess.disconnect();
-      initServerAccess(serverAddress, prevaylerPath, dataInMemory);
+      initServerAccess(prevaylerPath, dataInMemory);
       loginPanel.displayBadPasswordMessage(key, complement);
     }
 
     public void showErrorText(String message) {
       serverAccess.disconnect();
-      initServerAccess(serverAddress, prevaylerPath, dataInMemory);
+      initServerAccess(prevaylerPath, dataInMemory);
       loginPanel.displayErrorText(message);
     }
 
