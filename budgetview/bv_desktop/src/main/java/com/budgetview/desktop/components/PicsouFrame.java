@@ -1,7 +1,5 @@
 package com.budgetview.desktop.components;
 
-import com.budgetview.desktop.feedback.UsageDataSender;
-import com.budgetview.desktop.feedback.UserEvaluationDialog;
 import com.budgetview.desktop.utils.Gui;
 import org.globsframework.gui.splits.utils.GuiUtils;
 import org.globsframework.model.GlobRepository;
@@ -15,7 +13,6 @@ import java.awt.event.WindowFocusListener;
 public class PicsouFrame extends JFrame {
   private GlobRepository repository;
   private boolean isIconified;
-  private boolean closing = false;
 
   public PicsouFrame(String title, final Directory directory) {
     super(title);
@@ -26,15 +23,6 @@ public class PicsouFrame extends JFrame {
 
       public void windowDeiconified(WindowEvent e) {
         isIconified = false;
-      }
-
-      public void windowClosing(WindowEvent e) {
-        if (closing) {
-          return;
-        }
-        closing = true;
-        UserEvaluationDialog.showIfNeeded(repository, directory);
-        UsageDataSender.send(repository, directory);
       }
     });
 

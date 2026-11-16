@@ -2,7 +2,6 @@ package com.budgetview.desktop.help;
 
 import com.budgetview.desktop.browsing.BrowsingService;
 import com.budgetview.desktop.card.NavigationService;
-import com.budgetview.desktop.feedback.FeedbackService;
 import com.budgetview.desktop.model.Card;
 import org.globsframework.utils.directory.Directory;
 
@@ -45,9 +44,6 @@ public class HyperlinkHandler implements HyperlinkListener {
     else if (href.startsWith("url:")) {
       BrowsingService browser = directory.get(BrowsingService.class);
       browser.launchBrowser(href.substring(4));
-    }
-    else if (href.startsWith("contact:")) {
-      directory.get(FeedbackService.class).send();
     }
     else if (actions.containsKey(href)) {
       actions.get(href).run();

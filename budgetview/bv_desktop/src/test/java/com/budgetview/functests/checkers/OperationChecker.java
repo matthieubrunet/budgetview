@@ -438,11 +438,6 @@ public class OperationChecker {
     exit();
   }
 
-  public UserEvaluationDialogChecker exitWithUserEvaluation() {
-    System.setProperty("realExit", "false");
-    return UserEvaluationDialogChecker.open(getFileMenu().getSubMenu(Lang.get("exit")).triggerClick());
-  }
-
   public void deleteUser(String password) {
     MenuItem subMenu = window.getMenuBar().getMenu(Lang.get("file")).getSubMenu(Lang.get("delete"));
     PasswordDialogChecker dialogChecker =
@@ -463,26 +458,16 @@ public class OperationChecker {
     confirmationDialogChecker.validate();
   }
 
-  public void checkFeedbackLink() {
-    FeedbackDialogChecker.init(getHelpMenu().getSubMenu(Lang.get("feedback")).triggerClick())
-      .checkComponents()
-      .cancel();
-  }
-
   public AboutChecker openAbout() {
     return AboutChecker.open(getHelpMenu().getSubMenu("About").triggerClick());
   }
 
-  public FeedbackDialogChecker openFeedback() {
-    MenuItem feedbackMenu = getHelpMenu().getSubMenu(Lang.get("feedback"));
-    return FeedbackDialogChecker.init(feedbackMenu.triggerClick());
-  }
-
   public void checkHelpMenuWithoutServerActions() {
     MenuItem help = getHelpMenu();
-    assertFalse(help.contains(Lang.get("feedback")));
-    assertFalse(help.contains(Lang.get("sendLogs.action")));
-    assertFalse(help.contains(Lang.get("sendImportedFile.action")));
+    // Libellés des anciens envois au support, supprimés en 6.00 avec leurs clés de langue.
+    assertFalse(help.contains("Send a comment..."));
+    assertFalse(help.contains("Send logs..."));
+    assertFalse(help.contains("Send an imported file..."));
   }
 
   private MenuItem getHelpMenu() {
@@ -689,28 +674,12 @@ public class OperationChecker {
     return NotesDialogChecker.open(getViewMenu().getSubMenu(Lang.get("notesDialog.action")));
   }
 
-  public SendImportedFileChecker openSendImportedFile() {
-    return SendImportedFileChecker.open(getSendImportedFileMenuItem());
-  }
-
-  private MenuItem getSendImportedFileMenuItem() {
-    return getHelpMenu().getSubMenu(Lang.get("sendImportedFile.action"));
-  }
-
-  public void checkSendImportedFileDisabled() {
-    assertFalse(getSendImportedFileMenuItem().isEnabled());
-  }
-
   public void checkGotoWebsite(String url) {
     BrowsingChecker.checkDisplay(getHelpMenu().getSubMenu(Lang.get("gotoWebsite")).triggerClick(), url);
   }
 
   public PrintDialogChecker openPrint() {
     return PrintDialogChecker.init(getFileMenu().getSubMenu("Print...").triggerClick());
-  }
-
-  public MessageAndDetailsDialogChecker openSendLogs() {
-    return MessageAndDetailsDialogChecker.init(getHelpMenu().getSubMenu(Lang.get("sendLogs.action")).triggerClick());
   }
 
   public void changeDate() {

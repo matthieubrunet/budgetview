@@ -19,7 +19,6 @@ import com.budgetview.desktop.components.highlighting.HighlightingService;
 import com.budgetview.desktop.components.layoutconfig.LayoutConfigService;
 import com.budgetview.desktop.dashboard.DashboardStatUpdater;
 import com.budgetview.desktop.dashboard.DashboardView;
-import com.budgetview.desktop.feedback.FeedbackService;
 import com.budgetview.desktop.help.HelpService;
 import com.budgetview.desktop.license.activation.LicenseInfoView;
 import com.budgetview.desktop.model.PeriodAccountStat;
@@ -105,7 +104,6 @@ public class MainPanel {
     this.frame = windowManager.getFrame();
     directory.add(new UndoRedoService(repository));
     directory.add(new HelpService(repository, directory));
-    directory.add(new FeedbackService(repository, directory));
     directory.add(new LayoutConfigService(repository, directory));
     LogoutService logoutService = new MainPanelLogoutService();
     directory.add(LogoutService.class, logoutService);

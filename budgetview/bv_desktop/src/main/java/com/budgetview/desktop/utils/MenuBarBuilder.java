@@ -1,6 +1,5 @@
 package com.budgetview.desktop.utils;
 
-import com.budgetview.desktop.Application;
 
 import com.budgetview.desktop.WindowManager;
 import com.budgetview.desktop.about.AboutAction;
@@ -12,11 +11,8 @@ import com.budgetview.desktop.backup.RestoreFileAction;
 import com.budgetview.desktop.backup.RestoreSnapshotMenuAction;
 import com.budgetview.desktop.cloud.actions.CloudDemoAction;
 import com.budgetview.desktop.components.PicsouFrame;
-import com.budgetview.desktop.components.dialogs.SendImportedFileAction;
-import com.budgetview.desktop.feedback.actions.SendFeedbackAction;
 import com.budgetview.desktop.help.actions.GotoSupportAction;
 import com.budgetview.desktop.help.actions.GotoWebsiteAction;
-import com.budgetview.desktop.help.actions.SendLogsAction;
 import com.budgetview.desktop.license.activation.ActivateLicenseAction;
 import com.budgetview.desktop.license.dev.ShowLicenseExpirationAction;
 import com.budgetview.desktop.license.dev.SimulateLicenseRegistrationAction;
@@ -50,12 +46,10 @@ public class MenuBarBuilder {
 
   private ImportFileAction importFileAction;
   private ExportFileAction exportFileAction;
-  private SendFeedbackAction openFeedbackAction;
   private SetPasswordAction setPasswordAction;
   private BackupAction backupAction;
   private RestoreFileAction restoreActionFileAction;
   private RestoreSnapshotMenuAction restoreSnapshotMenuAction;
-  private SendImportedFileAction sendImportedFileAction;
   private PreferencesAction preferencesAction;
   private DeleteUserAction deleteUserAction;
 //  private ActivateLicenseAction activateLicenseAction;
@@ -76,11 +70,9 @@ public class MenuBarBuilder {
 
     this.importFileAction = ImportFileAction.initForMenu(Lang.get("import"), repository, directory);
     this.exportFileAction = new ExportFileAction(repository, directory);
-    this.openFeedbackAction = new SendFeedbackAction(Lang.get("feedback"), repository, directory);
     this.backupAction = new BackupAction(repository, directory);
     this.restoreActionFileAction = new RestoreFileAction(repository, directory);
     this.restoreSnapshotMenuAction = new RestoreSnapshotMenuAction(directory, repository);
-    this.sendImportedFileAction = new SendImportedFileAction(directory, repository);
     this.preferencesAction = new PreferencesAction(repository, directory);
 //    this.activateLicenseAction = new ActivateLicenseAction(repository, directory);
     this.setPasswordAction = new SetPasswordAction(repository, directory);
@@ -185,8 +177,6 @@ public class MenuBarBuilder {
     devMenu.add(new ChangeDateAction(repository));
     devMenu.addSeparator();
     devMenu.add(new HideSignpostsAction(repository));
-    devMenu.add(new ShowUserEvaluationDialogAction(repository, directory));
-    devMenu.add(new DumpUsageDataAction(repository));
     devMenu.addSeparator();
     devMenu.add(new SimulateLicenseRegistrationAction(repository));
     devMenu.add(new ShowLicenseExpirationAction(repository, directory));
@@ -220,13 +210,6 @@ public class MenuBarBuilder {
 
     menu.addSeparator();
     menu.add(new GotoWebsiteAction(directory));
-
-    if (Application.isServerEnabled()) {
-      menu.addSeparator();
-      menu.add(openFeedbackAction);
-      menu.add(new SendLogsAction(directory));
-      menu.add(sendImportedFileAction);
-    }
 
     if (!Gui.useMacOSMenu()) {
       menu.addSeparator();
