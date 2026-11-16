@@ -54,8 +54,17 @@ Faire l'inventaire sans rien modifier, puis supprimer.
   Fait le 2026-11-16 (profil `coverage`, script [audit/coverage.sh](audit/coverage.sh)), voir
   [1c, résultats](#1c-résultats) plus bas.
   Les 17 classes candidates sont supprimées (2026-11-16).
-- [ ] **1d. Couverture JaCoCo en usage réel** : agent JaCoCo dans `run-dev.sh` (option), quelques
-  sessions de travail habituelles. Une classe à 0 % dans 1c et dans 1d est candidate.
+- [ ] **1d. Couvrir ou supprimer le code jamais exécuté** : pour chaque classe accessible depuis
+  `DesktopApp` mais à 0 % en 1c, retrouver la fonction visible qui s'en sert et la chercher dans l'aide.
+  Documentée : écrire le test fonctionnel qui manque. Ni documentée ni atteignable : candidate à la
+  suppression, sur arbitrage de Matthieu. Inventaire d'abord (tableau fonction / documentée / décision),
+  tests ensuite.
+  Remplace le projet initial (agent JaCoCo pendant l'usage réel, 2026-11-16) : l'usage de Matthieu ne couvre
+  qu'une petite partie des fonctions, une classe non exécutée n'y prouverait rien, alors qu'un test protège
+  aussi les étapes suivantes.
+  **Hors champ** (décision de Matthieu, 2026-11-16) : le code propre à Windows et à Linux, qui ne tourne
+  pas sur le Mac. Ces cibles seront reprises si un jour elles deviennent nécessaires. Le cloud et Budgea
+  restent gardés sans test (1b).
 - [ ] **1e. Code inaccessible depuis `DesktopApp`** : ProGuard en `-dontobfuscate -printusage`
   (ou un outil équivalent), à recouper avec 1c et 1d. Attention aux classes chargées par
   réflexion (globs, splits, i18n), que ces outils signalent à tort comme inutilisées.
@@ -288,6 +297,34 @@ Quatre classes sont inaccessibles mais exécutées, donc servies par les seuls t
 `HistoLinePainter`, `OfxBeautifier`, `model.LicenseActivationState` (type du modèle, à garder pour les
 données 5.01).
 
+## 1d, inventaire
+
+Fait le 2026-11-16 : nouvelle mesure de couverture (1 028 tests verts, sans erreur instable), recoupée avec
+`reach.py` et une recherche de chaque nom dans les sources, les `.splits` et `bv_server`. 67 classes de
+`bv_desktop` et `bv_shared` sont à 0 % sans être signalées inaccessibles.
+
+**Faille de `reach.py`** : il ne connaît que les classes présentes dans au moins une arête de `jdeps`. Une
+classe sans aucune dépendance vers `com.budgetview` ni aucun appelant n'apparaît ni dans les accessibles ni
+dans les inaccessibles. Ainsi 15 des « 68 accessibles » de 1c, sans aucune référence, ne l’étaient pas (et le code Windows et Linux, que seul `com.jgoodies` appelle, ne l’est pas davantage).
+
+| Groupe | Classes | Proposition |
+|---|---|---|
+| Aucune référence nulle part | `AccountAnalysisView`, `ReadOnlyGlobTextFieldView`, `PieChartPainter`, `BlankAction`, `experiment.AutoCompleteDemo`, `ButtonPopupDemo`, `SplitPaneDotsPainter`, `SeriesRecurrenceEditionPanel`, `FloatingAverage`, `utils.Html`, `ofx.InvalidPasswordOrBadUrl`, `ofx.TimeoutError`, `Chronometer`, `DataExchangeService` ; `JRoundedPanel` (seul un `main` de démo dans `src/test` s'en sert) | supprimer |
+| UI enregistrées dans `ApplicationLAF` mais nommées par aucun `.splits` (un `.splits` désigne une UI par le nom complet de sa classe : `<ui name=… class="com.budgetview…">`) | `WavePanelUI`, `SelectionToggleUI`, `RoundButtonUI`, `AddOnPanelLayout` | supprimer, avec leur enregistrement. `RoundButtonUI` est gardé : les look & feel Windows et Linux (`com.jgoodies.looks.plastic`, hors du graphe de `reach.py`) l'installent directement |
+| Stringifier d'un type que plus rien n'affiche | `AccountCardTypeStringifier` (le choix du type de carte, `CardTypeChooserDialog`, est parti en 1c) | supprimer, après vérification |
+| Stringifier des projets | `ProjectStringifier`, `ProjectComparator` | chercher où une description de projet est demandée, sinon supprimer |
+| Dessin : les tests uispec4j ne peignent jamais | graphe journalier des comptes (`HistoDailyBlockPainter`, `HistoDailyMetrics`) ; impression (`PrintStyle`, `BudgetGaugeBlockMetrics`, `SeriesTableMetrics`, `TransactionBlockMetrics`), fonction documentée dans `derniers_changements.html` et déjà testée jusqu'à `DummyPrinterService` | tester : rendu dans une `BufferedImage` ; `DummyPrinterService` qui dessine les pages du rapport |
+| Point d'entrée | `DesktopApp` (seul son `main` n'a pas tourné) | garder |
+| Hors champ : Windows et Linux | `UnixBrowsingService`, `WindowsBrowsingService`, `LafUtils`, `PicsouOptionPaneUI`, `PicsouRootPaneUI`, `PicsouWindowsFileChooserUI`, `PicsouWindowsLabelUI`, `PicsouLinuxLookAndFeel`, `PicsouWindowsLookAndFeel` | garder sans test |
+| Cloud et Budgea (1b) | `desktop.cloud.*` (4), `CloudConnection*` (6), `SynchroErrorDialog`, `ShowSynchroErrorAction`, `JsonImporter` (format des relevés Budgea), `RealAccountComparator` (import des comptes du cloud), `shared.cloud.*` (5) | garder sans test |
+| Client serveur et constantes de `bv_server` | `client.exceptions.*` (5), `shared.http.Http`, `shared.json.Json`, `PasswordEncryption`, `PasswordBasedEncryptor`, `LicenseConstants`, `MobileConstants` | garder |
+
+**Supprimées le 2026-11-16** : les 21 classes des quatre premiers groupes (sans `RoundButtonUI`) et la démo
+`JRoundedPanelTest`, avec les branches `AccountCardType` et `Project` de `PicsouDescriptionService`. Aucune
+ressource ne leur était attachée, et `reach.py` corrigé ne signale aucun orphelin derrière elles.
+`reach.py` corrigé signale aussi deux classes qui ne servent qu'aux tests : `desktop.utils.TimeUtils` (et son
+`TimeUtilsTest`) et l'annotation `utils.Inline`, appliquée nulle part. Elles restent à trancher.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -299,3 +336,4 @@ données 5.01).
 | 2026-11-16 | 1a, lot 5 (licence) | 1 045 classes de premier niveau (−25), 2 226 `.class` (−76) ; `target/dist` 12,1 Mo, `budgetview.jar` 4,95 Mo (−117 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −4 492 lignes de Java net, −299 lignes de langue. Reste 4 classes mortes par construction, toutes du cloud (1b) |
 | 2026-11-16 | 1c, couverture de la suite | bv_desktop + bv_shared : 103 classes de premier niveau à 0 % sur 1 004 (2 732 lignes sur 47 253) ; 17 candidates à la suppression (373 lignes). globs 164/468, prevayler 52/80, saxstack 22/32 à 0 %. 1 028 tests, 1 erreur instable, 11 min sous JaCoCo |
 | 2026-11-16 | 1c, 17 classes supprimées | 1 028 classes de premier niveau (−17), 2 186 `.class` (−40) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,90 Mo (−50 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −917 lignes de Java net, −71 lignes de `.splits`, −37 lignes de langue (3 fichiers) |
+| 2026-11-16 | 1d, 21 classes supprimées | `reach.py` corrigé (classes sans arête). 1 007 classes de premier niveau (−21), 2 162 `.class` (−24) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,87 Mo (−33 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −1 150 lignes de Java (dont la démo `JRoundedPanelTest`) |

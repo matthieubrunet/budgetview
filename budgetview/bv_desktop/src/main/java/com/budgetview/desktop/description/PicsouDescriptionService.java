@@ -2,7 +2,6 @@ package com.budgetview.desktop.description;
 
 import com.budgetview.desktop.accounts.utils.MonthDay;
 import com.budgetview.desktop.description.stringifiers.*;
-import com.budgetview.desktop.projects.utils.ProjectStringifier;
 import com.budgetview.model.*;
 import com.budgetview.shared.model.AccountType;
 import com.budgetview.shared.model.BudgetArea;
@@ -75,9 +74,6 @@ public class PicsouDescriptionService extends DefaultDescriptionService {
     if (globType.equals(Account.TYPE)) {
       return new AccountStringifier();
     }
-    if (globType.equals(AccountCardType.TYPE)) {
-      return new AccountCardTypeStringifier();
-    }
     if (globType.equals(Bank.TYPE)) {
       return new BankStringifier();
     }
@@ -102,9 +98,6 @@ public class PicsouDescriptionService extends DefaultDescriptionService {
     }
     if (globType.equals(ProfileType.TYPE)) {
       return new BundleBasedStringifier(ProfileType.NAME, ProfileType.TYPE.getName() + ".");
-    }
-    if (globType.equals(Project.TYPE)) {
-      return new ProjectStringifier();
     }
     if (globType.equals(DayOfMonth.TYPE)) {
       return new DayOfMonthStringifier();
