@@ -11,6 +11,9 @@ import org.uispec4j.assertion.UISpecAssert;
 import org.uispec4j.interception.PopupMenuInterceptor;
 import org.uispec4j.interception.toolkit.Empty;
 
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -29,7 +32,33 @@ public abstract class AbstractHistoChecker<T extends AbstractHistoChecker> exten
         }
       }
     });
+    paintOffscreen(chart);
     return (T) chart.getCurrentDataset();
+  }
+
+  /**
+   * Dessine le graphique dans une image en mémoire : uispec4j n'affiche rien à l'écran, et sans cela le code
+   * de dessin des graphiques (HistoDailyPainter, HistoDailyBlockPainter…) ne serait jamais exécuté par les tests.
+   */
+  private static void paintOffscreen(HistoChart chart) {
+    Rectangle bounds = chart.getBounds();
+    boolean resized = bounds.width <= 0 || bounds.height <= 0;
+    if (resized) {
+      // Fenêtre non mise en page par uispec4j : taille provisoire, rétablie après le dessin
+      // (HistoChart.setBounds réinitialise ses métriques).
+      chart.setBounds(bounds.x, bounds.y, 400, 200);
+    }
+    BufferedImage image = new BufferedImage(chart.getWidth(), chart.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = image.createGraphics();
+    try {
+      chart.paint(g2);
+    }
+    finally {
+      g2.dispose();
+      if (resized) {
+        chart.setBounds(bounds);
+      }
+    }
   }
 
   protected HistoDataset getDataset() {

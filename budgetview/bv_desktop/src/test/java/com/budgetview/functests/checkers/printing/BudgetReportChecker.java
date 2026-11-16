@@ -10,8 +10,6 @@ import com.budgetview.desktop.printing.budget.tables.SeriesTablePage;
 import com.budgetview.desktop.printing.utils.BlockMultiColumnsPage;
 import junit.framework.Assert;
 
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
 import java.awt.print.Printable;
 
 public class BudgetReportChecker {
@@ -22,12 +20,6 @@ public class BudgetReportChecker {
       Assert.fail("Unexpected report type: " + report.getClass());
     }
     this.report = (BudgetReport) report;
-
-    Paper paper = new Paper();
-    paper.setImageableArea(0, 0, 1000, 900);
-    PageFormat format = new PageFormat();
-    format.setPaper(paper);
-    this.report.init(format);
   }
 
   public BudgetReportChecker checkPageCount(int count) {

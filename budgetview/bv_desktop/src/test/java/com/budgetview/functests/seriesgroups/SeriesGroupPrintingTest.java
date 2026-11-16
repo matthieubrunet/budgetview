@@ -122,12 +122,12 @@ public class SeriesGroupPrintingTest extends LoggedInFunctionalTestCase {
     budgetView.variable.addToGroup("Home", "Groceries");
 
     timeline.selectMonth(201401);
+    budgetView.variable.collapseGroup("Groceries");
+
     operations.openPrint()
       .checkOptions("January 2014", "Year 2014")
       .selectCurrentMonth()
       .print();
-
-    budgetView.variable.collapseGroup("Groceries");
 
     BudgetReportChecker january2014Report = printer.getBudgetReport();
     january2014Report.initGaugesPage(1)

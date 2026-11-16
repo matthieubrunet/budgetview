@@ -54,7 +54,7 @@ Faire l'inventaire sans rien modifier, puis supprimer.
   Fait le 2026-11-16 (profil `coverage`, script [audit/coverage.sh](audit/coverage.sh)), voir
   [1c, résultats](#1c-résultats) plus bas.
   Les 17 classes candidates sont supprimées (2026-11-16).
-- [ ] **1d. Couvrir ou supprimer le code jamais exécuté** : pour chaque classe accessible depuis
+- [x] **1d. Couvrir ou supprimer le code jamais exécuté** : pour chaque classe accessible depuis
   `DesktopApp` mais à 0 % en 1c, retrouver la fonction visible qui s'en sert et la chercher dans l'aide.
   Documentée : écrire le test fonctionnel qui manque. Ni documentée ni atteignable : candidate à la
   suppression, sur arbitrage de Matthieu. Inventaire d'abord (tableau fonction / documentée / décision),
@@ -65,6 +65,9 @@ Faire l'inventaire sans rien modifier, puis supprimer.
   **Hors champ** (décision de Matthieu, 2026-11-16) : le code propre à Windows et à Linux, qui ne tourne
   pas sur le Mac. Ces cibles seront reprises si un jour elles deviennent nécessaires. Le cloud et Budgea
   restent gardés sans test (1b).
+  Fait le 2026-11-16, voir [1d, inventaire](#1d-inventaire) plus bas : 24 classes supprimées, le dessin du
+  graphe journalier et de l'impression désormais exécuté par les tests. Les 59 classes encore à 0 % sont
+  toutes dans les groupes gardés.
 - [ ] **1e. Code inaccessible depuis `DesktopApp`** : ProGuard en `-dontobfuscate -printusage`
   (ou un outil équivalent), à recouper avec 1c et 1d. Attention aux classes chargées par
   réflexion (globs, splits, i18n), que ces outils signalent à tort comme inutilisées.
@@ -323,7 +326,19 @@ dans les inaccessibles. Ainsi 15 des « 68 accessibles » de 1c, sans aucune ré
 `JRoundedPanelTest`, avec les branches `AccountCardType` et `Project` de `PicsouDescriptionService`. Aucune
 ressource ne leur était attachée, et `reach.py` corrigé ne signale aucun orphelin derrière elles.
 `reach.py` corrigé signale aussi deux classes qui ne servent qu'aux tests : `desktop.utils.TimeUtils` (et son
-`TimeUtilsTest`) et l'annotation `utils.Inline`, appliquée nulle part. Elles restent à trancher.
+`TimeUtilsTest`) et l'annotation `utils.Inline`, appliquée nulle part. Supprimées aussi.
+
+**Tests du dessin** (2026-11-16). Les tests uispec4j n'affichent rien : sans dessin explicite, aucun code de
+`paint` ne tourne.
+- Impression : `DummyPrinterService` prépare le rapport (`init`, sur le format de page des tests, zone
+  imprimable de 1000 x 900) puis dessine chaque page dans une `BufferedImage`, comme `DefaultPrinterService` et
+  `PrinterJob`. **`PrintableReport.init` n'est pas idempotent** : un second appel ajoute de nouveau les pages.
+  Les vérificateurs (`BudgetReportChecker`, `TransactionPrintChecker`) ne l'appellent donc plus.
+  `SeriesGroupPrintingTest` repliait le groupe après l'impression et ne passait que parce que le rapport était
+  préparé à la vérification : il le replie maintenant avant d'imprimer.
+- Graphiques : `AbstractHistoChecker.getDataset` dessine le `HistoChart` dans une image à chaque lecture. Les
+  fenêtres de test n'étant pas mises en page (largeur 0), il lui donne une taille provisoire de 400 x 200, puis
+  rétablit la sienne (`HistoChart.setBounds` réinitialise ses métriques).
 
 ## Journal
 
@@ -337,3 +352,4 @@ ressource ne leur était attachée, et `reach.py` corrigé ne signale aucun orph
 | 2026-11-16 | 1c, couverture de la suite | bv_desktop + bv_shared : 103 classes de premier niveau à 0 % sur 1 004 (2 732 lignes sur 47 253) ; 17 candidates à la suppression (373 lignes). globs 164/468, prevayler 52/80, saxstack 22/32 à 0 %. 1 028 tests, 1 erreur instable, 11 min sous JaCoCo |
 | 2026-11-16 | 1c, 17 classes supprimées | 1 028 classes de premier niveau (−17), 2 186 `.class` (−40) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,90 Mo (−50 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −917 lignes de Java net, −71 lignes de `.splits`, −37 lignes de langue (3 fichiers) |
 | 2026-11-16 | 1d, 21 classes supprimées | `reach.py` corrigé (classes sans arête). 1 007 classes de premier niveau (−21), 2 162 `.class` (−24) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,87 Mo (−33 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −1 150 lignes de Java (dont la démo `JRoundedPanelTest`) |
+| 2026-11-16 | 1d, tests du dessin | `TimeUtils` et `@Inline` supprimés : 1 004 classes de premier niveau (−3), 2 160 `.class` ; `target/dist` 12,0 Mo, `budgetview.jar` 4,87 Mo ; 1 026 tests verts (−2, ceux de `TimeUtils`), 162 classes, 11 min sous JaCoCo. Classes à 0 % : bv_desktop 46 sur 933, bv_shared 13 sur 32, toutes gardées par décision |

@@ -9,8 +9,6 @@ import com.budgetview.desktop.printing.utils.PageBlock;
 import junit.framework.Assert;
 import org.globsframework.utils.TablePrinter;
 
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
 import java.util.List;
 
 public class TransactionPrintChecker {
@@ -22,12 +20,6 @@ public class TransactionPrintChecker {
       Assert.fail("Unexpected report type: " + report.getClass());
     }
     TransactionsReport transactionsReport = (TransactionsReport) report;
-
-    Paper paper = new Paper();
-    paper.setImageableArea(0, 0, 1000, 900);
-    PageFormat format = new PageFormat();
-    format.setPaper(paper);
-    transactionsReport.init(format);
     fillActual(transactionsReport);
   }
 
