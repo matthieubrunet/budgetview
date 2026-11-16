@@ -1,6 +1,7 @@
 package com.budgetview.desktop.utils;
 
 
+import com.budgetview.desktop.Application;
 import com.budgetview.desktop.WindowManager;
 import com.budgetview.desktop.about.AboutAction;
 import com.budgetview.desktop.accounts.actions.CreateAccountAction;
@@ -73,7 +74,7 @@ public class MenuBarBuilder {
     this.setPasswordAction = new SetPasswordAction(repository, directory);
     this.deleteUserAction = deleteUserAction;
     this.printBudgetAction = new PrintBudgetAction(replicationGlobRepository, directory);
-    this.threadsAction = new SendStackTracesAction(repository, directory);
+    this.threadsAction = new DumpStackTracesAction();
     this.aboutAction = new AboutAction(directory);
     this.exitAction = new ExitAction(windowManager, repository, directory);
     this.logoutAction = new LogoutAction(logoutService);
@@ -165,7 +166,6 @@ public class MenuBarBuilder {
     devMenu.add(new ThrowExceptionAction());
     devMenu.add(new ThrowInRepoExceptionAction(repository));
     devMenu.add(new AddAccountErrorAction(repository));
-    devMenu.add(new ShowSynchroErrorAction(directory));
     devMenu.addSeparator();
     devMenu.add(new Goto10OfNextMonthAction(repository));
     devMenu.add(new AddSixDaysAction(repository));
@@ -177,8 +177,12 @@ public class MenuBarBuilder {
     devMenu.add(ToggleAllAddOnsAction.enableAll(repository));
     devMenu.add(ToggleAllAddOnsAction.disableAll(repository));
     devMenu.addSeparator();
-    devMenu.add(new CloudDemoAction(repository, directory));
-    devMenu.addSeparator();
+    // Synchro bancaire (Budgea) désactivée en usage local (docs/perimetre-local.md)
+    if (Application.isServerEnabled()) {
+      devMenu.add(new ShowSynchroErrorAction(directory));
+      devMenu.add(new CloudDemoAction(repository, directory));
+      devMenu.addSeparator();
+    }
     devMenu.add(threadsAction);
     return devMenu;
   }

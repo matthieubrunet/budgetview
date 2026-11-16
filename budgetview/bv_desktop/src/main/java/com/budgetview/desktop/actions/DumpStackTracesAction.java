@@ -1,31 +1,25 @@
 package com.budgetview.desktop.actions;
 
-import com.budgetview.client.mail.ServerMailingService;
-import com.budgetview.model.User;
-import com.budgetview.shared.license.LicenseConstants;
 import com.budgetview.utils.Lang;
-import org.globsframework.model.Glob;
-import org.globsframework.model.GlobRepository;
 import org.globsframework.utils.Dates;
 import org.globsframework.utils.Log;
-import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.Date;
 import java.util.Map;
 
-public class SendStackTracesAction extends AbstractAction {
-  private GlobRepository repository;
-  private Directory directory;
+/**
+ * Menu de dev : relève toutes les 4 s la pile de chaque thread et la mémoire, puis l'écrit dans le log à l'arrêt.
+ * (Jusqu'en 6.0.1, le relevé était aussi envoyé au support par le serveur, qui ne répond plus.)
+ */
+public class DumpStackTracesAction extends AbstractAction {
   private Thread thread;
   private boolean stop;
   private StringBuilder buffer = new StringBuilder();
 
-  public SendStackTracesAction(GlobRepository repository, Directory directory) {
+  public DumpStackTracesAction() {
     super(Lang.get("dumpThread"));
-    this.repository = repository;
-    this.directory = directory;
   }
 
   public void actionPerformed(ActionEvent e) {
@@ -52,30 +46,11 @@ public class SendStackTracesAction extends AbstractAction {
       }
       thread = null;
 
-      Glob glob = repository.find(User.KEY);
-      String mail = "";
-      if (glob != null) {
-        mail = glob.get(User.EMAIL);
-      }
-      String content = buffer.toString();
-      Log.write(content);
-      directory.get(ServerMailingService.class).sendMail(LicenseConstants.SUPPORT_EMAIL,
-                                                         mail,
-                                                         "Thread dump",
-                                                         content,
-                                                         new ServerMailingService.Listener() {
-                                                    public void sent(String mail, String title, String content) {
-                                                      Log.write("[SendStack] Mail sent from " + mail + " - title : " + title + "\n" + content);
-                                                    }
-
-                                                    public void sendFailed(String mail, String title, String content) {
-                                                      Log.write("[SendStack] Failed to send mail from " + mail + " - title : " + title + "\n" + content);
-                                                    }
-                                                  },
-                                                         repository);
+      Log.write(buffer.toString());
+      buffer.setLength(0);
     }
     catch (InterruptedException e) {
-      Log.write("[SendStack] Interrupted thread in send");
+      Log.write("[DumpStack] Interrupted thread");
     }
   }
 

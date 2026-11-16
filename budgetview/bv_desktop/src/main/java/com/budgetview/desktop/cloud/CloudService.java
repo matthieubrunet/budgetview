@@ -37,6 +37,24 @@ public class CloudService {
   private final BudgeaAPI budgeaAPI = new BudgeaAPI();
   private final CloudAPI cloudAPI = new CloudAPI();
 
+  /**
+   * Synchro bancaire (Budgea) désactivée en usage local : l'agrégateur est arrêté depuis 2018 et le
+   * serveur register.budgetview.fr ne répond plus. Le code est gardé pour une reprise éventuelle,
+   * et tout appel réseau du service passe par cette garde. Réactivation : -Dbudgetview.server.enabled=true
+   * (docs/perimetre-local.md).
+   */
+  private static boolean isDisabled(String operation) {
+    if (Application.isServerEnabled()) {
+      return false;
+    }
+    Log.write("[Cloud] Synchro bancaire désactivée, appel ignoré : " + operation);
+    return true;
+  }
+
+  private static IOException disabledError() {
+    return new IOException("Synchro bancaire désactivée (budgetview.server.enabled)");
+  }
+
   public interface ErrorCallback {
     void processSubscriptionError(CloudSubscriptionStatus status);
 
@@ -82,6 +100,10 @@ public class CloudService {
   }
 
   public void signup(final String email, final GlobRepository repository, final Callback callback) {
+    if (isDisabled("signup")) {
+      callback.processError(disabledError());
+      return;
+    }
     Thread thread = new Thread(new Runnable() {
       public void run() {
         try {
@@ -133,6 +155,10 @@ public class CloudService {
   }
 
   public void validateSignup(final String email, final String code, final GlobRepository repository, final ValidationCallback callback) {
+    if (isDisabled("validateSignup")) {
+      callback.processError(disabledError());
+      return;
+    }
     Thread thread = new Thread(new Runnable() {
       public void run() {
         try {
@@ -182,6 +208,10 @@ public class CloudService {
   }
 
   public void modifyEmailAddress(final String newEmail, final GlobRepository repository, final Callback callback) {
+    if (isDisabled("modifyEmailAddress")) {
+      callback.processError(disabledError());
+      return;
+    }
     Thread thread = new Thread(new Runnable() {
       public void run() {
         try {
@@ -216,6 +246,10 @@ public class CloudService {
   }
 
   public void validateEmailModification(final String email, final String code, final GlobRepository repository, final ValidationCallback callback) {
+    if (isDisabled("validateEmailModification")) {
+      callback.processError(disabledError());
+      return;
+    }
     Thread thread = new Thread(new Runnable() {
       public void run() {
         try {
@@ -261,6 +295,10 @@ public class CloudService {
   }
 
   public void updateBankFields(Key bankKey, GlobRepository repository, Callback callback) {
+    if (isDisabled("updateBankFields")) {
+      callback.processError(disabledError());
+      return;
+    }
     try {
       Glob user = repository.get(CloudDesktopUser.KEY);
 
@@ -339,6 +377,10 @@ public class CloudService {
   }
 
   public void addBankConnection(final Glob bank, final Glob bankConnection, final GlobRepository repository, final BankConnectionCallback callback) {
+    if (isDisabled("addBankConnection")) {
+      callback.processError(disabledError());
+      return;
+    }
     Log.debug("[Cloud] addBankConnection: " + bank);
     Thread thread = new Thread(new Runnable() {
       public void run() {
@@ -403,6 +445,10 @@ public class CloudService {
   }
 
   public void addBankConnectionStep2(final int connectionId, final Glob bankConnection, final GlobRepository repository, final BankConnectionCallback callback) {
+    if (isDisabled("addBankConnectionStep2")) {
+      callback.processError(disabledError());
+      return;
+    }
     Log.debug("[Cloud] addBankConnectionStep2");
     Thread thread = new Thread(new Runnable() {
       public void run() {
@@ -421,6 +467,10 @@ public class CloudService {
   }
 
   public void updatePassword(final int connectionId, final Glob bankConnection, final GlobRepository repository, final BankConnectionCallback callback) {
+    if (isDisabled("updatePassword")) {
+      callback.processError(disabledError());
+      return;
+    }
     Log.debug("[Cloud] updatePassword");
     Thread thread = new Thread(new Runnable() {
       public void run() {
@@ -500,6 +550,10 @@ public class CloudService {
   }
 
   public void checkBankConnectionReady(final Glob providerConnection, final GlobRepository repository, final BankConnectionCheckCallback callback) {
+    if (isDisabled("checkBankConnectionReady")) {
+      callback.processError(disabledError());
+      return;
+    }
     Thread thread = new Thread(new Runnable() {
       public void run() {
         try {
@@ -552,6 +606,10 @@ public class CloudService {
   }
 
   public void updateBankConnections(final GlobRepository repository, final Callback callback) {
+    if (isDisabled("updateBankConnections")) {
+      callback.processError(disabledError());
+      return;
+    }
     Thread thread = new Thread(new Runnable() {
       public void run() {
         try {
@@ -606,6 +664,10 @@ public class CloudService {
   }
 
   public void deleteBankConnection(final Glob connection, final GlobRepository repository, final Callback callback) {
+    if (isDisabled("deleteBankConnection")) {
+      callback.processError(disabledError());
+      return;
+    }
     Thread thread = new Thread(new Runnable() {
       public void run() {
         try {
@@ -634,6 +696,10 @@ public class CloudService {
   }
 
   public void downloadStatement(final GlobRepository repository, final DownloadCallback callback) {
+    if (isDisabled("downloadStatement")) {
+      callback.processError(disabledError());
+      return;
+    }
     Thread thread = new Thread(new Runnable() {
       public void run() {
         try {
@@ -665,6 +731,9 @@ public class CloudService {
   }
 
   public GlobList doDownloadStatement(GlobRepository repository) throws SubscriptionError, IOException, InvalidCloudAPIVersion {
+    if (isDisabled("doDownloadStatement")) {
+      throw disabledError();
+    }
     Glob user = repository.findOrCreate(CloudDesktopUser.KEY);
     Integer lastUpdate = user.get(CloudDesktopUser.LAST_UPDATE);
     int cloudUserId = user.get(CloudDesktopUser.CLOUD_USER_ID);
@@ -769,6 +838,10 @@ public class CloudService {
   }
 
   public void deleteCloudAccount(final GlobRepository repository, final UnsubscriptionCallback callback) {
+    if (isDisabled("deleteCloudAccount")) {
+      callback.processError(disabledError());
+      return;
+    }
     Log.debug("[Cloud] deleteCloudAccount");
     Thread thread = new Thread(new Runnable() {
       public void run() {

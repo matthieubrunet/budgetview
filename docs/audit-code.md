@@ -35,14 +35,20 @@ Il faut mesurer (étapes 1 et 2), puis interroger l'historique git (étape 4).
 
 Faire l'inventaire sans rien modifier, puis supprimer.
 
-- [ ] **1a. Code derrière `Application.isServerEnabled()`** : licences, cloud, mobile,
+- [x] **1a. Code derrière `Application.isServerEnabled()`** : licences, cloud, mobile,
   vérification de version ([perimetre-local.md](perimetre-local.md)). Il est mort par
   construction, puisque le serveur ne répond plus. Lister les classes qui ne servent que là
   (`client/`, `mobile/`, `session/`…). C'est le plus gros gisement et le moins risqué.
   Inventaire fait le 2026-11-16 (script [audit/reach.py](audit/reach.py)), voir [1a, inventaire](#1a-inventaire) plus bas.
-  Lots 1 à 5 supprimés le 2026-11-16 ; reste la synchro Budgea (1b) et `ServerMailingService`.
-- [ ] **1b. Synchro bancaire Budgea** (`budgea/`, `bank/`, `io/budgea`) : vérifier si elle
+  Lots 1 à 6 supprimés le 2026-11-16.
+- [x] **1b. Synchro bancaire Budgea** (`budgea/`, `bank/`, `io/budgea`) : vérifier si elle
   marche encore sans le serveur. Sinon, décider de la couper, voire de la supprimer.
+  Ne peut pas marcher : jeton et relevés passaient par `register.budgetview.fr`, muet, et Budgea est arrêté
+  depuis 2018.
+  Décision de Matthieu (2026-11-16) : **désactivée, code gardé**, car un agrégateur pourra peut-être resservir.
+  Toutes les méthodes réseau de `CloudService` passent désormais par l'interrupteur (`isDisabled`), et les
+  deux actions cloud du menu de dev n'apparaissent qu'avec lui ([perimetre-local.md](perimetre-local.md)).
+  `bank/` n'en fait pas partie : ce sont les plugins de banque de l'import de fichiers (`BankPluginService`).
 - [ ] **1c. Couverture JaCoCo de la suite fonctionnelle** : ajouter un profil Maven, lancer
   `mvn test`, lister les classes à 0 %.
 - [ ] **1d. Couverture JaCoCo en usage réel** : agent JaCoCo dans `run-dev.sh` (option), quelques
@@ -201,6 +207,10 @@ classes que plus rien n'appelle (`AddOnsView`, `AddOnsSelector`, `BankEntityEdit
   compte de démo, changement de langue, rien d'anormal.
   Reste après ce lot la synchro Budgea (1b) et le deuxième cercle : `SendStackTracesAction` →
   `ServerMailingService`.
+- [x] 6. `ServerMailingService` (2026-11-16), avec `ConnectionStatus`, qu'il était seul à appeler. Son unique
+  client, l'action « surveillance des threads » du menu de dev, écrivait déjà son relevé dans le log avant de
+  l'envoyer : elle est gardée sous le nom `DumpStackTracesAction`, sans l'envoi. Les constantes mail de
+  `LicenseConstants` restent, `bv_server` s'en sert.
 
 Pendant ces suppressions, compiler dans un worktree séparé (`git worktree add`, puis
 `mvn -o test-compile -pl budgetview/bv_shared,budgetview/bv_desktop`). Cela permet de vérifier pendant
