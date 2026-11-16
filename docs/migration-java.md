@@ -1,8 +1,7 @@
 # Migration de Java 8 vers un Java récent
 
-État au 2026-11-16 : analyse faite, essai d'exécution sous Java 17 réussi, étapes 1 à 4 faites (plugins
-Maven en 3.0.x, shrinker supprimé, uispec4j porté, hooks Mac sur `java.awt.Desktop`). Build et tests tournent sous JDK 8 et sous JDK 17 ;
-la référence reste Zulu 8, le code est toujours compilé en cible 1.8.
+État au 2026-11-16 : étapes 1 à 5 faites. **Le code est compilé en `--release 21` et la référence est
+OpenJDK 21** (Homebrew). Java 8 ne peut plus ni construire ni exécuter l'application. Reste l'étape 6 (FlatLaf).
 
 ## Décision : rester sur la JVM
 
@@ -38,7 +37,7 @@ contributeurs, ou pour repenser le produit.
 |---|---|---|
 | Code de l'application | Presque aucune API interne de Java. Aucune lambda : le code est de style Java 6. | faible |
 | `MacOSXHooks` | `com.apple.eawt` a disparu en Java 9 : plus de menus « À propos », « Préférences » ni « Quitter », plus d'ouverture de fichier par double-clic. **Porté** (2026-11-16) vers `java.awt.Desktop`, voir plus bas. | — |
-| Plugins Maven | **Fait** (2026-11-15) : tous en 3.0.x. `<release>` attendra la compilation sous Java 9+ : l'option n'existe qu'à partir de compiler 3.6 et d'un JDK 9. | — |
+| Plugins Maven | **Fait** (2026-11-15) : tous en 3.0.x ; compiler en 3.13.0 avec `<release>21</release>` depuis le 2026-11-16. | — |
 | Shrinker | Lit les `.class` avec ASM 3.1 (2007), qui ne connaît pas `invokedynamic`. Ça marche aujourd'hui faute de lambdas, mais une compilation pour Java 9+ en met dans chaque concaténation de chaînes. Passer à ASM 9 (l'API a changé : `MethodAdapter` n'existe plus) ou supprimer le shrinker, qui n'a plus d'intérêt avec `jpackage`. **Supprimé** (2026-11-15), voir plus bas. | — |
 | JGoodies Looks 2.2.0 | Thème Windows/Linux de 2008, avec des classes du projet dans le paquet de JGoodies. Fonctionnera probablement, à vérifier à l'écran. | à tester |
 | `SecurityManager` de `FunctionalTestCase` | Il fallait un drapeau en Java 17-23, et il est désactivé pour de bon en Java 24. **Remplacé** (2026-11-16) par un point de sortie unique, `AppExit`, voir plus bas. | — |
@@ -55,10 +54,41 @@ N'empêchent pas la migration : log4j 1.2 (fin de vie, sans conséquence en loca
    Java récent : compilation, exécution, tests), plutôt que l'option A (exécuter sur Java 21, mais
    compiler et tester sous Zulu 8).
 4. ~~Hooks Mac vers `java.awt.Desktop`, avec remise de `apple.laf.useScreenMenuBar`.~~ Fait.
-5. Passage effectif : ~~stabiliser `PrintTest` sous 17~~ (fait), ~~remplacer le `SecurityManager` de `FunctionalTestCase`~~
-   (fait), décider des formats CLDR, installer un JDK 21, compiler en `--release 21`
-   (compiler ≥ 3.6) et faire de ce JDK la référence.
+5. ~~Passage effectif : stabiliser `PrintTest`, remplacer le `SecurityManager`, décider des formats CLDR,
+   installer un JDK 21, compiler en `--release 21`, en faire la référence.~~ Fait (2026-11-16), voir plus bas.
 6. Ensuite seulement : FlatLaf.
+
+## Passage à Java 21 (2026-11-16)
+
+- **JDK** : `brew install openjdk@21` (keg-only, sans sudo), dans
+  `/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`. Version installée : 21.0.13.
+- **Compilation** : `maven-compiler-plugin` 3.13.0 et `<release>21</release>` dans les 8 `pom.xml` du
+  réacteur. Aucun module n'hérite de la racine : chacun porte son bloc, et saxstack n'en avait pas (défaut de
+  Maven). Bytecode en version 65.
+- **uispec4j garde `-source 8 -target 8`** : `--release` interdit les `--add-exports` vers les modules du JDK,
+  alors qu'uispec4j sous-classe `sun.awt.SunToolkit`. Il se construit sous JDK 21 comme avant. Le réacteur, lui,
+  n'importe aucune API interne (`sun.*`, `com.apple.*` : vérifié par recherche, tout passe par réflexion).
+- **Avertissements** « marked for removal » dans l'application : 4 `finalize()` (`TextFilterPanel`,
+  `HyperlinkTableColumn`, et dans globs `FillPainter`, `GradientPainter`, `ReplicationGlobRepository`), des
+  `new Integer/Long/Double(...)`. Sans effet en Java 21 ; `finalize` est à remplacer avant qu'il ne disparaisse.
+- **Formats CLDR acceptés** : pas de `-Djava.locale.providers=COMPAT` (supprimé en Java 23). Aucun test n'y réagit.
+  Relecture du code (2026-11-16), rien ne dépend des formats régionaux de Java :
+  - montants **affichés** sans séparateur de milliers, en `Locale.US` (`AmountFormat`, `Formats` de globs) ;
+  - montants **saisis** (`GlobNumericEditor`, `SplitTransactionDialog`) lus par `Double.parseDouble`, après
+    remplacement de `,` par `.` ;
+  - montants **importés** (CSV, QIF, OFX, synchro) lus par `Amounts.extractAmount`, qui retire tout ce qui
+    n'est ni chiffre, ni signe, ni `,`/`.` : une espace de milliers, insécable ou fine, disparaît ;
+  - dates : motifs fixés, chiffres seulement à l'import ; les deux formats à mois en lettres
+    (`yearMonthFormat`, `LOCAL_TIME_STAMP`) servent à l'affichage, et CLDR n'y change rien en français.
+- **Tests** :
+
+  | Configuration | Résultat |
+  |---|---|
+  | JDK 21, bytecode 1.8 | 1 034 tests, 2 échecs intermittents (`TimeViewPanelUISpecTest…_3`, déjà connu sous 17 ; `SignpostSequenceTest.testSwitchingToTheDemoAccountAndBackPreservesSignposts`, `budgetCardToggle` introuvable alors qu'il est dans l'arbre) ; tous deux verts 3 fois sur 3 à la relance |
+  | JDK 21, `--release 21` | 1 034 tests, tous verts, en ~9 min 30 |
+
+- **Application** : `run-dev.sh` exige désormais un JDK 21 (défaut : celui de Homebrew). Le livrable
+  `target/dist` démarre sous 21, sans exception dans le log.
 
 ## Hooks Mac sur `java.awt.Desktop` (2026-11-16)
 

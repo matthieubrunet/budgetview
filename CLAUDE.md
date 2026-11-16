@@ -62,22 +62,22 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 
 ## Build et tests
 
-**JDK de référence : 8.** Le build et les tests marchent aussi sous JDK 17 depuis le 2026-11-15
-(uispec4j a une variante `java-jdk17`, profils `jdk17` activés d'office à partir de Java 9), mais la
-référence reste Zulu 8 tant que la migration n'est pas finie ([docs/migration-java.md](docs/migration-java.md)).
+**JDK de référence : 21** depuis le 2026-11-16. Le réacteur est compilé en `--release 21` : Java 8 ne peut
+plus ni le construire ni l'exécuter ([docs/migration-java.md](docs/migration-java.md)). Les profils `jdk17`
+(variante `java-jdk17` d'uispec4j, `--add-opens` des tests) s'activent d'office à partir de Java 9.
 - uispec4j sous-classe `sun.awt.SunToolkit` : le jar installé dans `~/.m2` n'est utilisable qu'avec le JDK
   qui l'a construit. **Changer de JDK pour les tests = réinstaller uispec4j avec ce JDK** (étape 1), puis
-  `clean install` du réacteur : des classes compilées par javac 17 en cible 1.8 peuvent appeler des
-  méthodes absentes de Java 8.
+  `clean install` du réacteur. uispec4j reste compilé en `-source 8 -target 8` : `--release` interdirait
+  ses accès à `sun.awt`.
 
-Sur ce poste (Mac ARM), installé le 2026-11-15 :
-- JDK 8 : Zulu 8 (archive Azul, sans sudo) dans `~/Library/Java/JavaVirtualMachines/zulu-8.jdk`.
-  Les casks Homebrew de JDK exigent sudo ; Temurin n'a pas de JDK 8 pour aarch64.
-- Maven 3.10 (`brew install maven`) — fonctionne sous Java 8.
-- `openjdk@17` (Homebrew) : `/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home`.
+Sur ce poste (Mac ARM) :
+- `openjdk@21` (Homebrew, 2026-11-16) : `/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`.
+- Maven 3.10 (`brew install maven`).
+- Anciens JDK, plus nécessaires au build : Zulu 8 (`~/Library/Java/JavaVirtualMachines/zulu-8.jdk`),
+  `openjdk@17` (Homebrew).
 
 ```sh
-export JAVA_HOME=$HOME/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home
+export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
 
 # 1. Une fois : installer uispec4j dans ~/.m2 (retiré du réacteur racine,
 #    mais requis : même -DskipTests résout les dépendances de test de globs et bv_desktop).
@@ -102,7 +102,7 @@ mvn -Pgen-version clean install -DskipTests
 ```
 
 Lancer l'application de dev : **`./run-dev.sh`** (`--build` pour reconstruire le jar avant).
-Le script fixe le JDK 8, met `-DSINGLE_INSTANCE_DISABLED=true` et utilise les données de
+Le script fixe le JDK 21, met `-DSINGLE_INSTANCE_DISABLED=true` et utilise les données de
 `~/.budgetview-dev` (modifiable avec `BV_DEV_DATA`). Il refuse les dossiers de données de
 l'application officielle, y compris celui désigné par son `redirect.txt`, qui est dans Dropbox.
 
@@ -136,11 +136,9 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
   - Le jar de la 5.01 (`/Applications/BudgetView.app/Contents/Resources/app/budgetview_bundle.jar`) est
     obfusqué, avec des noms qui ne diffèrent que par la casse : ne pas l'extraire sur le disque du Mac,
     qui ignore la casse. Le lire avec `zipfile` (Python).
-- Cible Java **1.8** (dernier commit amont : passage en 1.8, désactivation
-  du look & feel Mac qui ne compilait plus faute de `apple.laf.AquaLookAndFeel`).
-  Migration vers un Java récent (analyse, essai sous Java 17, ordre des étapes) : [docs/migration-java.md](docs/migration-java.md).
-- Packaging natif via `jpackage` (commandes dans `README.md`) — `jpackage`
-  n'existe qu'à partir de Java 14 : il faudra un second JDK pour cette étape.
+- Cible Java **21** depuis le 2026-11-16 (l'amont s'était arrêté en 1.8). Migration, étapes et
+  mesures : [docs/migration-java.md](docs/migration-java.md).
+- Packaging natif via `jpackage` (commandes dans `README.md`), fourni par le JDK 21.
 - Tests : JUnit 4, surefire inclut `**/*Test.java` et `**/*Tests.java`.
   Les tests fonctionnels (`src/test/java/com/budgetview/functests`, classes de base
   `FunctionalTestCase` → `LoggedInFunctionalTestCase`) pilotent l'IHM via uispec4j.
