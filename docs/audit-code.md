@@ -182,6 +182,7 @@ classes que plus rien n'appelle (`AddOnsView`, `AddOnsSelector`, `BankEntityEdit
 - [x] 2. données sur le serveur (`6a2b98561`).
 - [x] 3. retours utilisateur et envois (`37f48de6c`). `DisconnectionTip` y est passé, seul `FeedbackDialog` s'en servait.
 - [x] 4a. bandeau « nouvelle version » (`69a9a539f`), avec `LicenseAPI`, qui fait partie du deuxième cercle.
+  Lots 1 à 4a vérifiés aussi dans l'appli (`./run-dev.sh`) par Matthieu le 2026-11-16 : rien d'anormal.
 - [ ] 5. licence et téléchargement du jar : ce n'est pas une simple suppression. `UserConfigService`, la machine
   d'états `userconfig/states` (7 classes) et `LicenseRegistrationTrigger` écrivent `IS_REGISTERED_USER` et
   `LICENSE_ACTIVATION_STATE` dans le modèle, et `ImportFileAction` ouvre `LicenseActivationDialog` quand
