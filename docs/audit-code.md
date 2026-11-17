@@ -71,6 +71,8 @@ Faire l'inventaire sans rien modifier, puis supprimer.
 - [ ] **1e. Code inaccessible depuis `DesktopApp`** : ProGuard en `-dontobfuscate -printusage`
   (ou un outil équivalent), à recouper avec 1c et 1d. Attention aux classes chargées par
   réflexion (globs, splits, i18n), que ces outils signalent à tort comme inutilisées.
+  Inventaire fait le 2026-11-17 (ProGuard 7.6.1, script [audit/usage.sh](audit/usage.sh)), voir
+  [1e, inventaire](#1e-inventaire) plus bas. Lots à arbitrer.
 - [ ] **1f. Ressources orphelines** : fichiers `.splits`, clés `lang_*.properties`, images,
   définitions de `banks/` qui ne sont plus référencés.
 
@@ -340,6 +342,72 @@ ressource ne leur était attachée, et `reach.py` corrigé ne signale aucun orph
   fenêtres de test n'étant pas mises en page (largeur 0), il lui donne une taille provisoire de 400 x 200, puis
   rétablit la sienne (`HistoChart.setBounds` réinitialise ses métriques).
 
+## 1e, inventaire
+
+Fait le 2026-11-17, sans rien modifier.
+
+**Méthode.** `docs/audit/usage.sh` passe le livrable (`target/dist`) à ProGuard 7.6.1 en `-printusage`, sans
+réduire, optimiser ni renommer. Le point d'entrée est `DesktopApp.main`, les règles sont dans
+[audit/proguard.pro](audit/proguard.pro). Les modules du dépôt sont analysés (`budgetview.jar`, `bv_shared`,
+`globs`, `saxstack`, `prevayler`) ; les bibliothèques tierces servent seulement à résoudre les références.
+Règles contre les faux positifs de la réflexion :
+- globs : `GlobTypeLoader` lit les champs `public static` des types et leurs annotations ;
+- splits : chaque classe nommée par un `.splits` (`class="…"`) est gardée avec son constructeur, et
+  `PropertySetter` pose les attributs par les setters publics des composants, des UI et des layouts ;
+- `UIService` et `LayoutService` instancient les classes qu'`ApplicationLAF` enregistre par leur nom ;
+- look & feel (`createUI`), énumérations, sérialisation.
+
+`usage.py` classe ensuite chaque membre isolé selon les occurrences de son nom dans le code principal, les
+tests et `bv_server`. Ce tri est indicatif : un nom courant (`show`, `getKey`) compte comme cité même quand le
+membre est mort. Durée : 15 s.
+
+| Module | Classes entières | Membres isolés |
+|---|---|---|
+| bv_desktop | 56 | 618 |
+| bv_shared | 8 | 106 |
+| globs | 293 | 640 |
+| prevayler | 32 | 86 |
+| saxstack | 34 | 56 |
+
+**Classes.** ProGuard confirme `reach.py` : 31 classes de premier niveau inaccessibles des deux côtés,
+toutes déjà classées en 1c et 1d (outils, démos, Budgea). Il ne s'en écarte que sur 8 classes :
+- 4 sont signalées par ProGuard seul : `client.exceptions.UnableToWrite` (client serveur, gardé),
+  `PicsouLinuxLookAndFeel` (Linux, hors champ), et deux interfaces que `reach.py` voit seulement parce qu'elles
+  sont implémentées, `RealAccountImporter` (son unique méthode, `ImportDialog.importAccounts`, n'a aucun
+  appelant) et `time.selectable.Transformation` ;
+- 4 sont signalées par `reach.py` seul et sont gardées à raison : `RoundButtonUI`, `PicsouButtonUI` et
+  `PicsouWindowsLabelUI`, que les look & feel installent par `createUI`, et `model.LicenseActivationState`,
+  conservé pour les données 5.01.
+
+Les 17 classes internes inutilisées dont la classe englobante sert sont l'apport propre de ProGuard. On y
+trouve les deux stringifiers d'`AccountPositionLabels`, `Account$UserAccountMatcher` et
+`Account$UserSavingAccountMatcher`, les deux écouteurs de survol de `Gui`, et `Http$Post` (gardé).
+
+**Membres isolés de `bv_desktop` et `bv_shared` (724).**
+
+| Groupe | Membres | Lecture |
+|---|---|---|
+| Constantes `static final` cités dans le source | 211 | Faux positifs : `javac` recopie leur valeur, le bytecode ne les cite plus. ProGuard ne peut pas en juger |
+| Groupes gardés (cloud, Budgea, client serveur, Windows, Linux) | 93 | Garder (1b, 1d) |
+| Constructeurs | 59 | Surtout le constructeur implicite de classes à méthodes statiques : rien à gagner. Exceptions dans les lots |
+| Servis par les seuls tests | 29 | Garder : points d'observation des tests (`getSelectionManager`, `waitRepaint`, `setDummyBrowser`…) |
+| Servis par `bv_server` | 2 | Garder (`AppLogger.getLogFile`, `SerializedGlob.setId`) |
+| **Aucune autre occurrence** | 58 | Morts, sauf erreur de lecture : à supprimer par lots |
+| **Nom cité ailleurs** (homonyme ou redéfinition) et **abstraits** | 263 + 8 champs | À lire un par un. Les gisements identifiés sont regroupés ci-dessous |
+
+**Lots proposés.**
+
+| Lot | Contenu | Taille |
+|---|---|---|
+| A. Enregistrement local et version téléchargée | Vestige de la licence (1a, lot 5). La chaîne `localRegister` / `register` / `downloadedVersion` / `setDownloadedVersion` / `localDownload` / `removeLocalUser` / `canRead` / `getUserId` traverse `DataAccess` (et `LocalInfo`), `DataAccessDecorator`, `EncryptToTransportDataAccess`, `DataTransport`, `LocalSessionDataTransport`, `SessionService`, les `SessionState`, `Persistence`, `RootDataManager` et leurs implémentations (`Dummy`, `InMemory`, `Prevayler`, `PRootDataManager`). Ne rien appeler ne veut pas dire ne rien relire : les transactions Prevayler `Register` et `SetDownloadedVersion` restent, avec leur lecture et `executeOn`, car un ancien journal peut en contenir. Seuls partent leurs constructeurs publics et ce qui les émet | ~70 membres |
+| B. Extensions (`AddOn`) | La 6.00 active toutes les extensions : `getName`, `getIcon`, `getDescription`, `activate`, `isEnabled`, `getField` et les 5 `processPostActivation` ne sont plus appelés. Voir ce qui reste utile d'`AddOn` et d'`AddOnService` (`getAddOns` ne sert qu'aux tests) | ~16 membres, peut-être 7 classes |
+| C. Plugins de banque | `BankPlugin.postApply` et `getVersion`, `BankPluginService.add`, `TransactionAnalyzerFactory.Loader.loadBank` : suite de 1c (le chargement des plugins ne fait plus rien) | ~6 membres |
+| D. Partie instance d'`AccountPositionLabels` | La classe sert par ses méthodes statiques ; son constructeur, ses méthodes abstraites, ses 5 champs et ses deux stringifiers internes n'ont plus d'utilisateur depuis la suppression de `SavingsAccountPositionLabels` (1c) | ~15 membres, 2 classes internes |
+| E. Méthodes sans aucune autre occurrence | Les 58 du tableau, dont `TimeViewPanel.goto*`, `OfxWriter.writeLoadOp` et `writeQuery`, les `HistoDiffColors.get*`, `Gui.initHtmlEditor` et `createInvisibleLabel`, `RandomStrings.random*` (seule `randomAlphanumeric` sert), `PRootData.writeV1Info` | 58 membres |
+| F. Divers repérés parmi les homonymes | `main` de démo dans `NotificationFlagUI`, `OnOffToggleUI`, `PlusMinusToggleUI` et `PRootDataManager` (avec son `dump`) ; écouteurs clavier vides de `TimeViewPanel` ; interfaces `RealAccountImporter` et `Transformation` | ~10 membres, 2 classes |
+
+Les chiffres de `globs`, `prevayler` et `saxstack` sont l'entrée des chantiers 2a à 2c, avec ceux de 1c.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -353,3 +421,4 @@ ressource ne leur était attachée, et `reach.py` corrigé ne signale aucun orph
 | 2026-11-16 | 1c, 17 classes supprimées | 1 028 classes de premier niveau (−17), 2 186 `.class` (−40) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,90 Mo (−50 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −917 lignes de Java net, −71 lignes de `.splits`, −37 lignes de langue (3 fichiers) |
 | 2026-11-16 | 1d, 21 classes supprimées | `reach.py` corrigé (classes sans arête). 1 007 classes de premier niveau (−21), 2 162 `.class` (−24) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,87 Mo (−33 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −1 150 lignes de Java (dont la démo `JRoundedPanelTest`) |
 | 2026-11-16 | 1d, tests du dessin | `TimeUtils` et `@Inline` supprimés : 1 004 classes de premier niveau (−3), 2 160 `.class` ; `target/dist` 12,0 Mo, `budgetview.jar` 4,87 Mo ; 1 026 tests verts (−2, ceux de `TimeUtils`), 162 classes, 11 min sous JaCoCo. Classes à 0 % : bv_desktop 46 sur 933, bv_shared 13 sur 32, toutes gardées par décision |
+| 2026-11-17 | 1e, inventaire ProGuard | Rien de modifié. bv_desktop + bv_shared : 64 classes entières inutilisées (31 de premier niveau, 33 internes), dont 4 que `reach.py` ne voyait pas ; 724 membres isolés, dont 58 sans aucune autre occurrence et 211 faux positifs (constantes recopiées). globs 293 classes et 640 membres, prevayler 32 et 86, saxstack 34 et 56. Six lots proposés (A à F), ~175 membres |
