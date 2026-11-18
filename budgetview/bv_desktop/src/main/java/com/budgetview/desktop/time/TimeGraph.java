@@ -122,10 +122,6 @@ public class TimeGraph {
     }
   }
 
-  public int getYearWeigth() {
-    return monthWidth * 12;
-  }
-
   public int getAbsoluteHeight() {
     return totalHeight;
   }

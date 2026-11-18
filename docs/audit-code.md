@@ -68,11 +68,12 @@ Faire l'inventaire sans rien modifier, puis supprimer.
   Fait le 2026-11-16, voir [1d, inventaire](#1d-inventaire) plus bas : 24 classes supprimées, le dessin du
   graphe journalier et de l'impression désormais exécuté par les tests. Les 59 classes encore à 0 % sont
   toutes dans les groupes gardés.
-- [ ] **1e. Code inaccessible depuis `DesktopApp`** : ProGuard en `-dontobfuscate -printusage`
+- [x] **1e. Code inaccessible depuis `DesktopApp`** : ProGuard en `-dontobfuscate -printusage`
   (ou un outil équivalent), à recouper avec 1c et 1d. Attention aux classes chargées par
   réflexion (globs, splits, i18n), que ces outils signalent à tort comme inutilisées.
   Inventaire fait le 2026-11-17 (ProGuard 7.6.1, script [audit/usage.sh](audit/usage.sh)), voir
-  [1e, inventaire](#1e-inventaire) plus bas. Lots à arbitrer.
+  [1e, inventaire](#1e-inventaire) plus bas. Les six lots supprimés le 2026-11-18 : 12 classes de premier niveau
+  et ~1 150 lignes de Java en moins, 1 026 tests verts.
 - [ ] **1f. Ressources orphelines** : fichiers `.splits`, clés `lang_*.properties`, images,
   définitions de `banks/` qui ne sont plus référencés.
 
@@ -406,6 +407,25 @@ trouve les deux stringifiers d'`AccountPositionLabels`, `Account$UserAccountMatc
 | E. Méthodes sans aucune autre occurrence | Les 58 du tableau, dont `TimeViewPanel.goto*`, `OfxWriter.writeLoadOp` et `writeQuery`, les `HistoDiffColors.get*`, `Gui.initHtmlEditor` et `createInvisibleLabel`, `RandomStrings.random*` (seule `randomAlphanumeric` sert), `PRootData.writeV1Info` | 58 membres |
 | F. Divers repérés parmi les homonymes | `main` de démo dans `NotificationFlagUI`, `OnOffToggleUI`, `PlusMinusToggleUI` et `PRootDataManager` (avec son `dump`) ; écouteurs clavier vides de `TimeViewPanel` ; interfaces `RealAccountImporter` et `Transformation` | ~10 membres, 2 classes |
 
+**Bilan des lots** (2026-11-18, un commit par lot, de `62924fc87` à `f250cc45b`).
+
+| Lot | Fait | Écarts par rapport à la proposition |
+|---|---|---|
+| E | 57 membres sur 58, puis ce qu'ils étaient seuls à utiliser : `HelpSource` et les fichiers d'aide embarqués (`help/*/manualDownload.html`), le drapeau `filterOnCurrentMonth` d'`Uncategorized`, les actions de fermeture de `PicsouDialog`, des couleurs lues mais jamais rendues. Ensuite, morts par ricochet : `Month.getLastDay(int)` (lot D) et `TimeGraph.getYearWeigth` (`goto*`) | Gardé : `HistoChartMetrics.labelZoneHeightWithMargin`, appelé par l'appli Android, qui partage `bv_shared` |
+| D | Classe réduite à ses deux méthodes statiques | — |
+| F | Mains de démo des trois UI, `RealAccountImporter`, `Transformation`, écouteurs clavier de `TimeViewPanel` | Gardés : `PRootDataManager.main` et `dump`, que l'outil `persistence.direct.Dump` appelle |
+| C | Seul le plugin par défaut servait : son code passe dans `BankPluginService.apply`, `BankPlugin` et `AbstractBankPlugin` disparaissent | Plus large que prévu (2 classes) |
+| B | `AddOn`, `AddOnService` et les 5 extensions (7 classes), leurs icônes et leurs messages d'activation | Restent le `GlobType` `AddOns` (données), `AddOnListener` et l'action de dev `ToggleAllAddOnsAction` |
+| A | Toute la chaîne. `LocalInfo` et `RepoInfo` ne portent plus que la langue et la version du jar ; le message de connexion, échangé en mémoire, est réduit d'autant | `PRootData` garde et écrit tous ses champs ; `Register` et `SetDownloadedVersion` restent pour la relecture |
+
+**Angle mort de ProGuard.** Il part de `DesktopApp.main` : le code que seuls des outils lancés à part appellent
+(`persistence.direct.Dump`, par exemple) passe pour mort. Seule la compilation l'a révélé. Avant de supprimer un
+`main` ou ce qu'il appelle, chercher ses appelants dans tout le dépôt.
+
+Après les lots, ProGuard ne signale plus qu'un membre sans aucune autre occurrence, gardé pour Android. Les
+autres groupes (homonymes, abstraits, constructeurs) restent à lire au cas par cas ; rien n'y a été repéré
+d'aussi gros que les six lots.
+
 Les chiffres de `globs`, `prevayler` et `saxstack` sont l'entrée des chantiers 2a à 2c, avec ceux de 1c.
 
 ## Journal
@@ -422,3 +442,4 @@ Les chiffres de `globs`, `prevayler` et `saxstack` sont l'entrée des chantiers 
 | 2026-11-16 | 1d, 21 classes supprimées | `reach.py` corrigé (classes sans arête). 1 007 classes de premier niveau (−21), 2 162 `.class` (−24) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,87 Mo (−33 Ko) ; 1 028 tests verts, 163 classes, 9 min ; −1 150 lignes de Java (dont la démo `JRoundedPanelTest`) |
 | 2026-11-16 | 1d, tests du dessin | `TimeUtils` et `@Inline` supprimés : 1 004 classes de premier niveau (−3), 2 160 `.class` ; `target/dist` 12,0 Mo, `budgetview.jar` 4,87 Mo ; 1 026 tests verts (−2, ceux de `TimeUtils`), 162 classes, 11 min sous JaCoCo. Classes à 0 % : bv_desktop 46 sur 933, bv_shared 13 sur 32, toutes gardées par décision |
 | 2026-11-17 | 1e, inventaire ProGuard | Rien de modifié. bv_desktop + bv_shared : 64 classes entières inutilisées (31 de premier niveau, 33 internes), dont 4 que `reach.py` ne voyait pas ; 724 membres isolés, dont 58 sans aucune autre occurrence et 211 faux positifs (constantes recopiées). globs 293 classes et 640 membres, prevayler 32 et 86, saxstack 34 et 56. Six lots proposés (A à F), ~175 membres |
+| 2026-11-18 | 1e, lots A à F | 992 classes de premier niveau (−12), 2 140 `.class` (−20) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,84 Mo (−34 Ko) ; 1 026 tests verts, 162 classes, 9 min ; −1 148 lignes de Java net, −12 lignes de langue (3 fichiers), 2 fichiers d'aide et 5 icônes |

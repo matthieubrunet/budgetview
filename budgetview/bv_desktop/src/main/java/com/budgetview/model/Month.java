@@ -263,15 +263,6 @@ public class Month {
     }
   }
 
-  public static Date getLastDay(int monthId) {
-    synchronized (CALENDAR) {
-      int lastDayNumber = getLastDayNumber(monthId);
-      CALENDAR.clear();
-      CALENDAR.set(toYear(monthId), toMonth(monthId) - 1, lastDayNumber);
-      return CALENDAR.getTime();
-    }
-  }
-
   public static Integer getDay(Integer day, int monthId) {
     int lastDay = getLastDayNumber(monthId);
     if (day == null || day <= 0 || day > lastDay) {
