@@ -30,6 +30,11 @@ Il faut mesurer (étapes 1 et 2), puis interroger l'historique git (étape 4).
   celles venues de la 5.01, qui servent désormais avec la 6.00.
 - Les suppressions qui risquent de toucher l'IHM se vérifient aussi dans l'appli (`./run-dev.sh`),
   pas seulement par les tests.
+- **Tests unitaires** (décidé le 2026-11-18, raisons dans [tests-unitaires.md](tests-unitaires.md)) :
+  ne pas en ajouter pendant l'étape 1, ils feraient passer du code mort pour vivant dans la mesure
+  JaCoCo. Aux étapes 2 à 4, avant de réécrire une classe à comportement constant, écrire d'abord
+  les tests qui figent son comportement actuel, défauts compris. Les corrections de comportement
+  attendent le chantier des tests unitaires, après l'audit.
 
 ## Étape 1 : le code mort, mesuré
 
@@ -127,6 +132,8 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   mêmes lignes.
 - [ ] **5c. Durée** : repérer les classes de test les plus lentes (`target/surefire-reports`) et
   voir si leur coût est justifié.
+- Chantier suivant, à part : compléter les tests unitaires et corriger les défauts d'import relevés
+  par le sondage du 2026-11-18, voir [tests-unitaires.md](tests-unitaires.md).
 - Ne pas toucher aux tests fonctionnels qui couvrent des fonctions encore utilisées : ce sont
   eux qui garantissent les autres chantiers.
 
