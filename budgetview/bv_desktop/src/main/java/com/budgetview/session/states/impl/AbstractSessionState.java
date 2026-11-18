@@ -42,10 +42,6 @@ public abstract class AbstractSessionState implements SessionState {
     defaultSessionService.remove(sessionId);
   }
 
-  public void register(SerializedInput input) {
-    throw new InvalidActionForState("register", getStateName());
-  }
-
   public long getLastAccess() {
     return lastAccess;
   }
@@ -56,10 +52,6 @@ public abstract class AbstractSessionState implements SessionState {
 
   public void deleteUser(SerializedInput input) {
     throw new InvalidActionForState("deleteUser", getStateName());
-  }
-
-  public void localDownload(SerializedInput input) {
-    throw new InvalidActionForState("localDownload", getStateName());
   }
 
   public void setLang(SerializedInput input) {

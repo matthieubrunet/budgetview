@@ -18,11 +18,6 @@ public class InMemoryRootDataManager implements RootDataManager {
     return data.getUser(name);
   }
 
-  public void register(byte[] mail, byte[] signature, String activationCode) {
-    Register register = new Register(mail, signature, activationCode);
-    register.executeOn(data, new Date());
-  }
-
   public Persistence.UserInfo createUserAndHiddenUser(String name, boolean autoLog, boolean isRegisteredUser, byte[] cryptedPassword,
                                           byte[] linkInfo, byte[] cryptedLinkInfo, Integer userId) {
     CreateUserAndHiddenUser user = new CreateUserAndHiddenUser(name, autoLog, isRegisteredUser, cryptedPassword,
@@ -51,9 +46,6 @@ public class InMemoryRootDataManager implements RootDataManager {
     RenameUserAndHiddenUser user = new RenameUserAndHiddenUser(autoLog, isRegisteredUser, newName, newCryptedPassword, newLinkInfo, newCryptedLinkInfo,
                                                                name, linkInfo, cryptedLinkInfo, userId);
     user.executeAndQuery(data, new Date());
-  }
-
-  public void setDownloadedVersion(long version) {
   }
 
   public void setLang(String lang) {

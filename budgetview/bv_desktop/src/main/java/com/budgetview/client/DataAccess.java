@@ -23,10 +23,6 @@ public interface DataAccess {
   boolean initConnection(String name, char[] password, boolean privateComputer)
     throws BadPassword, UserNotRegistered;
 
-  void localRegister(byte[] mail, byte[] signature, String activationCode, long jarVersion);
-
-  void downloadedVersion(long version);
-
   void setLang(String lang);
 
   void applyChanges(ChangeSet changeSet, GlobRepository globRepository);
@@ -84,10 +80,6 @@ public interface DataAccess {
 
   List<UserInfo> getLocalUsers();
 
-  void removeLocalUser(String user);
-
-  boolean canRead(MapOfMaps<String, Integer, SerializedGlob> data);
-
   interface IdUpdater {
     void update(IntegerField field, Integer lastAllocatedId);
   }
@@ -103,12 +95,6 @@ public interface DataAccess {
 
     public boolean initConnection(String name, char[] password, boolean privateComputer) throws BadPassword, UserNotRegistered {
       return true;
-    }
-
-    public void localRegister(byte[] mail, byte[] signature, String activationCode, long jarVersion) {
-    }
-
-    public void downloadedVersion(long version) {
     }
 
     public void setLang(String lang) {
@@ -154,13 +140,6 @@ public interface DataAccess {
       return null;
     }
 
-    public void removeLocalUser(String user) {
-    }
-
-    public boolean canRead(MapOfMaps<String, Integer, SerializedGlob> data) {
-      return false;
-    }
-
     public GlobList getUserData(MutableChangeSet upgradeChangeSetToApply, IdUpdater idUpdater) {
       return GlobList.EMPTY;
     }
@@ -170,49 +149,12 @@ public interface DataAccess {
   };
 
   class LocalInfo {
-    private byte[] repoId;
-    private byte[] mail;
-    private byte[] signature;
-    private String activationCode;
-    private long count;
-    private long downloadVersion;
     private String lang;
     private long jarVersion;
 
-    public LocalInfo(byte[] repoId, byte[] mail, byte[] signature, String activationCode,
-                     long count, long downloadVersion, String lang, long jarVersion) {
-      this.repoId = repoId;
-      this.mail = mail;
-      this.signature = signature;
-      this.activationCode = activationCode;
-      this.count = count;
-      this.downloadVersion = downloadVersion;
+    public LocalInfo(String lang, long jarVersion) {
       this.lang = lang;
       this.jarVersion = jarVersion;
-    }
-
-    public byte[] getRepoId() {
-      return repoId;
-    }
-
-    public byte[] getMail() {
-      return mail;
-    }
-
-    public byte[] getSignature() {
-      return signature;
-    }
-
-    public String getActivationCode() {
-      return activationCode;
-    }
-
-    public long getCount() {
-      return count;
-    }
-
-    public long getDownloadVersion() {
-      return downloadVersion;
     }
 
     public String getLang() {

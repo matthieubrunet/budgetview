@@ -24,11 +24,7 @@ public interface SessionService {
 
   void confirmUser(Long sessionId, SerializedInput input, SerializedOutput output) throws UnknownId, InvalidActionForState;
 
-  void register(Long id, SerializedInput input);
-
   void getUserData(Long sessionId, SerializedInput input, SerializedOutput output) throws UnknownId, InvalidActionForState;
-
-  void getUserId(Long sessionId, SerializedInput input, SerializedOutput output);
 
   void addUserData(Long sessionId, SerializedInput input, SerializedOutput output) throws UnknownId, InvalidActionForState;
 
@@ -41,8 +37,6 @@ public interface SessionService {
   void getLocalUsers(SerializedOutput output);
 
   void renameUser(long sessionId, SerializedInput input, SerializedOutput output);
-
-  void localDownload(Long sessionId, SerializedInput input);
 
   void setLang(Long sessionId, SerializedInput input);
 

@@ -23,8 +23,6 @@ public interface Persistence {
 
   Integer confirmUser(String b64LinkInfo) throws IdentificationFailed;
 
-  void register(byte[] mail, byte[] signature, String activationCode);
-
   void delete(String name, byte[] encryptedLinkInfo, Integer userId);
 
   Glob getUser(String name);
@@ -45,8 +43,6 @@ public interface Persistence {
                      byte[] previousLinkInfo, byte[] previousEncryptedLinkInfo,
                      byte[] linkInfo, byte[] encryptedLinkInfo,
                      Integer previousUserId, SerializedInput input);
-
-  void setDownloadedVersion(long version);
 
   void setLang(String lang);
 

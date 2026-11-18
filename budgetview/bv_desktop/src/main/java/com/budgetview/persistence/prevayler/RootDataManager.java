@@ -10,8 +10,6 @@ public interface RootDataManager {
 
   Glob getUser(String name);
 
-  void register(byte[] mail, byte[] signature, String activationCode);
-
   Persistence.UserInfo createUserAndHiddenUser(String name, boolean autoLog, boolean isRegisteredUser, byte[] cryptedPassword,
                                                byte[] linkInfo, byte[] cryptedLinkInfo, Integer userId);
 
@@ -28,54 +26,15 @@ public interface RootDataManager {
                                 String name, byte[] linkInfo, byte[] cryptedLinkInfo,
                                 Integer userId);
 
-  void setDownloadedVersion(long version);
-
   void setLang(String lang);
 
   static class RepoInfo {
-    private byte[] id;
-    private byte[] mail;
-    private byte[] signature;
-    private String activationCode;
-    private long count;
-    private long downloadedVersion;
     private String lang;
     private long version;
 
-    public RepoInfo(byte[] id, byte[] mail, byte[] signature, String activationCode, long count,
-                    long downloadedVersion, String lang, long version) {
-      this.id = id;
-      this.mail = mail;
-      this.signature = signature;
-      this.activationCode = activationCode;
-      this.count = count;
-      this.downloadedVersion = downloadedVersion;
+    public RepoInfo(String lang, long version) {
       this.lang = lang;
       this.version = version;
-    }
-
-    public byte[] getId() {
-      return id;
-    }
-
-    public byte[] getMail() {
-      return mail;
-    }
-
-    public byte[] getSignature() {
-      return signature;
-    }
-
-    public long getCount() {
-      return count;
-    }
-
-    public String getActivationCode() {
-      return activationCode;
-    }
-
-    public long getDownloadedVersion() {
-      return downloadedVersion;
     }
 
     public String getLang() {

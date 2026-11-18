@@ -23,16 +23,6 @@ public class LocalSessionDataTransport implements DataTransport {
     return byteOutput.getInput();
   }
 
-  public void localRegister(Long sessionId, byte[] privateId, byte[] mail, byte[] signature, String activationCode) {
-    SerializedByteArrayOutput byteOutput = new SerializedByteArrayOutput();
-    SerializedOutput output = byteOutput.getOutput();
-    output.writeBytes(privateId);
-    output.writeBytes(mail);
-    output.writeBytes(signature);
-    output.writeJavaString(activationCode);
-    sessionService.register(sessionId, byteOutput.getInput());
-  }
-
   private SerializedInput getTrueInByteArray(long version) {
     SerializedByteArrayOutput serializedByteArrayOutput = new SerializedByteArrayOutput();
     SerializedOutput output = serializedByteArrayOutput.getOutput();
@@ -57,14 +47,6 @@ public class LocalSessionDataTransport implements DataTransport {
     SerializedByteArrayOutput output = new SerializedByteArrayOutput();
     sessionService.renameUser(sessionId, SerializedInputOutputFactory.init(data), output.getOutput());
     return output.getInput();
-  }
-
-  public void localDownload(Long sessionId, byte[] privateId, long version) {
-    SerializedByteArrayOutput byteOutput = new SerializedByteArrayOutput();
-    SerializedOutput output = byteOutput.getOutput();
-    output.writeBytes(privateId);
-    output.write(version);
-    sessionService.localDownload(sessionId, byteOutput.getInput());
   }
 
   public void setLang(Long sessionId, byte[] privateId, String lang) {
@@ -139,8 +121,5 @@ public class LocalSessionDataTransport implements DataTransport {
     SerializedByteArrayOutput output = new SerializedByteArrayOutput();
     sessionService.getLocalUsers(output.getOutput());
     return output.getInput();
-  }
-
-  public void removeLocalUser(String user) {
   }
 }

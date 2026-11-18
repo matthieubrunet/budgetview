@@ -58,17 +58,11 @@ public class EncryptToTransportDataAccess implements DataAccess {
     SerializedInput response = dataTransport.connect(version);
     try {
       if (response.readBoolean()) {
-        byte[] repoId = response.readBytes();
-        byte[] mail = response.readBytes();
-        byte[] signature = response.readBytes();
-        String activationCode = response.readJavaString();
-        long count = response.readNotNullLong();
-        long downloadVersion = response.readNotNullLong();
         String lang = response.readUtf8String();
         long jarVersion = response.readNotNullLong();
         sessionId = response.readLong();
         privateId = response.readBytes();
-        return new LocalInfo(repoId, mail, signature, activationCode, count, downloadVersion, lang, jarVersion);
+        return new LocalInfo(lang, jarVersion);
       }
       sessionId = response.readLong();
       privateId = response.readBytes();
@@ -255,15 +249,6 @@ public class EncryptToTransportDataAccess implements DataAccess {
     return data;
   }
 
-  public void localRegister(byte[] mail, byte[] signature, String activationCode, long jarVersion) {
-    dataTransport.localRegister(sessionId, privateId, mail, signature, activationCode);
-    dataTransport.localDownload(sessionId, privateId, jarVersion);
-  }
-
-  public void downloadedVersion(long version) {
-    dataTransport.localDownload(sessionId, privateId, version);
-  }
-
   public void setLang(String lang) {
     dataTransport.setLang(sessionId, privateId, lang);
   }
@@ -282,14 +267,6 @@ public class EncryptToTransportDataAccess implements DataAccess {
     }
     input.close();
     return users;
-  }
-
-  public void removeLocalUser(String user) {
-    dataTransport.removeLocalUser(user);
-  }
-
-  public boolean canRead(MapOfMaps<String, Integer, SerializedGlob> data) {
-    return false;
   }
 
   private byte[] generateLinkInfo() {

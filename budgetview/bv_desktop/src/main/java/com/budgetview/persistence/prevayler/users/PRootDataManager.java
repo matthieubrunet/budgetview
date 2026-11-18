@@ -136,10 +136,6 @@ public class PRootDataManager implements RootDataManager {
     }
   }
 
-  public void register(final byte[] mail, final byte[] signature, String activationCode) {
-    prevayler.execute(new Register(mail, signature, activationCode));
-  }
-
   public Persistence.UserInfo createUserAndHiddenUser(String name, boolean autoLog, boolean isRegisteredUser,
                                           byte[] cryptedPassword, byte[] linkInfo,
                                           byte[] cryptedLinkInfo, Integer userId) {
@@ -178,19 +174,6 @@ public class PRootDataManager implements RootDataManager {
     }
     catch (Exception e) {
       throw new UnexpectedApplicationState(pathToPrevaylerDirectory, e);
-    }
-  }
-
-  public void setDownloadedVersion(long version) {
-    try {
-      prevayler.execute(new SetDownloadedVersion(version));
-      prevayler.takeSnapshot();
-    }
-    catch (GlobsException e) {
-      throw e;
-    }
-    catch (Exception e) {
-      throw new UnexpectedApplicationState(e);
     }
   }
 

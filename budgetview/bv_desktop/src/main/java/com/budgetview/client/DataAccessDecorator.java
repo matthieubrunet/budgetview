@@ -46,14 +46,6 @@ public class DataAccessDecorator implements DataAccess {
     return dataAccess.initConnection(name, password, privateComputer);
   }
 
-  public void localRegister(byte[] mail, byte[] signature, String activationCode, long jarVersion) {
-    dataAccess.localRegister(mail, signature, activationCode, jarVersion);
-  }
-
-  public void downloadedVersion(long version) {
-    dataAccess.downloadedVersion(version);
-  }
-
   public void setLang(String lang) {
     dataAccess.setLang(lang);
   }
@@ -72,10 +64,6 @@ public class DataAccessDecorator implements DataAccess {
     }
   }
 
-  public boolean canRead(MapOfMaps<String, Integer, SerializedGlob> data) {
-    return dataAccess.canRead(data);
-  }
-
   public LocalInfo connect(long version) {
     return dataAccess.connect(version);
   }
@@ -90,10 +78,6 @@ public class DataAccessDecorator implements DataAccess {
 
   public List<UserInfo> getLocalUsers() {
     return dataAccess.getLocalUsers();
-  }
-
-  public void removeLocalUser(String user) {
-    dataAccess.removeLocalUser(user);
   }
 
   public GlobList getUserData(MutableChangeSet changeSet, IdUpdater idUpdater) {

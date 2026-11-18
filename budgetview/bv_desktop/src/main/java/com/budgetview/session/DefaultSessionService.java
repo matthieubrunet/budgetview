@@ -43,21 +43,10 @@ public class DefaultSessionService implements SessionService {
     state.confirmUser(input);
   }
 
-  public void register(Long sessionId, SerializedInput input) {
-    SessionState state = sessionStateHandler.getSessionState(sessionId);
-    state.register(input);
-  }
-
   public void getUserData(Long sessionId, SerializedInput input, SerializedOutput output) throws InvalidActionForState {
     SessionState sessionState = sessionStateHandler.getSessionState(sessionId);
     ConnectedState connected = sessionState.connected();
     connected.getUserData(input, output);
-  }
-
-  public void getUserId(Long sessionId, SerializedInput input, SerializedOutput output) {
-    SessionState sessionState = sessionStateHandler.getSessionState(sessionId);
-    ConnectedState connected = sessionState.connected();
-    connected.getUserId(input, output);
   }
 
   public void addUserData(Long sessionId, SerializedInput input, SerializedOutput output) throws InvalidActionForState {
@@ -102,11 +91,6 @@ public class DefaultSessionService implements SessionService {
   public void renameUser(long sessionId, SerializedInput input, SerializedOutput output) {
     SessionState state = sessionStateHandler.getSessionState(sessionId);
     state.connected().renameUser(input, output);
-  }
-
-  public void localDownload(Long sessionId, SerializedInput input) {
-    SessionState state = sessionStateHandler.getSessionState(sessionId);
-    state.localDownload(input);
   }
 
   public void setLang(Long sessionId, SerializedInput input) {

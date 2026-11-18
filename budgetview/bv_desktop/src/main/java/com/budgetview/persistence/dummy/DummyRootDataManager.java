@@ -30,9 +30,6 @@ public class DummyRootDataManager implements RootDataManager {
                               FieldValue.value(User.IS_REGISTERED_USER, true));
   }
 
-  public void register(byte[] mail, byte[] signature, String activationCode) {
-  }
-
   public Persistence.UserInfo createUserAndHiddenUser(String name, boolean autoLog, boolean isRegisteredUser,
                                           byte[] cryptedPassword, byte[] linkInfo, byte[] cryptedLinkInfo,
                                           Integer userId) {
@@ -60,13 +57,10 @@ public class DummyRootDataManager implements RootDataManager {
   public void replaceUserAndHiddenUser(boolean autoLog, boolean isRegisteredUser, String newName, byte[] newCryptedPassword, byte[] newLinkInfo, byte[] newCryptedLinkInfo, String name, byte[] linkInfo, byte[] cryptedLinkInfo, Integer userId) {
   }
 
-  public void setDownloadedVersion(long version) {
-  }
-
   public void setLang(String lang) {
   }
 
   public RepoInfo getAndUpdateAccountInfo(long version) {
-    return new RepoInfo(new byte[0], new byte[0], new byte[0], "", 0, 0, "en", version);
+    return new RepoInfo("en", version);
   }
 }

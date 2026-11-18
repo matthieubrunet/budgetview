@@ -9,6 +9,10 @@ import org.prevayler.Transaction;
 
 import java.util.Date;
 
+/**
+ * Enregistrement de la licence (5.01 et avant). Plus rien ne l'émet : la classe reste pour relire les journaux
+ * Prevayler qui en contiennent.
+ */
 public class Register implements Transaction, CustomSerializable {
   private static final byte V1 = 1;
   private static final byte V2 = 2;
@@ -18,12 +22,6 @@ public class Register implements Transaction, CustomSerializable {
   private String activationCode;
 
   private Register() {
-  }
-
-  public Register(byte[] mail, byte[] signature, String activationCode) {
-    this.mail = mail;
-    this.signature = signature;
-    this.activationCode = activationCode;
   }
 
   public void executeOn(Object prevalentSystem, Date executionTime) {

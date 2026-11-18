@@ -236,7 +236,7 @@ public class PRootData implements CustomSerializable {
 
   public RootDataManager.RepoInfo getRepoInfo() {
     count++;
-    return new RootDataManager.RepoInfo(id, mail, signature, activationCode, count, downloadedVersion, lang, jarVersion);
+    return new RootDataManager.RepoInfo(lang, jarVersion);
   }
 
   public void setRepoId(byte[] repoId) {

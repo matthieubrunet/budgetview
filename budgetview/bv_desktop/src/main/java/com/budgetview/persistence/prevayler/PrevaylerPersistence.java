@@ -51,13 +51,6 @@ public class PrevaylerPersistence implements Persistence {
     return hiddenUser.get(HiddenUser.USER_ID);
   }
 
-  public void register(byte[] mail, byte[] signature, String activationCode) {
-    if (rootDataManager != null){
-      // L'ancien LicenseCheckerThread (supprimé en 6.0.1) pouvait arriver ici après la fermeture.
-      rootDataManager.register(mail, signature, activationCode);
-    }
-  }
-
   public UserInfo createUser(String name, boolean autoLog, boolean isRegisteredUser, byte[] cryptedPassword,
                              byte[] linkInfo, byte[] cryptedLinkInfo) {
     Integer newUserId = rootDataManager.allocateNewUserId(name);
@@ -128,10 +121,6 @@ public class PrevaylerPersistence implements Persistence {
     return newUserId;
   }
 
-  public void setDownloadedVersion(long version) {
-    rootDataManager.setDownloadedVersion(version);
-  }
-
   public void setLang(String lang) {
     rootDataManager.setLang(lang);
   }
@@ -147,12 +136,6 @@ public class PrevaylerPersistence implements Persistence {
   public void connect(SerializedOutput output, long version) {
     RootDataManager.RepoInfo accountInfo = rootDataManager.getAndUpdateAccountInfo(version);
     output.write(true);
-    output.writeBytes(accountInfo.getId());
-    output.writeBytes(accountInfo.getMail());
-    output.writeBytes(accountInfo.getSignature());
-    output.writeJavaString(accountInfo.getActivationCode());
-    output.write(accountInfo.getCount());
-    output.write(accountInfo.getDownloadedVersion());
     output.writeUtf8String(accountInfo.getLang());
     output.write(accountInfo.getVersion());
   }

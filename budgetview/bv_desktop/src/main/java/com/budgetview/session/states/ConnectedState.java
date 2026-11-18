@@ -8,15 +8,11 @@ public interface ConnectedState extends SessionState {
 
   void updateData(SerializedInput transactionsInput, SerializedOutput output);
 
-  void getUserId(SerializedInput input, SerializedOutput output);
-
   void takeSnapshot(SerializedInput input);
 
   void restore(SerializedInput input, SerializedOutput output);
 
   void renameUser(SerializedInput input, SerializedOutput output);
-
-  void localDownload(SerializedInput input);
 
   void getSnapshotInfos(SerializedInput input, SerializedOutput output);
 

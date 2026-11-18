@@ -33,12 +33,6 @@ public class DefaultConnectedState extends AbstractSessionState implements Conne
     persistence.updateData(input, output, userId);
   }
 
-  public void getUserId(SerializedInput input, SerializedOutput output) {
-    lastAccess();
-    checkPrivateId(input);
-    output.writeInteger(userId);
-  }
-
   public void takeSnapshot(SerializedInput input) {
     lastAccess();
     checkPrivateId(input);
@@ -99,25 +93,12 @@ public class DefaultConnectedState extends AbstractSessionState implements Conne
       output.writeBoolean(Boolean.FALSE);
     }
   }
-  
-  public void localDownload(SerializedInput input) {
-    lastAccess();
-    checkPrivateId(input);
-    long version = input.readNotNullLong();
-    persistence.setDownloadedVersion(version);
-  }
 
   public void setLang(SerializedInput input) {
     lastAccess();
     checkPrivateId(input);
     String lang = input.readUtf8String();
     persistence.setLang(lang);
-  }
-
-  public void register(SerializedInput input) {
-    lastAccess();
-    checkPrivateId(input);
-    persistence.register(input.readBytes(), input.readBytes(), input.readJavaString());
   }
 
   public String getStateName() {

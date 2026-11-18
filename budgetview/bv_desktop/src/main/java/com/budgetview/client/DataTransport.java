@@ -7,8 +7,6 @@ public interface DataTransport {
 
   SerializedInput connect(long version) throws BadConnection;
 
-  void localRegister(Long sessionId, byte[] privateId, byte[] mail, byte[] signature, String activationCode);
-
   SerializedInput createUser(Long sessionId, byte[] bytes) throws UserAlreadyExists, IdentificationFailed, BadConnection;
 
   SerializedInput identifyUser(Long sessionId, byte[] data) throws BadConnection, BadPassword,
@@ -30,13 +28,9 @@ public interface DataTransport {
 
   SerializedInput getLocalUsers();
 
-  void removeLocalUser(String user);
-
   SerializedInput deleteUser(Long sessionId, byte[] bytes);
 
   SerializedInput rename(Long sessionId, byte[] bytes);
-
-  void localDownload(Long sessionId, byte[] privateId, long version);
 
   SerializedInput getSnapshotInfos(Long sessionId, byte[] bytes);
 

@@ -9,13 +9,13 @@ import org.prevayler.Transaction;
 
 import java.util.Date;
 
+/**
+ * Version du jar téléchargé (5.01 et avant). Plus rien ne l'émet : la classe reste pour relire les journaux
+ * Prevayler qui en contiennent.
+ */
 public class SetDownloadedVersion implements Transaction, CustomSerializable {
   private long version;
   private static final String TRANSACTION_DV = "DV";
-
-  public SetDownloadedVersion(long version) {
-    this.version = version;
-  }
 
   public SetDownloadedVersion() {
   }
