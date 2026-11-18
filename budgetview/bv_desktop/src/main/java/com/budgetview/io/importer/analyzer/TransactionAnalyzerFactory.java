@@ -1,6 +1,5 @@
 package com.budgetview.io.importer.analyzer;
 
-import com.budgetview.bank.BankPluginService;
 import com.budgetview.model.BankEntity;
 import com.budgetview.model.PreTransactionTypeMatcher;
 import com.budgetview.model.TransactionType;
@@ -44,17 +43,12 @@ public class TransactionAnalyzerFactory {
 
   public interface Loader {
     InputStream load(String file);
-
-    void loadBank(BankPluginService bankPluginService);
   }
 
   synchronized public void load(final ClassLoader loader, Long version, final GlobRepository repository, Directory directory) {
     load(new Loader() {
       public InputStream load(String file) {
         return loader.getResourceAsStream(file);
-      }
-
-      public void loadBank(BankPluginService bankPluginService) {
       }
     }, version, repository, directory);
   }

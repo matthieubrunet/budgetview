@@ -238,12 +238,8 @@ public class ImportSession {
         load = false;
       }
 
-      // Report du solde du fichier sur le compte (LAST_IMPORT_POSITION) et regles propres a chaque
-      // banque (La Poste, cartes a debit differe...). Appel retire par erreur en 2016 (a05fe274b).
-      BankPluginService bankPluginService = directory.get(BankPluginService.class);
-      GlobList transactions = localRepository.getAll(ImportedTransaction.TYPE);
-      bankPluginService.apply(currentlySelectedAccount, currentImportedAccount, transactions, referenceRepository,
-                              localRepository, importChangeSet);
+      // Report du solde du fichier sur le compte (LAST_IMPORT_POSITION). Appel retire par erreur en 2016 (a05fe274b).
+      directory.get(BankPluginService.class).apply(currentlySelectedAccount, currentImportedAccount, localRepository);
 
       GlobList allNewTransactions = convertImportedTransaction(selectedDateFormat, currentlySelectedAccount.get(Account.ID));
       boolean shouldImportSeries = shouldImportSeries();
