@@ -79,10 +79,11 @@ Faire l'inventaire sans rien modifier, puis supprimer.
   Inventaire fait le 2026-11-17 (ProGuard 7.6.1, script [audit/usage.sh](audit/usage.sh)), voir
   [1e, inventaire](#1e-inventaire) plus bas. Les six lots supprimés le 2026-11-18 : 12 classes de premier niveau
   et ~1 150 lignes de Java en moins, 1 026 tests verts.
-- [ ] **1f. Ressources orphelines** : fichiers `.splits`, clés `lang_*.properties`, images,
+- [x] **1f. Ressources orphelines** : fichiers `.splits`, clés `lang_*.properties`, images,
   définitions de `banks/` qui ne sont plus référencés.
   Inventaire fait le 2026-11-18 (script [audit/resources.py](audit/resources.py)), voir
-  [1f, inventaire](#1f-inventaire) plus bas. Quatre lots proposés, rien de supprimé.
+  [1f, inventaire](#1f-inventaire) plus bas. Les quatre lots supprimés le 2026-11-18 : 63 images,
+  12 `.splits`, 142 clés de langue, 5 fichiers divers.
 
 ## Étape 2 : les frameworks forkés
 
@@ -491,6 +492,16 @@ dépôt (`bv_server`, site, scripts) : seuls des homonymes ou des pages du site 
 Les lots A, B et D ne touchent pas le Java ; C non plus, mais chaque clé retirée sera recherchée encore une
 fois avant suppression. Vérification : build, suite complète, et ouverture des écrans principaux dans l'appli.
 
+**Suppression** (2026-11-18), dans l'ordre A, B, D, C, un commit par lot :
+- Relancer `resources.py` après le lot B : les `.splits` retirés étaient seuls à citer 11 clés
+  (`synchro.ofx.*`, `synchro.userAndPassword.*`…) et 2 icônes (`security_lock*`), versées au lot C.
+- Chaque clé a été recherchée une dernière fois sous les formes `"clé` et `$clé` dans tout le dépôt
+  (`bv_server` compris). Seul résultat : `account.updateMode`, qui ne sert que de préfixe
+  (`"account.updateMode." + name`). Retrait par un petit script qui suit les lignes de continuation,
+  puis contrôle par `java.util.Properties` : seules les clés visées ont disparu, aucune autre valeur n'a changé.
+- Piège : construire avec `clean` après une suppression de ressource. Sinon le fichier reste dans
+  `target/classes` et la suite passe sans rien vérifier.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -507,3 +518,4 @@ fois avant suppression. Vérification : build, suite complète, et ouverture des
 | 2026-11-17 | 1e, inventaire ProGuard | Rien de modifié. bv_desktop + bv_shared : 64 classes entières inutilisées (31 de premier niveau, 33 internes), dont 4 que `reach.py` ne voyait pas ; 724 membres isolés, dont 58 sans aucune autre occurrence et 211 faux positifs (constantes recopiées). globs 293 classes et 640 membres, prevayler 32 et 86, saxstack 34 et 56. Six lots proposés (A à F), ~175 membres |
 | 2026-11-18 | 1e, lots A à F | 992 classes de premier niveau (−12), 2 140 `.class` (−20) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,84 Mo (−34 Ko) ; 1 026 tests verts, 162 classes, 9 min ; −1 148 lignes de Java net, −12 lignes de langue (3 fichiers), 2 fichiers d'aide et 5 icônes |
 | 2026-11-18 | 1f, inventaire | Rien de modifié. Orphelins : 61 images sur 164 (332 Ko), 12 `.splits` sur 133 (314 lignes), 131 clés de langue sur 1 486, 1 définition de banque, 4 fichiers divers (124 Ko avec la banque). 330 clés à préfixe dynamique non tranchées. Un défaut de continuation dans `lang_en.properties`. Quatre lots proposés (A à D) |
+| 2026-11-18 | 1f, lots A à D | Pas de Java touché : 992 classes de premier niveau, 2 140 `.class` ; `target/dist` 12 Mo, `budgetview.jar` 4,55 Mo (−290 Ko) ; 1 026 tests verts à chaque lot, 162 classes, 9 à 21 min (durée très variable d'une suite à l'autre, sans échec). 63 images (338 Ko), 12 `.splits` (314 lignes), 142 clés de langue (−428 lignes, 3 fichiers), 5 fichiers divers (124 Ko) |
