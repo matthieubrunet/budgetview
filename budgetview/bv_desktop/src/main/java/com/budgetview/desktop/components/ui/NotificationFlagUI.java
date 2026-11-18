@@ -1,9 +1,5 @@
 package com.budgetview.desktop.components.ui;
 
-import org.globsframework.gui.splits.layout.Anchor;
-import org.globsframework.gui.splits.layout.Fill;
-import org.globsframework.gui.splits.layout.GridBagBuilder;
-import org.globsframework.gui.splits.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -120,15 +116,5 @@ public class NotificationFlagUI extends BasicButtonUI {
 
   public void setBalloonShadowColor(Color balloonShadowColor) {
     this.balloonShadowColor = balloonShadowColor;
-  }
-
-  public static void main(String[] args) {
-    JButton button = new JButton();
-    button.setText("6");
-    button.setUI(new NotificationFlagUI());
-
-    GuiUtils.showCentered(GridBagBuilder.init()
-                            .add(button, 0, 0, 1, 1, 1, 1, Fill.NONE, Anchor.CENTER)
-                            .getPanel());
   }
 }

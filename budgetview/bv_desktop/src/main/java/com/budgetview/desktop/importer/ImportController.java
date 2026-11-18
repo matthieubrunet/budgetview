@@ -2,7 +2,6 @@ package com.budgetview.desktop.importer;
 
 import com.budgetview.desktop.cloud.CloudService;
 import com.budgetview.desktop.description.stringifiers.RealAccountComparator;
-import com.budgetview.desktop.importer.components.RealAccountImporter;
 import com.budgetview.desktop.importer.utils.InvalidFileFormat;
 import com.budgetview.desktop.startup.components.AutoCategorizationFunctor;
 import com.budgetview.desktop.startup.components.OpenRequestManager;
@@ -38,7 +37,7 @@ import java.util.*;
 
 import static org.globsframework.model.FieldValue.value;
 
-public class ImportController implements RealAccountImporter, Disposable {
+public class ImportController implements Disposable {
 
   private GlobRepository repository;
   private LocalGlobRepository localRepository;

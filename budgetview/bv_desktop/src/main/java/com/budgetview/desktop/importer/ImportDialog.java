@@ -4,7 +4,6 @@ import com.budgetview.desktop.accounts.AccountPositionEditionDialog;
 import com.budgetview.desktop.components.PicsouFrame;
 import com.budgetview.desktop.components.dialogs.MessageAndDetailsDialog;
 import com.budgetview.desktop.components.dialogs.PicsouDialog;
-import com.budgetview.desktop.importer.components.RealAccountImporter;
 import com.budgetview.desktop.importer.series.ImportSeriesDialog;
 import com.budgetview.desktop.importer.series.SeriesImporter;
 import com.budgetview.desktop.importer.steps.*;
@@ -18,7 +17,6 @@ import org.globsframework.gui.splits.utils.Disposable;
 import org.globsframework.gui.splits.utils.DisposableGroup;
 import org.globsframework.gui.splits.utils.GuiUtils;
 import org.globsframework.model.Glob;
-import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.Key;
 import org.globsframework.model.repository.LocalGlobRepository;
@@ -36,9 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.globsframework.model.utils.GlobMatchers.fieldIn;
 
-public class ImportDialog implements RealAccountImporter, Disposable, ImportDisplay {
+public class ImportDialog implements Disposable, ImportDisplay {
   private GlobRepository parentRepository;
   private Directory parentDirectory;
   private LocalGlobRepository localRepository;
@@ -155,10 +152,6 @@ public class ImportDialog implements RealAccountImporter, Disposable, ImportDisp
 
   public PicsouDialog getDialog() {
     return dialog;
-  }
-
-  public void importAccounts(GlobList realAccounts) {
-    controller.importAccounts(realAccounts);
   }
 
   public void preselectFiles(List<File> files) {

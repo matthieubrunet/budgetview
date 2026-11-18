@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.Stack;
 
-public class TransformationAdapter implements Transformation {
+public class TransformationAdapter {
   private AffineTransform transform = new AffineTransform();
   private Graphics2D graphics2D;
   private Stack<AffineTransform> graphicsTransforms = new Stack<AffineTransform>();
