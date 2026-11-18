@@ -148,6 +148,21 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
   - macOS empêche de passer l'appli Java au premier plan depuis un script (ni `AXRaise`, ni
     `NSRunningApplication.activate`) : un vrai clic doit être fait par Matthieu.
   - L'application redirige `System.out` vers son log : un harnais lancé dans sa JVM y écrit aussi.
+- Consulter les données d'un dossier (`<data.path>/data`) sans passer par l'IHM (vérifié le 2026-11-18) :
+  - Toujours travailler sur une **copie** (`cp -R`) : l'outil ci-dessous ouvre Prevayler en écriture, et
+    l'appli qui tourne écrit dans les mêmes journaux.
+  - Disposition : `users/` (liste des utilisateurs) et un dossier par utilisateur, nommé par son identifiant
+    numérique, avec des paires `N.snapshot` / `N.journal`. Le journal le plus récemment modifié désigne le
+    compte où l'on vient de travailler.
+  - Utilisateurs : `java -cp target/dist/budgetview.jar com.budgetview.persistence.direct.Dump <copie>/data`
+    donne noms et `autoLog`. Le compte sans mot de passe s'appelle `autologUser`, mot de passe identique au nom.
+    Le lien nom → identifiant de dossier est chiffré : le déduire des dates de création des dossiers.
+  - Contenu : chiffré par le mot de passe de l'utilisateur, illisible sans lui. Seuls les **noms de types
+    globs** sont en clair dans journaux et snapshots :
+    `LC_ALL=C grep -a -o -E "[a-zA-Z]{4,30}" N.journal | sort | uniq -c` montre quels types ont été écrits
+    (ex. `accountPositionError` après un import dont le solde diffère). Le décodeur de journal de `Dump`
+    (`dumpJournal`, code mort) ne correspond pas au format de ces fichiers.
+  - Pour voir des valeurs : capture de la fenêtre (ci-dessus), ou demander le mot de passe du compte de test.
   - Le jar de la 5.01 (`/Applications/BudgetView.app/Contents/Resources/app/budgetview_bundle.jar`) est
     obfusqué, avec des noms qui ne diffèrent que par la casse : ne pas l'extraire sur le disque du Mac,
     qui ignore la casse. Le lire avec `zipfile` (Python).
@@ -235,6 +250,8 @@ qui prend globs dans `~/.m2`.
 - Simplification du code ancien (code mort, frameworks forkés, ce que Java 21 fournit, contournements,
   tests) : plan découpé en petits chantiers à cocher dans [docs/audit-code.md](docs/audit-code.md).
   Y cocher chaque chantier terminé et en noter les chiffres dans son journal.
+- Pistes d'amélioration relevées à l'usage (ergonomie, fonctions) : les noter dans
+  [docs/idees-ameliorations.md](docs/idees-ameliorations.md), sans les traiter avant la fin de l'audit.
 
 ## Points d'attention
 

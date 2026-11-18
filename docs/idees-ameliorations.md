@@ -1,0 +1,36 @@
+# Idées d'améliorations
+
+Pistes relevées à l'usage, **à reprendre une fois l'audit du code terminé** ([audit-code.md](audit-code.md)).
+Rien ici n'est décidé ni planifié : on note pour ne pas perdre, on triera ensuite.
+
+Pour chaque piste : ce qui a été constaté (avec la date), pourquoi c'est gênant, et où regarder dans le code.
+Un défaut avéré qui bloque l'usage ne va pas ici : il se corrige tout de suite.
+
+## Import
+
+### Écart de solde après un import : signalement trop discret
+
+- **Constaté le 2026-11-18** (6.0.1, compte de test) : compte contenant des opérations jusqu'en juin, puis
+  import d'un fichier d'octobre. Il manque donc des opérations entre les deux, et le solde calculé diffère
+  du solde du fichier. L'import se termine sans aucun message ; seule une bulle jaune « 1 » apparaît dans la
+  barre latérale gauche. Elle est passée inaperçue.
+- **Comportement actuel, conforme au code** :
+  - le solde affiché d'un compte existant est toujours le solde calculé (ouverture + opérations) ; le solde
+    du fichier n'est appliqué qu'à la création du compte ;
+  - l'écart crée un `AccountPositionError` (`PositionTrigger.AccountUpdate.updateAccount`), affiché comme
+    notification (`AccountPositionNotification`, texte `messages.account.position.error.msg`) ;
+  - aucune comparaison si le fichier n'a pas de solde (QIF, CSV), si la banque est marquée
+    `invalidPosition` (Crédit Mutuel, Barclays), ou si le solde du fichier n'est pas daté après la dernière
+    opération du compte (`BankPluginService`).
+- **Piste** : avertir à la dernière étape de l'import, avec les deux soldes et la période sans opérations,
+  et proposer d'importer le fichier manquant. À voir aussi : rappeler l'écart à côté du solde du compte
+  tant qu'il n'est pas résolu.
+
+## À vérifier
+
+### Interface en anglais sur le compte de test
+
+- **Constaté le 2026-11-18** : la session `run-dev.sh` du compte `Test` s'affiche en anglais (« Budget »,
+  « Income », « Add an account »), alors que la 6.00 force le français au démarrage
+  (`Application.LANG_PROPERTY`, `fr` par défaut). Cause non cherchée : préférence de l'utilisateur,
+  propriété passée au lancement, ou défaut du forçage.
