@@ -81,6 +81,8 @@ Faire l'inventaire sans rien modifier, puis supprimer.
   et ~1 150 lignes de Java en moins, 1 026 tests verts.
 - [ ] **1f. Ressources orphelines** : fichiers `.splits`, clés `lang_*.properties`, images,
   définitions de `banks/` qui ne sont plus référencés.
+  Inventaire fait le 2026-11-18 (script [audit/resources.py](audit/resources.py)), voir
+  [1f, inventaire](#1f-inventaire) plus bas. Quatre lots proposés, rien de supprimé.
 
 ## Étape 2 : les frameworks forkés
 
@@ -435,6 +437,60 @@ d'aussi gros que les six lots.
 
 Les chiffres de `globs`, `prevayler` et `saxstack` sont l'entrée des chantiers 2a à 2c, avec ceux de 1c.
 
+## 1f, inventaire
+
+Fait le 2026-11-18, sans rien modifier.
+
+**Méthode.** `python3 docs/audit/resources.py [--detail]` (8 s) cherche chaque ressource de
+`bv_desktop/src/main/resources` dans le code principal (`bv_desktop`, `bv_shared`, `globs`) et dans les autres
+ressources (`.splits`, `.xml`, `.properties`, `.html`). Les tests ne comptent pas, mais une ressource qu'ils
+sont seuls à citer est signalée à part. Les orphelins ont ensuite été recherchés par `git grep` dans tout le
+dépôt (`bv_server`, site, scripts) : seuls des homonymes ou des pages du site les citent.
+- Images : chemin complet relatif à `images/` (`"cards/budget.png"`, `icon="…"`). Trois chemins sont construits,
+  décrits dans le script : `cards/` + nom de `Card`, `color_themes/` + image de `ColorTheme`,
+  `welcome/<langue>/welcome.png`.
+- `.splits` : chemin `"/layout/…"` cité en Java ou dans un `file="…"` d'inclusion.
+- Clés de langue : littéral Java, `$clé` dans un `.splits`, ou valeur d'un `.xml`. Une clé dont un préfixe
+  (`"categorization.noseries."`) ou un suffixe à frontière de point est un littéral Java est classée
+  « dynamique possible », pas orpheline.
+- Banques : chaque `.xml` de `banks/` doit figurer dans `bankList.txt`, seule porte d'entrée
+  (`TransactionAnalyzerFactory`).
+
+| Ressource | Total | Orphelins | Taille des orphelins |
+|---|---|---|---|
+| Images | 164 | 61 | 332 Ko |
+| `.splits` | 133 | 12 | 314 lignes |
+| Clés de langue (union des 3 fichiers) | 1 486 | 131 | ~130 lignes par fichier |
+| Banques (`.xml`) | 25 | 1 | — |
+| Divers | — | 4 fichiers | 124 Ko avec la banque |
+
+**Ce qui reste, et pourquoi.**
+- Les 80 clés `demo.*` ne sont citées que par `DemoGenerationTest`, qui génère les comptes de démo
+  (profil `gen-demo`) : gardées. Idem pour 8 autres clés que seuls les tests citent, à revoir avec l'étape 5.
+- 330 clés « dynamique possible » : le préfixe existe dans le code, la clé n'est pas forcément atteinte
+  (ex. `categorization.noseries.noaccount` alors que le suffixe vient de `BudgetArea.getName()`). À lire famille par
+  famille si l'on veut aller plus loin ; le gain est faible.
+- `fonts/OpenSans-Apache-License.txt` : jamais lu, mais la licence Apache impose de la livrer avec la police.
+- `demo/demo-*.snapshot` : générés, chargés par un chemin construit.
+
+**Défauts relevés** (corrections hors audit, voir les règles de conduite) :
+- `lang_en.properties`, `categorization.noseries.variable` : la deuxième ligne de continuation n'a pas de `\`.
+  En anglais, le message perd son `</html>` final et `</html>` devient une clé à part.
+- Clés présentes dans une langue et absentes d'une autre : 13 manquent à `lang.properties` (langue par défaut,
+  celle des tests), 8 à `lang_en`, 2 à `lang_fr`. Toutes orphelines ou dynamiques, sauf erreur.
+
+**Lots proposés.**
+
+| Lot | Contenu | Taille |
+|---|---|---|
+| A. Images | Tout le dossier `home/` (16, l'ancienne page d'accueil), `cards/addons.png` (extensions, 1e lot B), les variantes `_rollover`, `_disabled`, `_selected` que plus aucun `.splits` ne nomme, les icônes de synchro (`button_synchro*`, `import_synchro`), `activation_key` (licence), `googleplay` (mobile), `smiley_*`, `help_logo`, `open_website*`… | 61 fichiers, 332 Ko |
+| B. `.splits` | Écrans des connecteurs bancaires (`bank/connection/` : BNP, Banque Postale, SG, OFX, identifiant et mot de passe, autre), `home/actionView`, `analysis/accountAnalysisView`, `accounts/accountEvolutionView`, `accountTypeSelectionPanel`, `chooseOrCreateAccountDialog`, `general/restoreChangePassword` | 12 fichiers, 314 lignes |
+| C. Clés de langue | Les 131 orphelines, dans les 3 fichiers : familles `synchro.*` (connecteurs), `import.*`, `wizard.*`, `monthRange.*`, `savingsView.*`, `navigationView.*`, anciennes séries par défaut (`series.electricity`…, remplacées par `defaultSeries.*`)… Un oubli serait visible : `Lang.get` lève `ItemNotFound` | ~390 lignes |
+| D. Divers | `connectors/bnp/*.js` (scripts du connecteur BNP), `css/jeditorpane.css` (plus cité depuis l'abandon de l'aide intégrée, `8285707c5`, 2015), `banks/uk/uk_banks.xml` (jamais listé dans `bankList.txt` depuis 2016) | 5 fichiers, 124 Ko |
+
+Les lots A, B et D ne touchent pas le Java ; C non plus, mais chaque clé retirée sera recherchée encore une
+fois avant suppression. Vérification : build, suite complète, et ouverture des écrans principaux dans l'appli.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -450,3 +506,4 @@ Les chiffres de `globs`, `prevayler` et `saxstack` sont l'entrée des chantiers 
 | 2026-11-16 | 1d, tests du dessin | `TimeUtils` et `@Inline` supprimés : 1 004 classes de premier niveau (−3), 2 160 `.class` ; `target/dist` 12,0 Mo, `budgetview.jar` 4,87 Mo ; 1 026 tests verts (−2, ceux de `TimeUtils`), 162 classes, 11 min sous JaCoCo. Classes à 0 % : bv_desktop 46 sur 933, bv_shared 13 sur 32, toutes gardées par décision |
 | 2026-11-17 | 1e, inventaire ProGuard | Rien de modifié. bv_desktop + bv_shared : 64 classes entières inutilisées (31 de premier niveau, 33 internes), dont 4 que `reach.py` ne voyait pas ; 724 membres isolés, dont 58 sans aucune autre occurrence et 211 faux positifs (constantes recopiées). globs 293 classes et 640 membres, prevayler 32 et 86, saxstack 34 et 56. Six lots proposés (A à F), ~175 membres |
 | 2026-11-18 | 1e, lots A à F | 992 classes de premier niveau (−12), 2 140 `.class` (−20) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,84 Mo (−34 Ko) ; 1 026 tests verts, 162 classes, 9 min ; −1 148 lignes de Java net, −12 lignes de langue (3 fichiers), 2 fichiers d'aide et 5 icônes |
+| 2026-11-18 | 1f, inventaire | Rien de modifié. Orphelins : 61 images sur 164 (332 Ko), 12 `.splits` sur 133 (314 lignes), 131 clés de langue sur 1 486, 1 définition de banque, 4 fichiers divers (124 Ko avec la banque). 330 clés à préfixe dynamique non tranchées. Un défaut de continuation dans `lang_en.properties`. Quatre lots proposés (A à D) |
