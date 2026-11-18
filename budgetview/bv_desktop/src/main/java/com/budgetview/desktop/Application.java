@@ -3,7 +3,6 @@ package com.budgetview.desktop;
 import com.budgetview.bank.BankPluginService;
 
 import com.budgetview.desktop.accounts.utils.AccountPositionNotificationHandler;
-import com.budgetview.desktop.addons.AddOnService;
 import com.budgetview.desktop.cloud.CloudService;
 import com.budgetview.desktop.components.dialogs.MessageDialog;
 import com.budgetview.desktop.components.dialogs.MessageType;
@@ -324,7 +323,6 @@ public class Application {
     // Retire par erreur en 2016 (03bb7182f) : utilise par ImportSession (position du compte importe).
     wrapper.add(new BankPluginService());
     wrapper.add(PrinterService.class, new DefaultPrinterService());
-    wrapper.add(new AddOnService());
 
     NotificationService notificationService = new NotificationService();
     notificationService.addHandler(new AccountPositionNotificationHandler());

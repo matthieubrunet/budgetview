@@ -2,7 +2,6 @@ package com.budgetview.desktop;
 
 import com.budgetview.client.DataAccess;
 import com.budgetview.desktop.accounts.utils.MonthDay;
-import com.budgetview.desktop.addons.AddOn;
 import com.budgetview.desktop.backup.BackupService;
 import com.budgetview.desktop.browsing.BrowsingService;
 import com.budgetview.desktop.model.DesktopModel;
