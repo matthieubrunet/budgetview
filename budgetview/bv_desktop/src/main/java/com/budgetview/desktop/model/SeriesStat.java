@@ -161,14 +161,6 @@ public class SeriesStat {
     };
   }
 
-  public static GlobMatcher isForAccount(final int accountId) {
-    return new GlobMatcher() {
-      public boolean matches(Glob seriesStat, GlobRepository repository) {
-        return seriesStat != null && equal(accountId, seriesStat.get(SeriesStat.ACCOUNT));
-      }
-    };
-  }
-
   public static GlobMatcher isSeriesForAccount(final int accountId) {
     return new GlobMatcher() {
       public boolean matches(Glob seriesStat, GlobRepository repository) {
@@ -250,13 +242,6 @@ public class SeriesStat {
                equal(seriesStat.get(SeriesStat.TARGET), seriesKey.get(Series.ID));
       }
     };
-  }
-
-  public static GlobList getAllSummariesForSeries(Integer[] selectedMonths, GlobRepository sourceRepository) {
-    return sourceRepository.getAll(SeriesStat.TYPE,
-                                   and(fieldEquals(SeriesStat.ACCOUNT, Account.ALL_SUMMARY_ACCOUNT_ID),
-                                       fieldEquals(SeriesStat.TARGET_TYPE, SeriesType.SERIES.getId()),
-                                       fieldIn(SeriesStat.MONTH, selectedMonths)));
   }
 
 

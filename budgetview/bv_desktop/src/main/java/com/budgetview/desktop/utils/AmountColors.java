@@ -75,10 +75,6 @@ public class AmountColors implements ColorChangeListener {
     return color;
   }
 
-  public Color getNormalColor() {
-    return normalText;
-  }
-
   public Color getTextColor(double diff) {
     return getTextColor(diff, normalText);
   }

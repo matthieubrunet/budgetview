@@ -10,7 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MessageDialog {
-  private final JEditorPane editorPane;
   private PicsouDialog dialog;
   private SplitsBuilder builder;
 
@@ -43,12 +42,6 @@ public class MessageDialog {
     dialog.show();
   }
 
-  public static void showWithButtonMessage(String titleKey, String buttonKey, MessageType type, Window owner, Directory directory,
-                                           String contentKey, String... contentArgs) {
-    MessageDialog dialog = new MessageDialog(titleKey, type, buttonKey, owner, directory, Lang.get(contentKey, contentArgs));
-    dialog.show();
-  }
-
   private MessageDialog(String titleKey, MessageType type, String buttonKey,
                         Window owner, Directory directory,
                         String message) {
@@ -56,18 +49,14 @@ public class MessageDialog {
       .setSource(getClass(), "/layout/utils/messageDialog.splits");
 
     builder.add("title", new JLabel(Lang.get(titleKey)));
-    this.editorPane = new JEditorPane("text/html", message);
-    builder.add("message", this.editorPane);
+    JEditorPane editorPane = new JEditorPane("text/html", message);
+    builder.add("message", editorPane);
 
     builder.add("icon", new JLabel(getIcon(type)));
 
     dialog = PicsouDialog.create(this, owner, directory);
     dialog.addPanelWithButton(builder.<JPanel>load(), new CloseDialogAction(buttonKey, dialog));
     dialog.pack();
-  }
-
-  public void changeMessage(final String msg){
-    editorPane.setText(msg);
   }
 
   private Icon getIcon(MessageType type) {

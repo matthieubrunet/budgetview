@@ -8,8 +8,6 @@ import org.globsframework.model.Glob;
 import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.ReadOnlyGlobRepository;
-import org.globsframework.model.utils.GlobMatcher;
-import org.globsframework.model.utils.GlobMatchers;
 
 import java.util.Set;
 
@@ -56,14 +54,8 @@ public class Uncategorized {
                                  TransactionMatchers.userCreated()));
   }
 
-  public static Level getLevel(Set<Integer> selectedMonths, boolean filterOnCurrentMonth, GlobRepository repository) {
-    GlobMatcher monthFilter =
-      filterOnCurrentMonth ? GlobMatchers.fieldIn(Transaction.MONTH, selectedMonths) : GlobMatchers.ALL;
-    GlobList transactions =
-      repository.getAll(Transaction.TYPE, and(TransactionMatchers.realTransactions(), monthFilter));
-
-//    GlobList transactions =
-//      filterOnCurrentMonth ? getTransactions(selectedMonths, repository) : getTransactions(repository);
+  public static Level getLevel(GlobRepository repository) {
+    GlobList transactions = repository.getAll(Transaction.TYPE, TransactionMatchers.realTransactions());
 
     double total = 0;
     double uncategorized = 0;

@@ -21,7 +21,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PicsouDialog extends JDialog {
@@ -39,7 +38,6 @@ public class PicsouDialog extends JDialog {
   private static int dialogCount = 0;
   private final int dialogId = dialogCount++;
 
-  private List<Action> onCloseActions;
   private JButton okButton;
 
   public static PicsouDialog create(Object creator, Window owner, Directory directory) {
@@ -185,9 +183,6 @@ public class PicsouDialog extends JDialog {
     if (visible && !openRequestIsManaged) {
       requestManager.popCallback();
     }
-    if (!visible) {
-      notifyOnClose();
-    }
   }
 
   private JButton createButton(final Action action) {
@@ -245,14 +240,6 @@ public class PicsouDialog extends JDialog {
     }
   }
 
-  private void notifyOnClose() {
-    if (onCloseActions != null) {
-      for (Action action : onCloseActions) {
-        action.actionPerformed(new ActionEvent(this, 0, "closed"));
-      }
-    }
-  }
-
   protected JRootPane createRootPane() {
     JRootPane rootPane = new JRootPane();
     GuiUtils.addShortcut(rootPane, "ESCAPE", new CloseAction());
@@ -287,13 +274,6 @@ public class PicsouDialog extends JDialog {
         }
       }
     });
-  }
-
-  public void addOnWindowClosedAction(Action action) {
-    if (onCloseActions == null) {
-      onCloseActions = new ArrayList<Action>();
-    }
-    this.onCloseActions.add(action);
   }
 
   private class CloseAction extends AbstractAction {

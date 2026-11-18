@@ -56,10 +56,6 @@ public class SeriesTableMetrics {
     return width;
   }
 
-  public int tableHeight() {
-    return height;
-  }
-
   public int tableTextX(String text, int col, Alignment alignment, boolean inner) {
     int left = tableColumnLeft(col);
     int right = tableColumnLeft(col + 1);

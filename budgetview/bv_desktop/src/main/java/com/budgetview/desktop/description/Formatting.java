@@ -29,13 +29,6 @@ public class Formatting extends AmountFormat {
     return dateFormat;
   }
 
-  public static SimpleDateFormat getYearMonthFormat() {
-    if (yearMonthFormat == null) {
-      updateWithDefaults();
-    }
-    return yearMonthFormat;
-  }
-
   public static SimpleDateFormat getDateAndTimeFormat() {
     if (dateAndTimeFormat == null) {
       updateWithDefaults();

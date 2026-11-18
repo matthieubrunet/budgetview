@@ -1,6 +1,5 @@
 package com.budgetview.model;
 
-import com.budgetview.desktop.accounts.utils.AccountMatchers;
 import com.budgetview.desktop.accounts.utils.MonthDay;
 import com.budgetview.model.util.TypeLoader;
 import com.budgetview.shared.model.AccountType;
@@ -221,10 +220,6 @@ public class Account {
     return account != null && AccountType.SAVINGS.getId().equals(account.get(ACCOUNT_TYPE));
   }
 
-  public static boolean shouldCreateMirrorTransaction(Glob fromAccount, Glob toAccount) {
-    return onlyOneIsImported(fromAccount, toAccount);
-  }
-
   public static boolean areNoneImported(Glob fromAccount, Glob toAccount) {
     if (fromAccount == null && toAccount == null) {
       return false;
@@ -273,11 +268,6 @@ public class Account {
     return 1;
   }
 
-  public static boolean onlyOneIsImported(Glob account1, Glob account2) {
-    return account1 != null && account2 != null &&
-           account1.isTrue(Account.IS_IMPORTED_ACCOUNT) != account2.isTrue(Account.IS_IMPORTED_ACCOUNT);
-  }
-
   public static String getName(String number, boolean isCard) {
     if (isCard) {
       return Lang.get("account.defaultName.card", PicsouUtils.splitCardNumber(number));
@@ -311,11 +301,6 @@ public class Account {
       }
     }
     return new Pair<Integer, Integer>(startMonth, endMonth);
-  }
-
-  public static Integer getDefaultMainAccountId(GlobRepository repository) {
-    Glob first = repository.getAll(Account.TYPE, AccountMatchers.userCreatedMainAccounts()).sort(Account.SEQUENCE).getFirst();
-    return first != null ? first.get(Account.ID) : null;
   }
 
   public static boolean needsTargetAccount(Glob series) {

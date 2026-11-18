@@ -105,30 +105,6 @@ public class PRootData implements CustomSerializable {
     output.write(jarVersion);
   }
 
-  private void writeV1Info(SerializedOutput output) {
-    {
-      output.write(hidenUsers.size());
-      Set<Map.Entry<String, Glob>> entries = hidenUsers.entrySet();
-      for (Map.Entry<String, Glob> entry : entries) {
-        output.writeJavaString(entry.getKey());
-        HiddenUser.write(output, entry.getValue());
-      }
-    }
-    output.writeBytes(id);
-    output.writeBytes(mail);
-    output.write(count);
-    output.writeJavaString(activationCode);
-    output.writeBytes(signature);
-    {
-      output.write(users.size());
-      Set<Map.Entry<String, Glob>> entries = users.entrySet();
-      for (Map.Entry<String, Glob> entry : entries) {
-        output.writeJavaString(entry.getKey());
-        User.write(output, entry.getValue());
-      }
-    }
-  }
-
   private void writeV5Info(SerializedOutput output) {
     {
       output.write(hidenUsers.size());

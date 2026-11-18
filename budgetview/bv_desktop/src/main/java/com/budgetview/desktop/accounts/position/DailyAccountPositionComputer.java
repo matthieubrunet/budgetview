@@ -82,14 +82,6 @@ public class DailyAccountPositionComputer {
     return positionValues;
   }
 
-  public DailyAccountPositionValues getMainValues(List<Integer> monthIdsToShow, int selectedMonthId) {
-    return getDailyValues(monthIdsToShow, selectedMonthId, TransactionMatchers.transactionsForMainAccounts(repository), DaySelection.EMPTY, Transaction.SUMMARY_POSITION);
-  }
-
-  public DailyAccountPositionValues getSavingsValues(List<Integer> monthIdsToShow, int selectedMonthId) {
-    return getDailyValues(monthIdsToShow, selectedMonthId, TransactionMatchers.transactionsForSavingsAccounts(repository), DaySelection.EMPTY, Transaction.SUMMARY_POSITION);
-  }
-
   public DailyAccountPositionValues getDailyValues(List<Integer> monthIdsToShow, int selectedMonthId, GlobMatcher accountMatcher,
                                                    DaySelection daySelection, final DoubleField position) {
 

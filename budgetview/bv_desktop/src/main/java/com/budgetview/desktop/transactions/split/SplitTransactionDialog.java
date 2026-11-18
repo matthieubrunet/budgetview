@@ -57,7 +57,6 @@ import static org.globsframework.gui.views.utils.LabelCustomizers.chain;
 import static org.globsframework.model.FieldValue.value;
 
 public class SplitTransactionDialog {
-  public static final int CATEGORY_COLUMN_INDEX = 0;
   public static final int LABEL_COLUMN_INDEX = 1;
   public static final int NOTE_COLUMN_INDEX = 3;
   public static final int DELETE_SPLIT_COLUMN_INDEX = 4;

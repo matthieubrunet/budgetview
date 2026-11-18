@@ -10,7 +10,6 @@ import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.model.utils.GlobMatchers;
 import org.globsframework.utils.Utils;
 
-import java.util.Date;
 import java.util.SortedSet;
 
 public class AccountMatchers {
@@ -140,15 +139,6 @@ public class AccountMatchers {
           }
         }
         return true;
-      }
-    };
-  }
-
-  public static GlobMatcher accountsNotClosedAsOf(final Date date) {
-    return new GlobMatcher() {
-      public boolean matches(Glob account, GlobRepository repository) {
-        Date endDate = account.get(Account.CLOSED_DATE);
-        return endDate == null || endDate.after(date);
       }
     };
   }

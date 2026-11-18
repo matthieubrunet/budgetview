@@ -515,35 +515,6 @@ public class TimeViewPanel extends JPanel implements MouseListener, MouseMotionL
     timeGraph.getAllSelectableMonth(globs);
   }
 
-  public void keyTyped(KeyEvent e) {
-  }
-
-  public void keyPressed(KeyEvent e) {
-  }
-
-  public void keyReleased(KeyEvent e) {
-  }
-
-  public void gotoFirst() {
-    scrollLeft(timeGraph.getYearWeigth() / 2);
-    repaint();
-  }
-
-  public void gotoLast() {
-    scrollRight(timeGraph.getYearWeigth() / 2);
-    repaint();
-  }
-
-  public void gotoPrevious() {
-    scrollLeft(timeGraph.getMonthWidth());
-    repaint();
-  }
-
-  public void gotoNext() {
-    scrollRight(timeGraph.getMonthWidth());
-    repaint();
-  }
-
   public TimeGraph getTimeGraph() {
     return timeGraph;
   }

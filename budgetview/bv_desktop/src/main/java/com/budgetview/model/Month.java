@@ -32,7 +32,6 @@ public class Month {
 
   public static final String DATE_FORMAT_STRING = "yyyy/MM/dd";
   private static NumberFormat MONTH_FORMAT = new DecimalFormat("00");
-  private static NumberFormat TWO_DIGITS_YEAR_FORMAT = new DecimalFormat("00");
   private static final Calendar CALENDAR = Calendar.getInstance();
 
   public static String toString(int yyyymm) {
@@ -215,12 +214,6 @@ public class Month {
     int month = toMonth(monthId);
     int year = toYear(monthId);
     return Lang.get("month." + toMonth(month) + ".medium") + " " + (year % 100);
-  }
-
-  private static String getTwoDigitsYearLabel(int year) {
-    synchronized (TWO_DIGITS_YEAR_FORMAT){
-      return TWO_DIGITS_YEAR_FORMAT.format(year % 100);
-    }
   }
 
   public static String getOneLetterMonthLabel(Integer month) {

@@ -16,7 +16,6 @@ import org.globsframework.utils.Updatable;
 import org.globsframework.utils.directory.Directory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -26,22 +25,15 @@ public class CategorizationLevel implements ChangeSetListener {
   private GlobRepository repository;
   private double total;
   private double percentage;
-  private Set<Integer> selectedMonths = Collections.emptySet();
-  private boolean filterOnCurrentMonth;
 
   public CategorizationLevel(GlobRepository repository, Directory directory) {
     this.repository = repository;
     this.repository.addChangeListener(this);
     directory.get(SelectionService.class).addListener(new GlobSelectionListener() {
       public void selectionUpdated(GlobSelection selection) {
-        selectedMonths = selection.getAll(Month.TYPE).getValueSet(Month.ID);
         update();
       }
     }, Month.TYPE);
-  }
-
-  public void setFilterOnCurrentMonth() {
-    this.filterOnCurrentMonth = true;
   }
 
   public void addListener(Updatable updatable) {
@@ -72,7 +64,7 @@ public class CategorizationLevel implements ChangeSetListener {
   }
 
   private void update() {
-    Uncategorized.Level level = Uncategorized.getLevel(selectedMonths, filterOnCurrentMonth, repository);
+    Uncategorized.Level level = Uncategorized.getLevel(repository);
     this.total = level.total;
     percentage = total == 0 ? 1 : level.uncategorized / total;
     if (percentage > 0 && percentage < 0.01) {

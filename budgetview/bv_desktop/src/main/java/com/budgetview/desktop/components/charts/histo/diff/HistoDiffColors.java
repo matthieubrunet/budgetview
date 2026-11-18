@@ -54,22 +54,6 @@ public class HistoDiffColors implements ColorChangeListener, Disposable {
     negativeFillColor = colorLocator.get(negativeFillKey);
   }
 
-  public Color getPositiveFillColor() {
-    return positiveFillColor;
-  }
-
-  public Color getPositiveLineColor() {
-    return positiveLineColor;
-  }
-
-  public Color getNegativeFillColor() {
-    return negativeFillColor;
-  }
-
-  public Color getNegativeLineColor() {
-    return negativeLineColor;
-  }
-
   public Color getLineColor(double value, boolean inverted) {
     if (Amounts.isNearZero(value)) {
       return inverted ? negativeLineColor : positiveLineColor;

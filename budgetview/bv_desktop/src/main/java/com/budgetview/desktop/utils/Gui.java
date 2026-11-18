@@ -1,6 +1,5 @@
 package com.budgetview.desktop.utils;
 
-import com.budgetview.desktop.plaf.PicsouMacLookAndFeel;
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.plastic.PicsouWindowsLookAndFeel;
 import org.globsframework.gui.splits.ImageLocator;
@@ -90,10 +89,6 @@ public class Gui {
     }
   }
 
-  public static Color getDefaultTableSelectionBackground() {
-    return selectionBackground;
-  }
-
   public static void configureIconButton(AbstractButton button, String name, Dimension dimension) {
     button.setName(name);
     button.setSize(dimension);
@@ -162,11 +157,6 @@ public class Gui {
     return editor;
   }
 
-  public static void initHtmlEditor(JEditorPane editor) {
-    GuiUtils.initHtmlComponent(editor);
-    GuiUtils.loadCssResource("/css/jeditorpane.css", editor, Gui.class);
-  }
-
   public static void setWaitCursor(JFrame frame) {
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
   }
@@ -199,23 +189,6 @@ public class Gui {
            ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
            ((modifiers & InputEvent.ALT_MASK) == InputEvent.ALT_MASK) ||
            ((modifiers & InputEvent.META_MASK) == InputEvent.META_MASK);
-  }
-
-  public static String printModifiers(int modifiers) {
-    StringBuffer buffer = new StringBuffer();
-    if ((modifiers & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) {
-      buffer.append("ctrl");
-    }
-    if ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) {
-      buffer.append("shift");
-    }
-    if ((modifiers & InputEvent.ALT_MASK) == InputEvent.ALT_MASK) {
-      buffer.append("alt");
-    }
-    if ((modifiers & InputEvent.META_MASK) == InputEvent.META_MASK) {
-      buffer.append("meta");
-    }
-    return buffer.toString();
   }
 
   public static class RolloverColorListener extends MouseAdapter {
@@ -263,12 +236,6 @@ public class Gui {
            ((e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
            ((e.getModifiers() & InputEvent.ALT_MASK) == InputEvent.ALT_MASK) ||
            ((e.getModifiers() & InputEvent.META_MASK) == InputEvent.META_MASK);
-  }
-
-  public static JLabel createInvisibleLabel() {
-    JLabel empty = new JLabel();
-    empty.setVisible(false);
-    return empty;
   }
 
   public static class RolloverMouseMotionListener extends MouseMotionAdapter {

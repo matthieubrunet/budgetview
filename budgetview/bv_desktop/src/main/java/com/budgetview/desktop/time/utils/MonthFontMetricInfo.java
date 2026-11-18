@@ -45,10 +45,6 @@ public class MonthFontMetricInfo {
       return orderedSize[rank];
     }
 
-    public int getMaxWidth() {
-      return orderedSize[0].getWidth();
-    }
-
     public int getMinWidth() {
       return orderedSize[orderedSize.length - 1].getWidth();
     }

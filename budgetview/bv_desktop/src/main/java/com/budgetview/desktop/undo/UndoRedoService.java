@@ -114,11 +114,6 @@ public class UndoRedoService {
     }
   }
 
-  public void cleanUndo() {
-    changesToUndo.clear();
-    notifyListeners();
-  }
-
   public void appendToNextUndo(Change change) throws InvalidState {
     if (changesToUndo.isEmpty()) {
       throw new InvalidState("There is no change to undo in the stack");

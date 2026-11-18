@@ -13,20 +13,8 @@ public class RandomStrings {
     return random(count, false, false);
   }
 
-  public static String randomAscii(int count) {
-    return random(count, 32, 127, false, false);
-  }
-
-  public static String randomAlphabetic(int count) {
-    return random(count, true, false);
-  }
-
   public static String randomAlphanumeric(int count) {
     return random(count, true, true);
-  }
-
-  public static String randomNumeric(int count) {
-    return random(count, false, true);
   }
 
   public static String random(int count, boolean letters, boolean numbers) {

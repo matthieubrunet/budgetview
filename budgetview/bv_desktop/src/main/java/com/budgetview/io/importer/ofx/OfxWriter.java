@@ -29,68 +29,6 @@ public class OfxWriter {
     }
   }
 
-  public void writeLoadOp(String fromDate, String currentDate, String user, String password, final String org,
-                          final String fid, final String bankId,
-                          final String accountNumber, final String accountType, final String uuid){
-    boolean writeV2 = false;
-    writeHeader(user, password, org, fid, currentDate, uuid, writeV2);
-    String str;
-    if (bankId == null) {
-      str = "<CREDITCARDMSGSRQV1>\n" +
-            "<CCSTMTTRNRQ>\n" +
-            write("TRNUID", uuid, writeV2) +
-            write("CLTCOOKIE", "1", writeV2) +
-            "<CCSTMTRQ>\n" +
-            "<CCACCTFROM>\n" +
-            write("ACCTID", accountNumber, writeV2) +
-            "</CCACCTFROM>\n" +
-            "<INCTRAN>\n" +
-//            "<DTSTART>" + fromDate + "\n" +
-            write("INCLUDE", "Y", writeV2) +
-            "</INCTRAN>\n" +
-            "</CCSTMTRQ>\n" +
-            "</CCSTMTTRNRQ>\n" +
-            "</CREDITCARDMSGSRQV1>\n" +
-            "</OFX>\n";
-    }
-    else {
-      str = "<BANKMSGSRQV1>\n" +
-            "<STMTTRNRQ>\n" +
-            write("TRNUID", uuid, writeV2) +
-            write("CLTCOOKIE", "1", writeV2) +
-            "<STMTRQ>\n" +
-            "<BANKACCTFROM>\n" +
-            write("BANKID", bankId, writeV2) +
-            write("ACCTID", accountNumber, writeV2) +
-            write("ACCTTYPE", (accountType == null ? "CHECKING" : accountType), writeV2) +
-            "</BANKACCTFROM>\n" +
-            "<INCTRAN>\n" +
-            write("DTSTART", fromDate, writeV2) +
-            write("INCLUDE", "Y", writeV2) +
-            "</INCTRAN>\n" +
-            "</STMTRQ>\n" +
-            "</STMTTRNRQ>\n" +
-            "</BANKMSGSRQV1>\n" +
-            "</OFX>\n";
-    }
-    write(str);
-  }
-
-  public void writeQuery(String user, String password, String currentDate, final String org, final String fid, String uuid){
-    writeHeader(user, password, org, fid, currentDate, uuid, writeV2);
-      write(
-      "<SIGNUPMSGSRQV1>\n" +
-      "<ACCTINFOTRNRQ>\n" +
-      write("TRNUID", uuid, writeV2) +
-      write("CLTCOOKIE", "1", writeV2) +
-      "<ACCTINFORQ>\n" +
-      write("DTACCTUP", currentDate, writeV2) +
-      "</ACCTINFORQ>\n" +
-      "</ACCTINFOTRNRQ>\n" +
-      "</SIGNUPMSGSRQV1>\n" +
-      "</OFX>\n");
-  }
-
   private void writeHeader(String user, String password, String org, String fid, String currentDate,
                            final String uuid, final boolean writeV2) {
     //    String applicationId = "Money"; //many institutions just won't work with an unrecognized app id...

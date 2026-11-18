@@ -72,17 +72,6 @@ public class TransactionNoteEditor extends DefaultCellEditor {
     table.removeKeyListener(tableKeyBlocker);
   }
 
-  private void unselectAllPopupElements(JPopupMenu popup) {
-    MenuSelectionManager.defaultManager().setSelectedPath(new MenuElement[]{popup});
-    popup.setSelected(popup);
-  }
-
-  private void selectPopupElement(JPopupMenu popup, int index) {
-    Component menuItem = popup.getComponent(index);
-    MenuSelectionManager.defaultManager().setSelectedPath(new MenuElement[]{popup, (MenuElement)menuItem});
-    popup.setSelected(menuItem);
-  }
-
   private static class BlockTableKeysListener implements KeyListener {
     public void keyTyped(KeyEvent e) {
     }

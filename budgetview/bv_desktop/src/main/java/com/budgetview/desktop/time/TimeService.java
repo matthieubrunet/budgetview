@@ -18,12 +18,6 @@ public class TimeService {
     long now();
   }
 
-  public static Now setTimeAccessor(Now now){
-    Now tmp = TimeService.now;
-    TimeService.now = now;
-    return tmp;
-  }
-
   static {
     reset();
   }

@@ -17,7 +17,6 @@ public class CreateAccountAction extends AbstractAction {
   private GlobRepository repository;
   private Directory directory;
   private final Window owner;
-  private boolean accountTypeEditable = true;
   private boolean gotoAccountView = false;
 
   public CreateAccountAction(AccountType accountType, GlobRepository repository, Directory directory) {
@@ -37,10 +36,6 @@ public class CreateAccountAction extends AbstractAction {
     initTooltip();
   }
 
-  public void setAccountTypeEditable(boolean accountTypeEditable) {
-    this.accountTypeEditable = accountTypeEditable;
-  }
-
   public void setGotoAccountViewEnabled(boolean enabled) {
     this.gotoAccountView = enabled;
   }
@@ -51,7 +46,7 @@ public class CreateAccountAction extends AbstractAction {
     }
 
     AccountEditionDialog dialog = new AccountEditionDialog(owner, repository, directory, true);
-    dialog.showWithNewAccount(accountType, accountTypeEditable, AccountUpdateMode.AUTOMATIC);
+    dialog.showWithNewAccount(accountType, true, AccountUpdateMode.AUTOMATIC);
   }
 
   private void initTooltip() {

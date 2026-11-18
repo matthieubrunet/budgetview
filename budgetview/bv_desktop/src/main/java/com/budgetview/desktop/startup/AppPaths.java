@@ -170,12 +170,4 @@ public class AppPaths {
     }
     return getDefaultDataPath();
   }
-
-  public static String getBankConfigPath() {
-    return getCodePath() + BANK_CONFIG_DIRECTORY;
-  }
-
-  public static String getJarPath() {
-    return getCodePath() + JAR_DIRECTORY;
-  }
 }

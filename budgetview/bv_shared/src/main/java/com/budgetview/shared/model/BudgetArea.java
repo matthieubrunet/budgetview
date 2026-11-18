@@ -120,10 +120,6 @@ public enum BudgetArea implements GlobConstantContainer {
     return result;
   }
 
-  public double getMultiplier() {
-    return isIncome() ? 1 : -1;
-  }
-
   public static boolean shouldInvertAmounts(BudgetArea area) {
     return !area.isIncome() && (area != BudgetArea.UNCATEGORIZED);
   }

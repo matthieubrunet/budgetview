@@ -168,7 +168,6 @@ public class EvolutionAnalysisView extends AnalysisViewPanel {
   }
 
   private class SeriesFactory implements RepeatComponentFactory<Glob> {
-    private static final int DEFAULT_SERIES_CHART_HEIGHT = 115;
     private SeriesEditionButtons seriesButtons;
 
     public SeriesFactory(SeriesEditionButtons seriesButtons) {

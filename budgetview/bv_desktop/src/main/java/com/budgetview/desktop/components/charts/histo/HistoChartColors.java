@@ -14,10 +14,7 @@ public class HistoChartColors implements ColorChangeListener, Disposable {
   private Color chartBorderColor;
   private Color scaleLineColor;
   private Color scaleOriginLineColor;
-  private Color scaleTextColor;
   private Color labelColor;
-  private Color labelBgColor;
-  private Color selectedLabelColor;
   private Color rolloverLabelColor;
   private Color sectionLineColor;
   private Color selectedColumnColor;
@@ -43,10 +40,8 @@ public class HistoChartColors implements ColorChangeListener, Disposable {
     this.chartBorderColor = colorLocator.get(prefix + ".chart.border");
     this.scaleLineColor = colorLocator.get(prefix + ".scale.line");
     this.scaleOriginLineColor = colorLocator.get(prefix + ".scale.line.origin");
-    this.scaleTextColor = colorLocator.get(prefix + ".scale.text");
     this.sectionLineColor = colorLocator.get(prefix + ".section.line");
     this.labelColor = colorLocator.get(prefix + ".label");
-    this.selectedLabelColor = colorLocator.get(prefix + ".label.selected");
     this.rolloverLabelColor = colorLocator.get(prefix + ".label.rollover");
     this.selectedColumnColor = colorLocator.get(prefix + ".selection.bg");
     this.selectedColumnBorder = colorLocator.get(prefix + ".selection.border");
@@ -69,16 +64,8 @@ public class HistoChartColors implements ColorChangeListener, Disposable {
     return scaleOriginLineColor;
   }
 
-  public Color getScaleTextColor() {
-    return scaleTextColor;
-  }
-
   public Color getLabelColor() {
     return labelColor;
-  }
-
-  public Color getSelectedLabelColor() {
-    return selectedLabelColor;
   }
 
   public Color getRolloverLabelColor() {
