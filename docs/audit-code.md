@@ -502,6 +502,56 @@ fois avant suppression. Vérification : build, suite complète, et ouverture des
 - Piège : construire avec `clean` après une suppression de ressource. Sinon le fichier reste dans
   `target/classes` et la suite passe sans rien vérifier.
 
+## 2a, inventaire
+
+Fait le 2026-11-19, sans rien modifier.
+
+**Méthode.** Le rapport ProGuard de 1e (`docs/audit/usage.sh`, qui analyse déjà `globs` depuis `DesktopApp.main`),
+trié par `python3 -I docs/audit/globs.py target/usage/usage.txt` (22 s) : classes de premier niveau inutilisées par
+paquet, avec les autres sources qui citent leur nom (`bv_server`, `bv_analytics`, Android, tests de `bv_desktop`, tests
+de `globs`), puis membres isolés des classes vivantes, classés comme dans `usage.py`.
+
+`globs` compte 608 fichiers et 43 000 lignes ; ses tests, 796 méthodes. `bv_server` (hors build) en est l'autre grand
+client : 114 fichiers, dont 113 imports de `sqlstreams`. Android cite `model`, `utils` et `xml` par un jar absent du
+dépôt (`app/libs`).
+
+| | Classes de premier niveau | Lignes | Poids dans `globs-1.0.jar` |
+|---|---|---|---|
+| Inutilisées, `sqlstreams` | 70 | ~3 500 | 81 Ko |
+| Inutilisées, autres paquets | 93 | ~4 950 | 150 Ko |
+| Vivantes | 445 | ~34 500 | 748 Ko |
+
+`sqlstreams` (accès SQL, JDBC, HSQLDB, MySQL) est mort **en entier** côté bureau, annotation `AutoIncrement` comprise :
+rien dans `bv_desktop` ni `bv_shared` ne l'importe. Il ne sert qu'à `bv_server`.
+
+Membres isolés des classes vivantes : 638, dont 53 sans aucune autre occurrence dans le dépôt, 36 cités par les seuls
+tests, 11 par le seul serveur ; les 538 autres partagent leur nom avec un membre vivant (interfaces, homonymes) et ne se
+trancheraient qu'à la lecture.
+
+**Dépendances entre lots.** `remote.ConstraintSerializer` et les tests de `remote` utilisent `sqlstreams.constraints` :
+`remote` part avant ou avec `sqlstreams`. Trois classes inutilisées sont des **outils de test** : `XmlChangeSetParser`
+(`DefaultChangeSetTest`, `ChangeSetSequencerTest`), `XmlGlobWriter` (`GlobTestUtils`), `XmlGlobStreamReader` (tests de
+`sqlstreams` et `remote` seulement). Les deux premières se déplacent dans `globs/src/test` au lieu d'être supprimées.
+
+**Lots proposés.**
+
+| Lot | Contenu | Classes, lignes | Tests retirés |
+|---|---|---|---|
+| A. IHM de `globs` | Actions `CreateGlobAction`, `DeleteGlobAction`, `AbstractGlobSelectionAction` ; éditeurs `GlobLinkListEditor`, `GlobSlider*` ; vues `GlobRepeatView`, `GlobToggleView`, `GlobMultiLineTextView` ; `HyperlinkButtonUIDemo`, `GlobSelectionButton`, `GlobKeyListTransfer`, `FixedCellPainter`, `FixedFillPainter`, `DefaultColorChangeListener`, `ResourceLoadingFailed` ; les méthodes de `GlobsPanelBuilder` qui les créent (`addCreateAction`, `addDeleteAction`, `addSlider`…) | 16, ~880 | 7 classes, 21 tests |
+| B. `remote` | `RemoteExecutor`, `SerializedRemoteAccess`, `ConstraintSerializer`, `DataAccess`, `remote.impl` (le `DataAccess` cité par 3 tests de `bv_desktop` est un homonyme, à vérifier) | 7, ~600 | 1 classe, 1 test |
+| C. Divers sans serveur | `model` : `ChangeSetSequencer`, `DefaultFieldValuesWithPrevious`, `FieldValuesWithPreviousBuilder`, `GlobArrayFieldValues`, `FieldChangeListener`, `GlobLinkComparator`, `CachedGlobIdGenerator`, `ChangeSetPrinter` ; `utils.logging.Html*` (5) ; `utils.stream` (`ReplacementInputStream` et ses 8 classes de nœuds) ; `metamodel.links.LinkBuilder`, `LinkVisitor`, `MultifieldVisitor` ; `XmlSingleGlobParser`, `streams.xml.XmlGlobStreamReader` ; `Millis`, `T3uples`, `DefaultComparator`, `InvalidReference`, `Rethrowable`, `Timeout`. `XmlChangeSetParser` et `XmlGlobWriter` passent dans les tests. `GlobRepositoryValidator` et `IntSet` sont cités par les tests fonctionnels : à lire | ~40, ~2 700 | ~5 classes, ~20 tests |
+| D. `sqlstreams` et ce que seul le serveur cite | Tout `sqlstreams`, puis `streams.accessors` (23), `GlobStream`, `JsonGlobWriter`, `GlobTreePrinter`, `StringComparator`, `Debug`, 4 exceptions | ~100, ~4 800 | 9 classes `sqlstreams` (17 tests) et 2 autres |
+| E. Membres | Les 53 membres sans autre occurrence (liste du script), puis les 36 cités par les seuls tests, au cas par cas | — | selon le cas |
+
+**Décision à prendre pour le lot D** : jusqu'ici, tout ce que `bv_server` utilise a été gardé (1a, 1d, 1e). Le
+supprimer de `globs` laisse `bv_server`, déjà hors build, sans sa couche SQL : il ne compilerait plus sans une copie de
+`sqlstreams`. Deux voies : garder `sqlstreams` tel quel, ou le déplacer dans `bv_server` (ce qui le sort du livrable
+et des tests du bureau sans perdre le code).
+
+Les lots A, B, C ne touchent ni le format des données ni l'IHM de BudgetView (rien de ces classes n'est atteint) ;
+vérification par build `clean`, tests de `globs` puis suite complète de `bv_desktop`. Rappel de 1e : l'angle mort de
+ProGuard est le code lancé à part (`Dump`, génération de la démo), que seule la compilation révèle.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -519,3 +569,4 @@ fois avant suppression. Vérification : build, suite complète, et ouverture des
 | 2026-11-18 | 1e, lots A à F | 992 classes de premier niveau (−12), 2 140 `.class` (−20) ; `target/dist` 12,0 Mo, `budgetview.jar` 4,84 Mo (−34 Ko) ; 1 026 tests verts, 162 classes, 9 min ; −1 148 lignes de Java net, −12 lignes de langue (3 fichiers), 2 fichiers d'aide et 5 icônes |
 | 2026-11-18 | 1f, inventaire | Rien de modifié. Orphelins : 61 images sur 164 (332 Ko), 12 `.splits` sur 133 (314 lignes), 131 clés de langue sur 1 486, 1 définition de banque, 4 fichiers divers (124 Ko avec la banque). 330 clés à préfixe dynamique non tranchées. Un défaut de continuation dans `lang_en.properties`. Quatre lots proposés (A à D) |
 | 2026-11-18 | 1f, lots A à D | Pas de Java touché : 992 classes de premier niveau, 2 140 `.class` ; `target/dist` 12 Mo, `budgetview.jar` 4,55 Mo (−290 Ko) ; 1 026 tests verts à chaque lot, 162 classes, 9 à 21 min (durée très variable d'une suite à l'autre, sans échec). 63 images (338 Ko), 12 `.splits` (314 lignes), 142 clés de langue (−428 lignes, 3 fichiers), 5 fichiers divers (124 Ko) |
+| 2026-11-19 | 2a, inventaire | Rien de modifié. `globs` : 608 fichiers, 43 000 lignes ; 163 classes de premier niveau inutilisées (8 465 lignes, 231 Ko du jar), dont tout `sqlstreams` (70 classes, ~3 500 lignes), que seul `bv_server` utilise ; 638 membres isolés, dont 53 sans aucune autre occurrence. Cinq lots proposés (A à E), décision attendue sur `sqlstreams` |
