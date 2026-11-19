@@ -132,18 +132,14 @@ contenant des opérations passées (`ProjectTransferTest`, méthodes `createMain
 
 ## Tests de globs
 
-Lancer avec une JVM par classe et une limite de temps (~1 min 30) : des classes de test de l'IHM laissent un
-état partagé (`ColorServiceEditorTest` échoue derrière d'autres classes), et un blocage SQL reste toujours possible.
+Le `pom` de `globs` fixe une JVM par classe (des classes de test de l'IHM laissent un état partagé :
+`ColorServiceEditorTest` échoue derrière d'autres classes), une limite de 120 s (un blocage SQL reste possible) et
+les `--add-opens` dont uispec4j a besoin sous Java 21 (sans eux, les 38 classes de test d'IHM échouent à
+l'initialisation ; réglages ajoutés le 2026-11-19). Durée : ~1 min.
 
 ```sh
-O=$(sed -n 's:.*<jdk.test.args>\(.*\)</jdk.test.args>.*:\1:p' budgetview/bv_desktop/pom.xml)
-mvn -o clean test -pl globs -DforkCount=1 -DreuseForks=false -Dsurefire.timeout=120 \
-    -DargLine="-Dapple.awt.UIElement=true -Xmx512m $O"
+mvn -o clean test -pl globs
 ```
-
-Sous Java 21, les `--add-opens` (`$O`, repris du profil `jdk17` de `bv_desktop`) sont indispensables : sans eux,
-uispec4j ne peut pas intercepter le toolkit et les 38 classes de test d'IHM échouent à l'initialisation
-(constaté le 2026-11-19 : 394 tests lancés, 38 erreurs).
 
 Toujours avec `clean` après un changement de signature dans `src/main` : le vieux `maven-compiler-plugin` (2.3.2)
 ne recompile que les sources modifiées, et une classe de test non touchée reste liée à l'ancienne méthode

@@ -231,8 +231,8 @@ Adaptations des tests faites pour la 6.00 :
   alors qu'ils n'ont pas tourné. Pour limiter la durée, utiliser le délai de l'outil qui lance la commande,
   et vérifier la ligne `Tests run:` finale.
 
-Tests de `globs` : 873, tous verts depuis le 2026-11-15 (détail et commande dans [docs/etat-des-tests.md](docs/etat-des-tests.md)).
-Toujours poser une limite de temps et une JVM par classe ; `clean` après un changement de signature (le vieux
+Tests de `globs` : `mvn -o clean test -pl globs` (~1 min ; le `pom` fixe JVM par classe, limite de temps et `--add-opens`),
+833 verts au 2026-11-19 (détail dans [docs/etat-des-tests.md](docs/etat-des-tests.md)). `clean` après un changement de signature (le vieux
 compilateur ne recompile pas les tests non touchés) ; `mvn -o install -pl globs -DskipTests` avant de tester bv_desktop,
 qui prend globs dans `~/.m2`.
 - Le dépôt `http://download.java.net/maven/2/` déclaré dans `bv_desktop/pom.xml`

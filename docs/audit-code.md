@@ -556,7 +556,8 @@ et des tests du bureau sans perdre le code).
   servaient de `addCreateAction` et `addDeleteAction`. Tests de `globs` : 873 → 833 ; `GlobMultiLineTextViewTest`
   héritait des 19 tests de `GlobTextViewTestCase`, qui tournent toujours pour les vues gardées.
 - Piège : les tests d'IHM de `globs` (38 classes) échouent sous Java 21 sans les `--add-opens` du profil `jdk17` de
-  `bv_desktop`, que le `pom` de `globs` n'a pas. Commande à jour dans [etat-des-tests.md](etat-des-tests.md).
+  `bv_desktop`, que le `pom` de `globs` n'avait pas. Ajoutés à son surefire avec une JVM par classe et une limite de
+  temps : `mvn -o clean test -pl globs` suffit ([etat-des-tests.md](etat-des-tests.md)).
 
 Les lots A, B, C ne touchent ni le format des données ni l'IHM de BudgetView (rien de ces classes n'est atteint) ;
 vérification par build `clean`, tests de `globs` puis suite complète de `bv_desktop`. Rappel de 1e : l'angle mort de
