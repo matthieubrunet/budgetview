@@ -136,9 +136,14 @@ Lancer avec une JVM par classe et une limite de temps (~1 min 30) : des classes 
 état partagé (`ColorServiceEditorTest` échoue derrière d'autres classes), et un blocage SQL reste toujours possible.
 
 ```sh
+O=$(sed -n 's:.*<jdk.test.args>\(.*\)</jdk.test.args>.*:\1:p' budgetview/bv_desktop/pom.xml)
 mvn -o clean test -pl globs -DforkCount=1 -DreuseForks=false -Dsurefire.timeout=120 \
-    -DargLine="-Dapple.awt.UIElement=true -Xmx512m"
+    -DargLine="-Dapple.awt.UIElement=true -Xmx512m $O"
 ```
+
+Sous Java 21, les `--add-opens` (`$O`, repris du profil `jdk17` de `bv_desktop`) sont indispensables : sans eux,
+uispec4j ne peut pas intercepter le toolkit et les 38 classes de test d'IHM échouent à l'initialisation
+(constaté le 2026-11-19 : 394 tests lancés, 38 erreurs).
 
 Toujours avec `clean` après un changement de signature dans `src/main` : le vieux `maven-compiler-plugin` (2.3.2)
 ne recompile que les sources modifiées, et une classe de test non touchée reste liée à l'ancienne méthode

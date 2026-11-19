@@ -548,6 +548,16 @@ supprimer de `globs` laisse `bv_server`, déjà hors build, sans sa couche SQL :
 `sqlstreams`. Deux voies : garder `sqlstreams` tel quel, ou le déplacer dans `bv_server` (ce qui le sort du livrable
 et des tests du bureau sans perdre le code).
 
+**Décision de Matthieu (2026-11-19)** : déplacer `sqlstreams` dans `bv_server`.
+
+**Suppression**, un commit par lot :
+- Lot A (2026-11-19) : 16 classes et leurs 7 classes de test, les 5 méthodes de `GlobsPanelBuilder` qui les créaient,
+  et les exemples `globs/samples` (`addressbook`, `blog`, `swingdemo`, 9 fichiers de 2008, hors build), qui se
+  servaient de `addCreateAction` et `addDeleteAction`. Tests de `globs` : 873 → 833 ; `GlobMultiLineTextViewTest`
+  héritait des 19 tests de `GlobTextViewTestCase`, qui tournent toujours pour les vues gardées.
+- Piège : les tests d'IHM de `globs` (38 classes) échouent sous Java 21 sans les `--add-opens` du profil `jdk17` de
+  `bv_desktop`, que le `pom` de `globs` n'a pas. Commande à jour dans [etat-des-tests.md](etat-des-tests.md).
+
 Les lots A, B, C ne touchent ni le format des données ni l'IHM de BudgetView (rien de ces classes n'est atteint) ;
 vérification par build `clean`, tests de `globs` puis suite complète de `bv_desktop`. Rappel de 1e : l'angle mort de
 ProGuard est le code lancé à part (`Dump`, génération de la démo), que seule la compilation révèle.
@@ -570,3 +580,4 @@ ProGuard est le code lancé à part (`Dump`, génération de la démo), que seul
 | 2026-11-18 | 1f, inventaire | Rien de modifié. Orphelins : 61 images sur 164 (332 Ko), 12 `.splits` sur 133 (314 lignes), 131 clés de langue sur 1 486, 1 définition de banque, 4 fichiers divers (124 Ko avec la banque). 330 clés à préfixe dynamique non tranchées. Un défaut de continuation dans `lang_en.properties`. Quatre lots proposés (A à D) |
 | 2026-11-18 | 1f, lots A à D | Pas de Java touché : 992 classes de premier niveau, 2 140 `.class` ; `target/dist` 12 Mo, `budgetview.jar` 4,55 Mo (−290 Ko) ; 1 026 tests verts à chaque lot, 162 classes, 9 à 21 min (durée très variable d'une suite à l'autre, sans échec). 63 images (338 Ko), 12 `.splits` (314 lignes), 142 clés de langue (−428 lignes, 3 fichiers), 5 fichiers divers (124 Ko) |
 | 2026-11-19 | 2a, inventaire | Rien de modifié. `globs` : 608 fichiers, 43 000 lignes ; 163 classes de premier niveau inutilisées (8 465 lignes, 231 Ko du jar), dont tout `sqlstreams` (70 classes, ~3 500 lignes), que seul `bv_server` utilise ; 638 membres isolés, dont 53 sans aucune autre occurrence. Cinq lots proposés (A à E), décision attendue sur `sqlstreams` |
+| 2026-11-19 | 2a, lot A (IHM de `globs`) | `globs` : −16 classes, −854 lignes de code, −728 de tests, −709 d'exemples (dont 9 fichiers de `samples`) ; `globs-1.0.jar` 1 209 Ko (−27 Ko), `target/dist` 12 Mo. Tests de `globs` 833 verts (−40), 54 s ; `bv_desktop` 1 026 verts, 16 min |

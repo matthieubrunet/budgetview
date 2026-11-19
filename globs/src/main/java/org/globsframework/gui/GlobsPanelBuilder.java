@@ -1,7 +1,5 @@
 package org.globsframework.gui;
 
-import org.globsframework.gui.actions.CreateGlobAction;
-import org.globsframework.gui.actions.DeleteGlobAction;
 import org.globsframework.gui.editors.*;
 import org.globsframework.gui.splits.SplitsBuilder;
 import org.globsframework.gui.splits.PanelBuilder;
@@ -100,10 +98,6 @@ public class GlobsPanelBuilder extends SplitsBuilder {
     return store(GlobMultiLineTextEditor.init(field, repository, directory).setName(name));
   }
 
-  public GlobSliderEditor addSlider(String name, DoubleField field, GlobSliderAdapter adapter) {
-    return store(GlobSliderEditor.init(field, repository,directory, adapter).setName(name));
-  }
-
   public GlobNumericEditor addEditor(DoubleField field) {
     return store(GlobNumericEditor.init(field, repository, directory));
   }
@@ -149,14 +143,6 @@ public class GlobsPanelBuilder extends SplitsBuilder {
       .setName(name);
   }
 
-  public GlobMultiLineTextView addMultiLineTextView(String name, GlobType type) {
-    return addMultiLineTextView(name, type, directory.get(DescriptionService.class).getListStringifier(type));
-  }
-
-  public GlobMultiLineTextView addMultiLineTextView(String name, GlobType type, GlobListStringifier stringifier) {
-    return store(GlobMultiLineTextView.init(type, repository, directory, stringifier).setName(name));
-  }
-
   public GlobHtmlView addHtmlView(String name, GlobType type, GlobListStringifier stringifier) {
     return store(GlobHtmlView.init(type, repository, directory, stringifier).setName(name));
   }
@@ -168,16 +154,6 @@ public class GlobsPanelBuilder extends SplitsBuilder {
   public GlobsPanelBuilder add(String name, ComponentHolder holder) {
     holder.setName(name);
     store(holder);
-    return this;
-  }
-
-  public GlobsPanelBuilder addCreateAction(String label, String name, GlobType type) {
-    add(name, new CreateGlobAction(label, type, repository, directory));
-    return this;
-  }
-
-  public GlobsPanelBuilder addDeleteAction(String label, String name, GlobType type) {
-    add(name, new DeleteGlobAction(label, type, repository, directory));
     return this;
   }
 
