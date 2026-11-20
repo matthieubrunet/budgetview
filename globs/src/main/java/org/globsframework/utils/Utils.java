@@ -114,10 +114,6 @@ public class Utils {
     return result;
   }
 
-  public static int minInt(int... values) {
-    return minOrMax(-1, values);
-  }
-
   private static int minOrMax(int sign, int... values) {
     if (values.length == 0) {
       return 0;

@@ -73,11 +73,6 @@ public class UtilsTest extends TestCase {
     assertEquals("b", Utils.max("a", null, "b"));
   }
 
-  public void testMinInt() throws Exception {
-    assertEquals(0, Utils.minInt());
-    assertEquals(1, Utils.minInt(4, 1, 2, 3));
-  }
-
   public void testCompare() throws Exception {
     assertTrue(Utils.compare("a", "b") < 0);
     assertTrue(Utils.compare("a", "a") == 0);

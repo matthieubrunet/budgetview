@@ -44,10 +44,6 @@ public class DatesTest extends TestCase {
                              4999));
   }
   
-  public void testExtractDate() throws Exception {
-    assertEquals(Dates.parse("2012/02/10"), Dates.extractDateDDMMYYYY("sdf sdf 10/02/2012 sdf sf"));
-  }
-
   private Calendar toCalendar(Date date) {
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(date);

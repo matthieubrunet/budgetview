@@ -5,8 +5,6 @@ import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.annotations.NamingField;
 import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.utils.exceptions.InvalidParameter;
-import org.globsframework.utils.exceptions.ItemAmbiguity;
-import org.globsframework.utils.exceptions.ItemNotFound;
 
 public class GlobTypeUtils {
 
@@ -30,17 +28,6 @@ public class GlobTypeUtils {
       return stringField(fields, type);
     }
     return null;
-  }
-
-  public static StringField getNamingField(GlobType type) throws ItemNotFound, ItemAmbiguity, InvalidParameter {
-    Field[] fields = type.getFieldsWithAnnotation(NamingField.class);
-    if (fields.length == 0) {
-      throw new ItemNotFound("Type '" + type + "' has no naming field");
-    }
-    if (fields.length > 1) {
-      throw new ItemAmbiguity("Type '" + type + "' has too many naming fields");
-    }
-    return stringField(fields, type);
   }
 
   private static StringField stringField(Field[] fields, GlobType type) {

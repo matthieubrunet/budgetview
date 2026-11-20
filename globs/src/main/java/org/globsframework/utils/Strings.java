@@ -239,15 +239,6 @@ public class Strings {
     return result;
   }
 
-  public static String trimLines(String input) {
-    return input
-      .replaceAll("^[ ]*", "")
-      .replaceAll("[ ]*\n", "\n")
-      .replaceAll("\n[ ]*", "\n")
-      .replaceAll("[ ]*$", "")
-      ;
-  }
-
   public static String toYesNo(boolean value) {
     return value ? "yes" : "no";
   }
@@ -257,10 +248,6 @@ public class Strings {
       return text.replaceAll("\n|\r", "");
     }
     return null;
-  }
-
-  public static String removeSpaces(String text) {
-    return text.replaceAll("[ \t\n]", "");
   }
 
   public static boolean looksLikeAnEmail(String email) {

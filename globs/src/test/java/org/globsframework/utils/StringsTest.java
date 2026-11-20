@@ -111,18 +111,6 @@ public class StringsTest extends TestCase {
     }
   }
 
-  public void testTrimLines() throws Exception {
-    assertEquals("One", Strings.trimLines("One"));
-    assertEquals("One\n" +
-                 "\n" +
-                 "Two\n" +
-                 "Three",
-                 Strings.trimLines("  One \n\n" +
-                                   "Two   \n" +
-                                   "  Three  "));
-
-  }
-
   public void testUnaccent() throws Exception {
     assertEquals("aaaa eeeee iii ooo uuu", Strings.unaccent("aàäâ eéèêë iïî oöô uùü"));
     assertEquals("AAAA EEEEE III OOO UUU", Strings.unaccent("AÀÄÂ EÉÈÊË IÏÎ OÖÔ UÙÜ"));
@@ -132,7 +120,4 @@ public class StringsTest extends TestCase {
     assertEquals("some new line", Strings.removeNewLine("some \n\nnew \n\rline\r"));
   }
 
-  public void testRemoveSpaces() throws Exception {
-    assertEquals("abcd123", Strings.removeSpaces("  a\tb c\nd 12  \n3 "));
-  }
 }
