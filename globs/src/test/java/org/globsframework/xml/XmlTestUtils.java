@@ -1,10 +1,10 @@
 package org.globsframework.xml;
 
 import junit.framework.Assert;
-import org.apache.xerces.parsers.SAXParser;
 import org.saxstack.comparator.XmlComparator;
 import org.saxstack.parser.SaxStackParser;
 import org.saxstack.utils.XmlNodeToBuilder;
+import org.saxstack.utils.XmlUtils;
 import org.saxstack.writer.PrettyPrintRootXmlTag;
 import org.xml.sax.XMLReader;
 
@@ -18,7 +18,7 @@ public class XmlTestUtils {
   }
 
   public static void assertEquals(String expected, String actual) {
-    SAXParser parser = new SAXParser();
+    XMLReader parser = XmlUtils.getXmlReader();
     try {
       if (!XmlComparator.areEqual(expected, actual, parser)) {
         showStringDiff(expected, actual, parser);
@@ -30,7 +30,7 @@ public class XmlTestUtils {
   }
 
   public static void assertEquivalent(String expected, String actual) {
-    SAXParser parser = new SAXParser();
+    XMLReader parser = XmlUtils.getXmlReader();
     try {
       if (!XmlComparator.areEquivalent(expected, actual, parser)) {
         showStringDiff(expected, actual, parser);
@@ -42,7 +42,7 @@ public class XmlTestUtils {
   }
 
   public static void assertIsSubset(String expected, String actual) {
-    SAXParser parser = new SAXParser();
+    XMLReader parser = XmlUtils.getXmlReader();
     try {
       if (XmlComparator.computeDiff(expected, actual, parser) != null) {
         showStringDiff(expected, actual, parser);
@@ -53,7 +53,7 @@ public class XmlTestUtils {
     }
   }
 
-  private static void showStringDiff(String expected, String actual, SAXParser parser) throws IOException {
+  private static void showStringDiff(String expected, String actual, XMLReader parser) throws IOException {
     Assert.assertEquals(format(expected, parser, 4),
                         format(actual, parser, 4));
   }

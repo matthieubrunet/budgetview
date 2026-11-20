@@ -288,7 +288,7 @@
                   <includeScope>runtime</includeScope>
                   <!-- Jamais chargées par l'application (aucune de leurs classes n'entrait dans le jar
                        réduit par l'ancien shrinker) : tirées par globs (sqlstreams) ou pour des constantes. -->
-                  <excludeArtifactIds>hsqldb,mysql-connector-java,joda-time,xercesImpl,xml-apis,slf4j-api,slf4j-log4j12,servlet-api</excludeArtifactIds>
+                  <excludeArtifactIds>hsqldb,mysql-connector-java,joda-time,slf4j-api,slf4j-log4j12,servlet-api</excludeArtifactIds>
                 </configuration>
               </execution>
             </executions>

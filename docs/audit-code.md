@@ -700,6 +700,9 @@ perte, la licence étant la même. Recommandation : le fondre.
   paquets, avec `XmlComparatorTest` et `XmlNodeToBuilderTest`. `XmlUtils.build` et `write` deviennent des méthodes
   privées de `SaxStackWriter`, leur seul appelant ; `XmlUtils.format` passe dans `XmlTestUtils` de `globs`. Reste dans
   `saxstack/src/main` : 17 classes, 608 lignes. Tests de `saxstack` 5, de `globs` 808 (+21, venus de `saxstack`).
+- Lot C (2026-11-20) : `XmlTestUtils` prend son lecteur par `XmlUtils.getXmlReader()` (JDK, avec espaces de noms, comme
+  le `SAXParser` de Xerces par défaut) ; `xercesImpl` sort du `pom` de `globs`, et `xercesImpl`, `xml-apis` de la liste
+  d'exclusions de `bv_desktop`, que plus rien ne lui amène (`dependency:tree`). Xerces ne reste qu'à `siteweaver`.
 
 ## Journal
 
@@ -727,3 +730,4 @@ perte, la licence étant la même. Recommandation : le fondre.
 | 2026-11-20 | 2b, inventaire | Rien de modifié. `saxstack` : 37 classes, 2 047 lignes de code, 44 tests (jamais lancés jusque-là, verts) ; `saxstack-2.0.jar` 87 Ko. Vivantes 16 classes (735 lignes) ; mortes 21 (1 203 lignes), dont 12 tenues par les outils de test de `globs` (`XmlComparator`) et 8 sans client. `xercesImpl` en dépendance de compilation de `globs` pour un seul outil de test. Remplacement par le JDK écarté ; quatre lots proposés (A à D), décision attendue sur la fusion dans `globs` |
 | 2026-11-20 | 2b, lot A (code mort) | `saxstack` : −7 classes, −450 lignes de code, −919 de tests ; `saxstack-2.0.jar` 41 Ko (−10 Ko). Tests de `saxstack` 26 verts (−18), `globs` 787 verts, `bv_desktop` 1 026 verts, 11 min |
 | 2026-11-20 | 2b, lot B (outils de test) | 13 classes (~810 lignes) et 2 classes de test sorties de `saxstack` vers `globs/src/test` ; `saxstack` 17 classes, 608 lignes ; `saxstack-2.0.jar` 17 Ko (−24 Ko). Tests de `saxstack` 5, `globs` 808 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` déjà connue comme instable (verte relancée seule, deux fois), 13 min |
+| 2026-11-20 | 2b, lot C (Xerces) | `xercesImpl` 2.11 et `xml-apis` retirés des dépendances de `globs` et de `bv_desktop` ; `target/dist` inchangé (11 Mo, 18 jars : ils en étaient déjà exclus). Tests de `globs` 808 verts, `bv_desktop` 1 026 verts, 14 min |
