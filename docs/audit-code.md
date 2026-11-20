@@ -615,6 +615,9 @@ et des tests du bureau sans perdre le code).
   Les 12 membres que seul le serveur cite (`Dates`, `Strings`, `GlobMatchers`…) restent : ce sont des méthodes de
   classes vivantes, qu'on ne déplace pas seules.
   Les 527 homonymes ne sont pas lus : rien n'y a été repéré d'aussi gros que les lots précédents.
+- Piège : des sources ont des fins de ligne CRLF (`GuiUtils`, `TableUtils` de `globs`, par exemple). Un script Python
+  qui les lit en mode texte les convertit en LF et le diff réécrit tout le fichier. Lire et écrire avec `newline=''`,
+  et vérifier qu'une suppression ne montre aucune insertion (`git diff --stat`).
 - Piège : les tests d'IHM de `globs` (38 classes) échouent sous Java 21 sans les `--add-opens` du profil `jdk17` de
   `bv_desktop`, que le `pom` de `globs` n'avait pas. Ajoutés à son surefire avec une JVM par classe et une limite de
   temps : `mvn -o clean test -pl globs` suffit ([etat-des-tests.md](etat-des-tests.md)).
