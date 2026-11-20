@@ -149,10 +149,11 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   Deux familles sont fautives : `ListFirstAndLast` rend `GlobList.getFirst()` récursive, et `UseTextBlocks` efface des
   blancs de fin de ligne. Lots A (recettes sûres, 102 fichiers) et C (plugins) faits le 2026-11-20 ; B (blocs de texte)
   non retenu, D rejeté.
-- [ ] **3c. Intégration macOS** : `com.apple.eawt` (2 fichiers) → `java.awt.Desktop` (Java 9 et +).
+- [x] **3c. Intégration macOS** : `com.apple.eawt` (2 fichiers) → `java.awt.Desktop` (Java 9 et +).
   Inventaire fait le 2026-11-20, voir [3c, inventaire](#3c-inventaire) plus bas : `java.awt.Desktop` déjà en place
   depuis le passage à Java 17, mais par réflexion et avec un repli `com.apple.eawt` mort ; navigateur lancé par trois
-  `Runtime.exec(String)` selon le système. Deux lots proposés (A et B).
+  `Runtime.exec(String)` selon le système. Deux lots proposés (A et B), faits le 2026-11-20 : plus aucun `com.apple.eawt` ni
+  `Runtime.exec` dans le code livré, −189 lignes.
 - [ ] **3d. Utilitaires maison** (`Utils`, `Strings`, `Files`…) comparés à `java.util`,
   `java.nio.file`, `Objects`, `String` (`isBlank`, `repeat`, `strip`…).
 - [ ] **3e. Collections synchronisées** (`Vector`, `Hashtable`, `StringBuffer`, 5 fichiers).
@@ -1164,7 +1165,8 @@ l'utilisateur (saisie libre), licences de l'écran « À propos ». Différences
 - une adresse saisie sans schéma (`www.exemple.fr`) : `open` la prend pour un fichier et échoue sans rien dire ;
   `Desktop.browse` échoue aussi. Ajouter `https://` serait une correction de comportement : notée pour après l'audit ;
 - une adresse qui n'est pas une URI (espace…) : `exec` la coupait en morceaux, `new URI` la refuse. Dans les deux cas,
-  rien ne s'ouvre ; on lèverait la même `IOFailure` (« Impossible de lancer le navigateur ») que la version Mac ;
+  rien ne s'ouvre. L'échec sera seulement journalisé : une exception levée dans l'IHM lance le contrôle des données
+  (`AwtExceptionHandler`), et `open` échouait déjà sans rien dire. La clé `browsing.error` devient inutile ;
 - sous Linux, `Desktop` demande les bibliothèques GTK, présentes sur un bureau courant, là où l'ancien code exigeait
   Firefox.
 
@@ -1182,6 +1184,12 @@ l'utilisateur (saisie libre), licences de l'écran « À propos ». Différences
   `com.apple.eawt` ; `initApplicationName` y est passée et `PicsouMacLookAndFeel` est supprimé, avec la propriété
   `com.apple.mrj…` et la ligne commentée de `Gui.init`. 5 fichiers, +56 −202 lignes. Tests de `bv_desktop` 1 026 verts,
   11 min ; vérifié par Matthieu dans l'appli de dev : À propos, Préférences, plein écran, ⌘Q.
+- Lot B (2026-11-20) : `BrowsingService` devient une classe concrète sur `Desktop.browse` ; `Mac`, `Windows` et
+  `UnixBrowsingService` supprimés, avec la clé `browsing.error` (3 fichiers de langue). Un échec est journalisé
+  (`[Browsing]` dans le log), sans exception. 7 fichiers, +24 −67 lignes. Tests de `bv_desktop` 1 026 verts, 19 min
+  (11 pour le lot A : même variabilité qu'en 1f) ; liens d'aide et de « À propos » vérifiés par Matthieu dans l'appli
+  de dev. Le lien vers le site d'une banque n'a pas pu l'être (pas de banque à site dans les données de dev) : même
+  appel que l'aide.
 
 ## Journal
 
@@ -1229,3 +1237,4 @@ l'utilisateur (saisie libre), licences de l'écran « À propos ». Différences
 | 2026-11-20 | 3b, lot C (plugins) | `maven-compiler-plugin` 3.16.0, `jacoco` 0.8.16 (6 `pom`, `coverage.sh`) ; 0 `[WARNING]`, `target/dist` 11 Mo. Tests de `globs` 796, `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable), 9 min. **3b terminé** |
 | 2026-11-20 | 3c, inventaire | Rien de modifié. `MacOSXHooks` déjà sur `java.awt.Desktop`, mais par réflexion avec un repli `com.apple.eawt` mort (~130 lignes à retirer avec `PicsouMacLookAndFeel`) ; navigateur par trois `Runtime.exec(String)` (dépréciés), remplaçables par `Desktop.browse`. Deux lots proposés (A et B) |
 | 2026-11-20 | 3c, lot A (hooks macOS) | `MacOSXHooks` sans réflexion ni `com.apple.eawt`, `PicsouMacLookAndFeel` supprimé (+56 −202 lignes) ; 2 139 `.class`, `target/dist` 11 Mo, `budgetview.jar` 4,55 Mo. Tests de `bv_desktop` 1 026 verts, 11 min ; menus vérifiés dans l'appli |
+| 2026-11-20 | 3c, lot B (navigateur) | 3 services à `Runtime.exec` remplacés par `Desktop.browse` (+24 −67 lignes) ; 2 136 `.class` (−3), `target/dist` 11 Mo, `budgetview.jar` 4,54 Mo. Tests de `bv_desktop` 1 026 verts, 19 min ; liens d'aide vérifiés dans l'appli. **3c terminé** |
