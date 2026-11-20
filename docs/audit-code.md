@@ -131,6 +131,8 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
 
 - [ ] **3a. Alertes du compilateur** : compiler avec `-Xlint:all` et classer ce qui ressort
   (dépréciations, types bruts, `finalize`…).
+  Inventaire fait le 2026-11-20, voir [3a, inventaire](#3a-inventaire) plus bas : ~2 000 alertes, dont ~1 900 de
+  bruit ou hors sujet ; ~70 corrections mécaniques en deux lots, décision attendue sur les lots C et D.
 - [ ] **3b. OpenRewrite** : passer les recettes de migration Java 8 → 21 en mode `dryRun`,
   relire le diff et n'appliquer que par familles.
 - [ ] **3c. Intégration macOS** : `com.apple.eawt` (2 fichiers) → `java.awt.Desktop` (Java 9 et +).
@@ -929,6 +931,86 @@ avec les autres et réécrire ces tests sur `panel`, qui a les mêmes attributs 
   −101 de tests (9 tests ; `testScrollPane` ne vérifie plus que le pas vertical). `splits` : **132 classes, 7 361 lignes
   de code** (138 et 7 790 au départ). Tests de `globs` 796 verts.
 
+## 3a, inventaire
+
+Fait le 2026-11-20, sans rien modifier.
+
+**Méthode.** Les `pom` ne demandent aucune alerte. Chaque module du réacteur est recompilé à part, sources principales
+puis tests, par `javac --release 21 -Xlint:all -Xmaxwarns 1000000 -proc:none` sur son classpath Maven
+(`dependency:build-classpath`), dans un dossier temporaire. Tout compile.
+
+| Catégorie | globs | prevayler | siteweaver | bv_shared | bv_desktop | Total |
+|---|---|---|---|---|---|---|
+| `serial` | 138 / 2 | 1 / 0 | 2 / 0 | 2 / 0 | 502 / 1 | 648 |
+| `rawtypes` | 185 / 93 | 25 / 4 | 2 / 26 | 0 | 57 / 15 | 407 |
+| `deprecation` | 7 / 40 | 0 | 0 | 13 / 0 | 54 / 247 | 361 |
+| `unchecked` | 124 / 57 | 9 / 1 | 0 / 13 | 0 | 22 / 88 | 314 |
+| `this-escape` | 38 / 0 | 1 / 0 | 0 | 1 / 0 | 145 / 13 | 198 |
+| `removal` | 6 / 6 | 4 / 1 | 0 / 1 | 0 | 6 / 0 | 24 |
+| varargs (sans catégorie) | 0 | 0 | 0 | 0 | 11 / 9 | 20 |
+| `dep-ann` | 0 | 0 | 0 | 1 / 0 | 9 / 1 | 11 |
+| `static` | 0 / 1 | 0 | 0 | 0 | 1 / 4 | 6 |
+| `fallthrough`, `cast`, `overloads` | 0 | 0 / 0 / 1 | 0 / 1 / 0 | 0 | 1 / 0 / 0 | 3 |
+
+(sources principales / tests ; `bv_shared` n'a pas de tests.)
+
+**À corriger, mécanique et sans effet sur le comportement.**
+- `finalize` (5 méthodes : `FillPainter`, `GradientPainter`, `ReplicationGlobRepository` dans `globs`,
+  `HyperlinkTableColumn`, `TextFilterPanel` dans `bv_desktop`) : chacune désinscrit l'objet d'un service
+  (`ColorService`, repository) qui le tient par une référence forte (`HashSet`, `ArrayList`). L'objet ne devient donc
+  récupérable qu'avec le service, et se désinscrire d'un service mort ne sert à rien : ces méthodes ne font rien
+  d'utile. À supprimer, ce qui n'ouvre pas de fuite qui n'existe déjà.
+- Constructeurs de types enveloppes promis à la suppression : `new Long(…)` (`PrevaylerDirectory`, 4, dans des
+  `compareTo`), `new Double(0.00)` (`PlannedSeriesStatTrigger`, `SeriesChartsPanel`), `new Boolean` (`ArrayUtils`),
+  `new Integer` (`XmlComparator` et 5 tests). Aucun n'est comparé par `==` : `valueOf`, ou `Long.compare`.
+- Petites alertes : 1 transtypage redondant (`siteweaver`), 6 appels statiques faits sur une instance, 11 éléments
+  marqués `@deprecated` en javadoc sans l'annotation (les champs anciens du modèle et `model/deprecated`, gardés pour
+  l'upgrade : l'annotation ne change rien d'autre), `Class.newInstance()` (2, `globs`) →
+  `getDeclaredConstructor().newInstance()` (les exceptions changent de forme : vérifier que les appelants attrapent
+  large), `new Locale(…)` → `Locale.of` (2), `new URL` → `URI.toURL` (1 test).
+- Varargs (20) : un `String...` repassé tel quel à `Lang.get(String, Object...)`. Java le prend bien comme tableau
+  d'arguments, ce que veut le code ; un transtypage `(Object[])` fait taire l'alerte. Valeur faible.
+
+**À traiter ailleurs.**
+- `Runtime.exec(String)` (3 : `MacBrowsingService`, `UnixBrowsingService`, `WindowsBrowsingService`) : ces trois
+  classes ouvrent le navigateur par la ligne de commande ; `java.awt.Desktop.browse` les remplace. Rattaché à **3c**.
+- Masques `InputEvent` (`CTRL_MASK`… et `getModifiers()`, 17 alertes dans `Gui`, `GuiUtils`, `GlobTableView`,
+  `StackChart`) : **pas mécanique**. Dans l'ancien système, `BUTTON3_MASK` vaut `META_MASK` (4) : sur Mac, un clic avec
+  Cmd passe pour un clic droit dans `GlobTableView` et `GuiUtils`. Passer aux masques `*_DOWN_MASK` et à
+  `getModifiersEx()` séparerait les deux, et uispec4j simule les clics avec ses propres modificateurs. Comportement à
+  figer par un test avant tout changement : rattaché à **4a**. Au passage, `Gui` contient deux fois le même test de
+  modificateurs (l. 188 et 235).
+- Types bruts et conversions non vérifiées (~720, dont ~510 dans `globs`) : les supprimer revient à généraliser l'API
+  de `globs`, une réécriture et non un remplacement. À revoir en **3b** si OpenRewrite en traite une partie sûre.
+- `junit.framework.Assert` (268 alertes, tests de `globs` et `bv_desktop`) : déprécié par JUnit 4, toujours là en
+  JUnit 4.13. Remplacer l'import par `org.junit.Assert` est mécanique, mais ne gagne rien tant que les tests restent en
+  JUnit 3 (`TestCase`) ; à voir avec l'étape 5.
+- Apache HttpClient 4 (13 alertes, `bv_shared/.../http/Http.java`) : utilisé seulement par le cloud et Budgea, coupés par
+  `isServerEnabled()` et gardés par décision en 1b. À migrer vers `java.net.http` le jour où ils reviendraient.
+
+**Bruit, à ne pas traiter.**
+- `serial` (648) : sous-classes Swing et exceptions sans `serialVersionUID`. Rien ne les sérialise. Les seules classes
+  `Serializable` qui comptent sont les transactions des utilisateurs (`persistence/prevayler/users`, 11) et `Capsule`
+  de `prevayler` : leur ajouter un `serialVersionUID` changerait l'identifiant calculé aujourd'hui, donc risquerait la
+  relecture des journaux de la 5.01. Ne jamais le faire sans le test de non-régression des données.
+- `this-escape` (198) : constructeurs Swing qui appellent leurs propres méthodes ; alerte apparue en Java 21, sans
+  défaut connu derrière.
+- Champs `@deprecated` du modèle (`Project.SERIES`, `Transaction.CREATED_BY_SERIES`, `model/deprecated`…) : voulus, lus
+  par `model/upgrade`.
+- `fallthrough` de `SeriesWrapperStringifier` (le `case SUMMARY` tombe sur un `throw`, voulu) ; `overloads` de
+  `Prevayler.execute` (API d'origine).
+
+**Lots proposés.**
+
+| Lot | Contenu | Taille | Risque |
+|---|---|---|---|
+| A. `removal` | 5 `finalize` supprimés, constructeurs enveloppes remplacés | 24 alertes, ~10 fichiers | nul : tests de `globs`, `prevayler` et `bv_desktop` |
+| B. Petites alertes | `cast`, `static`, `dep-ann`, `Class.newInstance`, `Locale`, `URL`, varargs | ~45 alertes, ~30 fichiers | faible ; varargs facultatif |
+| C. Garde-fou | Faire afficher par Maven les catégories utiles (`-Xlint:removal,cast,static,dep-ann,fallthrough,overloads,varargs`), les autres restant muettes | 5 `pom` | nul ; une nouvelle alerte se verrait au build |
+| D. `junit.framework.Assert` | Import remplacé par `org.junit.Assert` dans les tests | 268 alertes, ~60 fichiers | nul, mais sans gain tant que les tests restent en JUnit 3 |
+
+Recommandation : A, B et C ; D attend l'étape 5.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -966,3 +1048,4 @@ avec les autres et réécrire ces tests sur `panel`, qui a les mêmes attributs 
 | 2026-11-20 | 2d, lot A (fichiers morts) | Dossier `splits/` (5 fichiers) et 9 démos de `globs/src/test` (297 lignes, plus 2 fichiers XML) supprimés ; code livré inchangé. Tests de `globs` 813 verts |
 | 2026-11-20 | 2d, lot B (balises) | 5 balises, 3 classes et le pied de liste des répétitions supprimés (−184 lignes de Java, −195 de tests), schéma `splits.xsd` −58 lignes ; `globs-1.0.jar` 962 Ko (−5 Ko). Tests de `globs` 805 verts (−8) ; `bv_desktop` 1 026 verts, 9 min |
 | 2026-11-20 | 2d, lot C (formes et attributs) | 2 bordures, 3 icônes (3 classes), 2 attributs supprimés (−348 lignes de code, −101 de tests) ; `splits` 132 classes, 7 361 lignes ; `globs-1.0.jar` 952 Ko (−10 Ko), `target/dist` 11 Mo. Tests de `globs` 796 verts (−9) ; `bv_desktop` 1 026 verts, 9 min. **2d terminé, étape 2 terminée** |
+| 2026-11-20 | 3a, inventaire | Rien de modifié. `-Xlint:all` sur les 5 modules du réacteur : ~2 000 alertes (sources principales 1 369, tests 623), dont `serial` 648, types bruts et `unchecked` 721, dépréciations 361 (268 pour `junit.framework.Assert`), `this-escape` 198, `removal` 24 (5 `finalize` inopérants). ~70 corrections mécaniques ; `Runtime.exec` renvoyé à 3c, masques `InputEvent` à 4a. Quatre lots proposés (A à D) |
