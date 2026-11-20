@@ -244,7 +244,6 @@
       <xs:attribute name="viewportBackground" type="xs:string"/>
       <xs:attribute name="viewportOpaque" type="xs:boolean"/>
       <xs:attribute name="verticalUnitIncrement" type="xs:integer"/>
-      <xs:attribute name="horizontalUnitIncrement" type="xs:integer"/>
       <xs:attribute name="forceVerticalScroll" type="xs:boolean"/>
       <xs:attribute name="verticalScrollbarPolicy">
         <xs:simpleType>
@@ -632,7 +631,6 @@
       <xs:attribute name="text" type="xs:string"/>
       <xs:attribute name="editable" type="xs:boolean"/>
       <xs:attribute name="hyperlinkListener" type="xs:string"/>
-      <xs:attribute name="useImageLocator" type="xs:boolean"/>
     </xs:complexType>
   </xs:element>
 
@@ -707,8 +705,8 @@
     <xs:attribute name="border" type="xs:string">
       <xs:annotation>
         <xs:documentation xml:lang="en">
-          Adds a Border around the component. Value can be one of "none", "etched", "bevel(lowered)", "bevel(raised)"
-          or "matte(top,left,bottom,right,#color)".
+          Adds a Border around the component. Value can be one of "none", "empty", "etched", "empty(…)",
+          "matte(top,left,bottom,right,#color)" or "line(#color)".
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>

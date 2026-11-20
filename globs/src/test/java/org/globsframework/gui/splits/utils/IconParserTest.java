@@ -34,21 +34,6 @@ public class IconParserTest extends TestCase {
     assertEquals(Color.GREEN, icon.getColor());
   }
 
-  public void testCircledArrowWithFixedColor() throws Exception {
-    CircledArrowIcon icon = (CircledArrowIcon) parse("circledArrow(#FF0000)");
-    assertEquals(Color.RED, icon.getColor());
-  }
-
-  public void testCircledArrowWithNamedColor() throws Exception {
-    colorService.set("my.color", Color.BLUE);
-
-    CircledArrowIcon icon = (CircledArrowIcon) parse("circledArrow(my.color)");
-    assertEquals(Color.BLUE, icon.getColor());
-
-    colorService.set("my.color", Color.GREEN);
-    assertEquals(Color.GREEN, icon.getColor());
-  }
-
   public void testArrowButton() throws Exception {
     ArrowButtonIcon icon = (ArrowButtonIcon) parse("arrowButton(10,20,#FF0000)");
     assertEquals(10, icon.getIconWidth());
@@ -78,42 +63,6 @@ public class IconParserTest extends TestCase {
     EmptyIcon icon = (EmptyIcon) parse("empty(12,15)");
     assertEquals(12, icon.getIconWidth());
     assertEquals(15, icon.getIconHeight());
-  }
-
-  public void testRect() throws Exception {
-    RectIcon icon = (RectIcon) parse("rect(10,20,#FF0000,#00FF00)");
-    assertEquals(10, icon.getIconWidth());
-    assertEquals(20, icon.getIconHeight());
-    assertEquals(Color.RED, icon.getBackgroundColor());
-    assertEquals(Color.GREEN, icon.getBorderColor());
-  }
-
-  public void testRoundedRect() throws Exception {
-    RoundedRectIcon icon = (RoundedRectIcon) parse("roundedRect(10,20,1,2,#FF0000,#00FF00)");
-    assertEquals(10, icon.getIconWidth());
-    assertEquals(20, icon.getIconHeight());
-    assertEquals(1, icon.getArcX());
-    assertEquals(2, icon.getArcY());
-    assertEquals(Color.RED, icon.getBackgroundColor());
-    assertEquals(Color.GREEN, icon.getBorderColor());
-  }
-
-  public void testRoundedRectWithNamedColors() throws Exception {
-    colorService.set("rect.bg", Color.BLUE);
-    colorService.set("rect.border", Color.WHITE);
-
-    RoundedRectIcon icon = (RoundedRectIcon) parse("roundedRect(15,25,5,10,rect.bg,rect.border)");
-    assertEquals(15, icon.getIconWidth());
-    assertEquals(25, icon.getIconHeight());
-    assertEquals(5, icon.getArcX());
-    assertEquals(10, icon.getArcY());
-    assertEquals(Color.BLUE, icon.getBackgroundColor());
-    assertEquals(Color.WHITE, icon.getBorderColor());
-
-    colorService.set("rect.bg", Color.PINK);
-    colorService.set("rect.border", Color.GREEN);
-    assertEquals(Color.PINK, icon.getBackgroundColor());
-    assertEquals(Color.GREEN, icon.getBorderColor());
   }
 
   public void testOval() throws Exception {

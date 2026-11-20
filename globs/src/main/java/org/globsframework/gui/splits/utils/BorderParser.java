@@ -9,7 +9,6 @@ import org.globsframework.gui.splits.components.MutableMatteBorder;
 import org.globsframework.gui.splits.exceptions.SplitsException;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.util.regex.Matcher;
@@ -47,12 +46,6 @@ public class BorderParser {
     }
     if (desc.equalsIgnoreCase("etched")) {
       return BorderFactory.createEtchedBorder();
-    }
-    if (desc.equalsIgnoreCase("bevel(lowered)")) {
-      return BorderFactory.createBevelBorder(BevelBorder.LOWERED);
-    }
-    if (desc.equalsIgnoreCase("bevel(raised)")) {
-      return BorderFactory.createBevelBorder(BevelBorder.RAISED);
     }
 
     Matcher shortEmptyMatcher = EMPTY_SHORT_FORMAT.matcher(desc.trim());
@@ -116,8 +109,6 @@ public class BorderParser {
     throw new SplitsException("Unknown border type '" + desc + "' - possible examples:\n" +
                               "- empty(2,3,4,5)\n" +
                               "- etched\n" +
-                              "- bevel(lowered)\n" +
-                              "- bevel(raised)\n" +
                               "- matte(1,2,3,4,#00FF00)\n" +
                               "- line(#00FF00)");
   }

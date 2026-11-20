@@ -129,31 +129,6 @@ public class SplitsComponentsTest extends SplitsTestCase {
     assertEquals("link", log.toString());
   }
 
-  public void testUsingAnImageLocatorInHtmlComponents() throws Exception {
-    textLocator.set("editor.text", "<html><img src='anImage'/></html>");
-    parse("<htmlEditorPane text='$editor.text' useImageLocator='true'/>");
-    assertEquals("anImage", iconLocator.lastRequestedImageName);
-  }
-
-  public void testSettingTheImageLocatorOnAnHtmlEditorDoesNoClearTheText() throws Exception {
-    JEditorPane editor = new JEditorPane();
-    GuiUtils.initReadOnlyHtmlComponent(editor);
-    final String text = "<html><img src='anImage'></html>";
-    editor.setText(text);
-    builder.add("editor", editor);
-
-    TextBox textBox = new TextBox((JEditorPane)parse("<htmlEditorPane ref='editor' useImageLocator='true'/>"));
-
-    assertThat(textBox.htmlEquals("<html>\n" +
-                                  "  <head>\n" +
-                                  "  </head>\n" +
-                                  "  <body>\n" +
-                                  "    <img src='anImage'>\n" +
-                                  "  </body>\n" +
-                                  "</html>"));
-    assertEquals("anImage", iconLocator.lastRequestedImageName);
-  }
-
   public void testCreatingAComboBox() throws Exception {
     JComboBox combo = parse("<comboBox/>");
     assertNotNull(combo);
@@ -254,13 +229,12 @@ public class SplitsComponentsTest extends SplitsTestCase {
   public void testScrollPane() throws Exception {
     builder.add(aTable);
     JScrollPane scrollPane = parse(
-      "<scrollPane verticalUnitIncrement='12' horizontalUnitIncrement='15'" +
+      "<scrollPane verticalUnitIncrement='12'" +
       "            verticalScrollbarPolicy='always' horizontalScrollbarPolicy='asNeeded'>" +
       "  <table ref='aTable'/>" +
       "</scrollPane>");
     assertSame(scrollPane, aTable.getParent().getParent());
     assertEquals(12, scrollPane.getVerticalScrollBar().getUnitIncrement());
-    assertEquals(15, scrollPane.getHorizontalScrollBar().getUnitIncrement());
     assertEquals(0, scrollPane.getVerticalScrollBar().getValue());
 
     assertEquals(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, scrollPane.getVerticalScrollBarPolicy());
@@ -350,12 +324,6 @@ public class SplitsComponentsTest extends SplitsTestCase {
       "  <button/>" +
       "</scrollPane>",
       "horizontalScrollbarPolicy cannot be set when forceVerticalScroll is set to true");
-
-    checkParsingError(
-      "<scrollPane forceVerticalScroll='true' horizontalUnitIncrement='10'>" +
-      "  <button/>" +
-      "</scrollPane>",
-      "horizontalUnitIncrement cannot be set when forceVerticalScroll is set to true");
 
   }
 
@@ -540,14 +508,6 @@ public class SplitsComponentsTest extends SplitsTestCase {
 
   public void testEtchedBorder() throws Exception {
     checkBorder("etched", EtchedBorder.class);
-  }
-
-  public void testBevelBorder() throws Exception {
-    BevelBorder lowered = checkBorder("bevel(lowered)", BevelBorder.class);
-    assertEquals(BevelBorder.LOWERED, lowered.getBevelType());
-
-    BevelBorder raised = checkBorder("bevel(raised)", BevelBorder.class);
-    assertEquals(BevelBorder.RAISED, raised.getBevelType());
   }
 
   public void testResettingTheBorderWithAnEmptyString() throws Exception {

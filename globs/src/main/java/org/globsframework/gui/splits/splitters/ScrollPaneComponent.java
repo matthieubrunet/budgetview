@@ -71,15 +71,6 @@ public class ScrollPaneComponent extends AbstractSplitter {
       scrollPane.getVerticalScrollBar().setUnitIncrement(verticalUnitIncrement);
     }
 
-    Integer horizontalUnitIncrement = properties.getInt("horizontalUnitIncrement");
-    if (horizontalUnitIncrement != null) {
-      if (forceVerticalScroll) {
-        throw new SplitsException("horizontalUnitIncrement cannot be set when forceVerticalScroll is set to true" +
-                                  context.dump());
-      }
-      scrollPane.getHorizontalScrollBar().setUnitIncrement(horizontalUnitIncrement);
-    }
-
     String horizontalPolicy = properties.getString("horizontalScrollbarPolicy");
     if (horizontalPolicy != null) {
       if (forceVerticalScroll) {
@@ -130,7 +121,7 @@ public class ScrollPaneComponent extends AbstractSplitter {
 
   protected String[] getExcludedParameters() {
     return new String[]{"viewportBackground", "viewportOpaque",
-                        "verticalUnitIncrement", "horizontalUnitIncrement",
+                        "verticalUnitIncrement",
                         "verticalScrollbarPolicy", "horizontalScrollbarPolicy",
                         "forceVerticalScroll", "scrollbarUI"};
   }

@@ -119,9 +119,11 @@ n'utilise sans doute qu'une partie de leurs API.
   plus bas : environ la moitié du code est morte, dont une bonne part par configuration, que ProGuard ne voit pas.
   Lots 0 à C faits le 2026-11-20 : tests du module remis en marche, 299 fichiers annexes et 47 classes supprimés ;
   `prevayler` 56 classes, 1 686 lignes de code, jar 121 → 60 Ko. Lot D (journal en mémoire) gardé, fusion écartée.
-- [ ] **2d. `splits`** : balises et composants jamais utilisés dans les `.splits`.
+- [x] **2d. `splits`** : balises et composants jamais utilisés dans les `.splits`.
   Inventaire fait le 2026-11-20, voir [2d, inventaire](#2d-inventaire) plus bas : peu de chose à retirer (~350 lignes
   sur 7 800), le gros du tri ayant été fait par 2a ; s'y ajoutent la coquille du dossier `splits/` et 9 démos.
+  Lots A à C faits le 2026-11-20 : dossier `splits/` et démos supprimés, 5 balises, 2 bordures, 3 icônes et 2 attributs
+  retirés ; `splits` 132 classes, 7 361 lignes de code ; tests de `globs` 813 → 796.
 
 ## Étape 3 : ce que Java fait maintenant tout seul
 
@@ -920,6 +922,12 @@ avec les autres et réécrire ces tests sur `panel`, qui a les mêmes attributs 
   `testSizes`, `testComplexContainment` et `testCanUseReferencedComponentsForColumnsAndRows` passent de `frame` ou
   `borderLayout` à `panel` ou `column` ; les deux tests d'en-tête et de pied en disposition `verticalGrid` gardent
   l'en-tête. Tests de `globs` 805 verts.
+- Lot C (2026-11-20) : bordures `bevel(lowered)` et `bevel(raised)` (et leur mention dans le message d'erreur de
+  `BorderParser`), icônes `circledArrow`, `rect`, `roundedRect` avec `CircledArrowIcon`, `RectIcon`, `RoundedRectIcon`,
+  attributs `horizontalUnitIncrement` et `useImageLocator` supprimés, aussi dans `splits.xsd`. `useImageLocator` emportait
+  un kit HTML qui allait chercher les images par `ImageLocator` (~90 lignes de `HtmlEditorPane`). −348 lignes de code,
+  −101 de tests (9 tests ; `testScrollPane` ne vérifie plus que le pas vertical). `splits` : **132 classes, 7 361 lignes
+  de code** (138 et 7 790 au départ). Tests de `globs` 796 verts.
 
 ## Journal
 
@@ -957,3 +965,4 @@ avec les autres et réécrire ces tests sur `panel`, qui a les mêmes attributs 
 | 2026-11-20 | 2d, inventaire | Rien de modifié. `splits` (dans `globs`) : 138 classes, 7 790 lignes de code ; 5 balises sur 34 jamais écrites, 2 bordures, 3 icônes et 2 attributs explicites sur 36 jamais utilisés (~310 lignes, 6 classes) ; dossier `splits/` réduit à une coquille (5 fichiers) ; 9 démos (297 lignes) dans les tests de `globs`. Tests de `globs` 813 verts, 49 s. Trois lots proposés (A à C), décision attendue sur `frame` |
 | 2026-11-20 | 2d, lot A (fichiers morts) | Dossier `splits/` (5 fichiers) et 9 démos de `globs/src/test` (297 lignes, plus 2 fichiers XML) supprimés ; code livré inchangé. Tests de `globs` 813 verts |
 | 2026-11-20 | 2d, lot B (balises) | 5 balises, 3 classes et le pied de liste des répétitions supprimés (−184 lignes de Java, −195 de tests), schéma `splits.xsd` −58 lignes ; `globs-1.0.jar` 962 Ko (−5 Ko). Tests de `globs` 805 verts (−8) ; `bv_desktop` 1 026 verts, 9 min |
+| 2026-11-20 | 2d, lot C (formes et attributs) | 2 bordures, 3 icônes (3 classes), 2 attributs supprimés (−348 lignes de code, −101 de tests) ; `splits` 132 classes, 7 361 lignes ; `globs-1.0.jar` 952 Ko (−10 Ko), `target/dist` 11 Mo. Tests de `globs` 796 verts (−9) ; `bv_desktop` 1 026 verts, 9 min. **2d terminé, étape 2 terminée** |

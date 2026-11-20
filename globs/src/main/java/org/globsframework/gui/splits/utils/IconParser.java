@@ -34,26 +34,6 @@ public class IconParser {
                                                                "[ ]*([A-z\\.#0-9]+)[ ]*" +
                                                                "\\)");
 
-  private static Pattern CIRCLED_ARROW_FORMAT = Pattern.compile("circledArrow\\(" +
-                                                                "[ ]*([A-z\\.#0-9]+)[ ]*" +
-                                                                "\\)");
-
-  private static Pattern RECT_FORMAT = Pattern.compile("rect\\(" +
-                                                       "[ ]*([0-9]+)[ ]*," +
-                                                       "[ ]*([0-9]+)[ ]*," +
-                                                       "[ ]*([A-z\\.#0-9]+)[ ]*," +
-                                                       "[ ]*([A-z\\.#0-9]+)[ ]*" +
-                                                       "\\)");
-
-  private static Pattern ROUNDED_RECT_FORMAT = Pattern.compile("roundedRect\\(" +
-                                                               "[ ]*([0-9]+)[ ]*," +
-                                                               "[ ]*([0-9]+)[ ]*," +
-                                                               "[ ]*([0-9]+)[ ]*," +
-                                                               "[ ]*([0-9]+)[ ]*," +
-                                                               "[ ]*([A-z\\.#0-9]+)[ ]*," +
-                                                               "[ ]*([A-z\\.#0-9]+)[ ]*" +
-                                                               "\\)");
-
   private static Pattern OVAL_FORMAT = Pattern.compile("oval\\(" +
                                                        "[ ]*([0-9]+)[ ]*," +
                                                        "[ ]*([0-9]+)[ ]*," +
@@ -90,24 +70,9 @@ public class IconParser {
       return arrow;
     }
 
-    CircledArrowIcon circledArrow = parseCircledArrow(text, colorService, context);
-    if (circledArrow != null) {
-      return circledArrow;
-    }
-
     ArrowButtonIcon arrowButton = parseArrowButton(text, colorService, context);
     if (arrowButton != null) {
       return arrowButton;
-    }
-
-    RectIcon rect = parseRect(text, colorService, context);
-    if (rect != null) {
-      return rect;
-    }
-
-    RoundedRectIcon roundedRect = parseRoundedRect(text, colorService, context);
-    if (roundedRect != null) {
-      return roundedRect;
     }
 
     OvalIcon oval = parseOval(text, colorService, context);
@@ -157,17 +122,6 @@ public class IconParser {
     return new EmptyIcon(iconWidth, iconHeight);
   }
 
-  private static CircledArrowIcon parseCircledArrow(String text, ColorService colorService, SplitsContext context) {
-    Matcher arrowMatcher = CIRCLED_ARROW_FORMAT.matcher(text.trim());
-    if (!arrowMatcher.matches()) {
-      return null;
-    }
-
-    CircledArrowIcon icon = new CircledArrowIcon();
-    setSingleColor(icon, arrowMatcher.group(1), context, colorService);
-    return icon;
-  }
-
   private static ArrowButtonIcon parseArrowButton(String text, ColorService colorService, SplitsContext context) {
     Matcher matcher = ARROW_BUTTON_FORMAT.matcher(text.trim());
     if (!matcher.matches()) {
@@ -179,44 +133,6 @@ public class IconParser {
 
     ArrowButtonIcon icon = new ArrowButtonIcon(iconWidth, iconHeight);
     setSingleColor(icon, matcher.group(3), context, colorService);
-    return icon;
-  }
-
-  private static RectIcon parseRect(String text, ColorService colorService, SplitsContext context) {
-    Matcher matcher = RECT_FORMAT.matcher(text.trim());
-    if (!matcher.matches()) {
-      return null;
-    }
-
-    int iconWidth = Integer.parseInt(matcher.group(1));
-    int iconHeight = Integer.parseInt(matcher.group(2));
-
-    RectIcon icon = new RectIcon(iconWidth, iconHeight);
-    setBackgroundAndBorderColor(icon,
-                                matcher.group(3),
-                                matcher.group(4),
-                                colorService, context);
-
-    return icon;
-  }
-
-  private static RoundedRectIcon parseRoundedRect(String text, ColorService colorService, SplitsContext context) {
-    Matcher matcher = ROUNDED_RECT_FORMAT.matcher(text.trim());
-    if (!matcher.matches()) {
-      return null;
-    }
-
-    int iconWidth = Integer.parseInt(matcher.group(1));
-    int iconHeight = Integer.parseInt(matcher.group(2));
-    int arcX = Integer.parseInt(matcher.group(3));
-    int arcY = Integer.parseInt(matcher.group(4));
-
-    RoundedRectIcon icon = new RoundedRectIcon(iconWidth, iconHeight, arcX, arcY);
-    setBackgroundAndBorderColor(icon,
-                                matcher.group(5),
-                                matcher.group(6),
-                                colorService, context);
-
     return icon;
   }
 

@@ -48,15 +48,6 @@ public class BorderParserTest extends UISpecTestCase {
     assertTrue(border instanceof EtchedBorder);
   }
 
-  public void testBevel() throws Exception {
-    String text = "bevel(lowered)";
-    Border loweredBevel = parse(text);
-    assertTrue(loweredBevel instanceof BevelBorder);
-
-    Border raisedBevel = parse("bevel(raised)");
-    assertTrue(raisedBevel instanceof BevelBorder);
-  }
-
   public void testMatteBorderWithFixedColor() throws Exception {
     Border border = parse("matte(1,2,3,4,#00FF00)");
     assertTrue(border instanceof MatteBorder);
