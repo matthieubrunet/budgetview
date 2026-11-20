@@ -1,9 +1,7 @@
 package org.saxstack.utils;
 
 import org.saxstack.parser.ExceptionHolder;
-import org.saxstack.parser.SaxStackParser;
 import org.saxstack.parser.XmlAttributeNotFoundException;
-import org.saxstack.writer.*;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -11,10 +9,6 @@ import org.xml.sax.XMLReader;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
 
 /**
  * Built-in entity reference Replaces character
@@ -84,46 +78,6 @@ public class XmlUtils {
 
   public static String addInCDataValue(String xmlString) {
     return new StringBuffer("<![CDATA[").append(xmlString).append("]]>").toString();
-  }
-
-  public static String format(String input, XMLReader parser, int attributeCountOnLine) throws IOException {
-    Writer output = new StringWriter();
-    SaxStackParser.parse(parser,
-                         new XmlNodeToBuilder(new PrettyPrintRootXmlTag(output, attributeCountOnLine), null),
-                         new StringReader(input));
-    return output.toString();
-  }
-
-  public static void build(Filter filter, XmlRootBuilder rootBuilder, XmlTag root) throws IOException {
-    if (filter == null) {
-      filter = new FilterNone();
-    }
-    String tagName = rootBuilder.getTagName();
-    XmlTag xmlTag = filter.enter(root, tagName);
-    XmlNodeBuilder[] xmlExporterNodes = rootBuilder.process(xmlTag);
-    write(xmlTag, xmlExporterNodes, filter);
-    xmlTag.end();
-    filter.leave();
-  }
-
-  private static void write(XmlTag parentTag, XmlNodeBuilder[] xmlWriters, Filter filter)
-    throws IOException {
-    for (int i = 0; i < xmlWriters.length; i++) {
-      write(parentTag, xmlWriters[i], filter);
-    }
-  }
-
-  private static void write(XmlTag parentTag, XmlNodeBuilder xmlBuilder, Filter factory) throws IOException {
-    if (parentTag instanceof NullXmlTag) {
-      return;
-    }
-    while (xmlBuilder.hasNext()) {
-      String nextTagName = xmlBuilder.getNextTagName();
-      XmlTag newTag = factory.enter(parentTag, nextTagName);
-      write(newTag, xmlBuilder.processNext(newTag), factory);
-      factory.leave();
-      newTag.end();
-    }
   }
 
   public static XMLReader getXmlReader() {
