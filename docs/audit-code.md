@@ -46,6 +46,10 @@ Il faut mesurer (étapes 1 et 2), puis interroger l'historique git (étape 4).
 - **Le commit d'un lot est ce qui a été testé** : ne pas préparer le lot suivant dans l'arbre de travail pendant que la
   suite du lot en cours tourne (en 2c, il a fallu mettre le lot C de côté et reconstruire l'état du lot B avant de le
   commiter). Attendre, ou préparer dans une copie hors de l'arbre.
+- **Enveloppes et ternaires** : dans `c ? unDouble : 0.00`, le `double` nu fait déballer l'autre branche, qui lève
+  alors une `NullPointerException` si elle vaut `null` (vu en 3a, lot A, sur `new Double(0.00)`). En remplaçant un
+  constructeur `Integer`, `Long`, `Double`… dans un ternaire, garder un objet : `Double.valueOf(0.00)`. Vaut pour tout
+  remplacement de l'étape 3 (OpenRewrite compris) : relire chaque ternaire qui mélange les deux.
 
 ## Étape 1 : le code mort, mesuré
 
@@ -165,6 +169,9 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   mêmes lignes.
 - [ ] **5c. Durée** : repérer les classes de test les plus lentes (`target/surefire-reports`) et
   voir si leur coût est justifié.
+- [ ] **5d. Tests de `siteweaver` sous Maven** : comme `prevayler` en 2c (lot 0), ils sont en JUnit 3.8.1, que surefire
+  refuse ; ils n'ont jamais tourné par Maven. Passer à JUnit 4.12+ dans son `pom`. Lancés à la main en 3a (JUnitCore) :
+  72, dont 10 échecs anciens à trier (7 de `SiteUploaderTest`, 3 classes sans test, qu'un `TestSuite` signale).
 - Chantier suivant, à part : compléter les tests unitaires et corriger les défauts d'import relevés
   par le sondage du 2026-11-18, voir [tests-unitaires.md](tests-unitaires.md).
 - Ne pas toucher aux tests fonctionnels qui couvrent des fonctions encore utilisées : ce sont
