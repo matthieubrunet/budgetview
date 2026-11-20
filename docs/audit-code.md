@@ -150,6 +150,9 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   blancs de fin de ligne. Lots A (recettes sûres, 102 fichiers) et C (plugins) faits le 2026-11-20 ; B (blocs de texte)
   non retenu, D rejeté.
 - [ ] **3c. Intégration macOS** : `com.apple.eawt` (2 fichiers) → `java.awt.Desktop` (Java 9 et +).
+  Inventaire fait le 2026-11-20, voir [3c, inventaire](#3c-inventaire) plus bas : `java.awt.Desktop` déjà en place
+  depuis le passage à Java 17, mais par réflexion et avec un repli `com.apple.eawt` mort ; navigateur lancé par trois
+  `Runtime.exec(String)` selon le système. Deux lots proposés (A et B).
 - [ ] **3d. Utilitaires maison** (`Utils`, `Strings`, `Files`…) comparés à `java.util`,
   `java.nio.file`, `Objects`, `String` (`isBlank`, `repeat`, `strip`…).
 - [ ] **3e. Collections synchronisées** (`Vector`, `Hashtable`, `StringBuffer`, 5 fichiers).
@@ -1132,6 +1135,48 @@ attendus des tests fonctionnels, mais c'est le gain le plus faible des trois).
   `globs` 796, `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable, verte relancée
   seule, deux fois), 9 min.
 
+## 3c, inventaire
+
+Fait le 2026-11-20, sans rien modifier dans l'arbre.
+
+**Menus et fichiers macOS.** `MacOSXHooks` (222 lignes) a été réécrit au passage à Java 17 (`befc644d7`) : en Java 9 et
+plus, il passe déjà par `java.awt.Desktop` (`setAboutHandler`, `setPreferencesHandler`, `setQuitHandler`,
+`setOpenFileHandler`). Mais tout est fait **par réflexion**, à travers un `InvocationHandler` commun, pour compiler en
+cible Java 8, et un repli `com.apple.eawt` (gestionnaires, `FullScreenUtilities`) reste derrière un test
+`isJava9OrLater()`. Depuis le passage en `--release 21`, la réflexion ne sert plus et le repli ne peut plus s'exécuter
+(`com.apple.eawt` n'est plus exporté par `java.desktop`). Réécriture directe : quatre lambdas, plus de proxy ni de
+`equals`/`hashCode` à la main, ~100 lignes de moins. Comportement inchangé, dont l'annulation de la demande de sortie
+si `ExitAction` revient. La propriété `apple.awt.fullscreenable` (bouton vert) reste : savoir si elle sert encore
+relève de 4a.
+
+`PicsouMacLookAndFeel` (39 lignes) : seule `initApplicationName()` est appelée (`Application`, `DevDesktopApp`). Le
+reste est mort depuis que `Gui.init` a commenté `UIManager.setLookAndFeel(new PicsouMacLookAndFeel())` (la classe
+n'étend même plus `AquaLookAndFeel`). La propriété `com.apple.mrj.application.apple.menu.about.name` date du Java 6
+d'Apple ; seule `apple.awt.application.name` est lue par le JDK actuel. Proposition : passer `initApplicationName` dans
+`MacOSXHooks`, à côté de `useScreenMenuBar`, et supprimer la classe et la ligne commentée de `Gui`.
+
+**Navigateur.** `BrowsingService` choisit parmi `MacBrowsingService` (`open <url>`), `WindowsBrowsingService`
+(`rundll32 url.dll,FileProtocolHandler <url>`) et `UnixBrowsingService` (`firefox <url>`), tous par
+`Runtime.exec(String)`, déprécié en Java 18 (relevé en 3a et 3b). `DummyBrowsingService` sert aux tests
+(`BrowsingChecker`). `Desktop.browse(URI)` couvre les trois systèmes. Appelants : aide (13 URL `https://`), site de la
+banque (122 URL `http(s)://` dans `banks/`, 11 vides, désactivées), lien d'un élément de projet et banques créées par
+l'utilisateur (saisie libre), licences de l'écran « À propos ». Différences :
+- une adresse saisie sans schéma (`www.exemple.fr`) : `open` la prend pour un fichier et échoue sans rien dire ;
+  `Desktop.browse` échoue aussi. Ajouter `https://` serait une correction de comportement : notée pour après l'audit ;
+- une adresse qui n'est pas une URI (espace…) : `exec` la coupait en morceaux, `new URI` la refuse. Dans les deux cas,
+  rien ne s'ouvre ; on lèverait la même `IOFailure` (« Impossible de lancer le navigateur ») que la version Mac ;
+- sous Linux, `Desktop` demande les bibliothèques GTK, présentes sur un bureau courant, là où l'ancien code exigeait
+  Firefox.
+
+**Lots proposés.**
+
+| Lot | Contenu | Taille | Risque |
+|---|---|---|---|
+| A. Hooks macOS | `MacOSXHooks` sans réflexion ni `com.apple.eawt`, `PicsouMacLookAndFeel` supprimé | 2 classes, ~−130 lignes | faible : à vérifier dans l'appli (À propos, Préférences, Quitter par ⌘Q, plein écran, ouverture d'un fichier par le Finder sur le `.app`) |
+| B. Navigateur | `BrowsingService` concret sur `Desktop.browse`, 3 classes supprimées, `DummyBrowsingService` gardé | 4 classes, ~−40 lignes | faible : tests du navigateur, puis un lien d'aide ouvert dans l'appli |
+
+**Décision de Matthieu (2026-11-20)** : faire A et B.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -1176,3 +1221,4 @@ attendus des tests fonctionnels, mais c'est le gain le plus faible des trois).
 | 2026-11-20 | 3b, inventaire | Rien de modifié. OpenRewrite `UpgradeToJava21` (plugin 6.18.0, `rewrite-migrate-java` 3.20.0) en `dryRun` : 231 fichiers du build, 13 familles. Patch appliqué dans une copie : compile, mais 62 `StackOverflowError` dans les tests de `globs` (`ListFirstAndLast` rend `GlobList.getFirst()` récursive) et `ExportTest` en échec (`UseTextBlocks` efface une tabulation finale). Quatre lots proposés (A à D) |
 | 2026-11-20 | 3b, lot A (recettes sûres) | 102 fichiers, +441 −568 lignes, sans changement de comportement ; `target/dist` 11 Mo, 17 jars, `budgetview.jar` 4,55 Mo. Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues |
 | 2026-11-20 | 3b, lot C (plugins) | `maven-compiler-plugin` 3.16.0, `jacoco` 0.8.16 (6 `pom`, `coverage.sh`) ; 0 `[WARNING]`, `target/dist` 11 Mo. Tests de `globs` 796, `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable), 9 min. **3b terminé** |
+| 2026-11-20 | 3c, inventaire | Rien de modifié. `MacOSXHooks` déjà sur `java.awt.Desktop`, mais par réflexion avec un repli `com.apple.eawt` mort (~130 lignes à retirer avec `PicsouMacLookAndFeel`) ; navigateur par trois `Runtime.exec(String)` (dépréciés), remplaçables par `Desktop.browse`. Deux lots proposés (A et B) |
