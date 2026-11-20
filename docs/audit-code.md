@@ -728,7 +728,7 @@ verts, 12 min), puis la lecture de `PrevaylerFactory` avec les réglages que fai
 code qui n'est atteint que par un réglage jamais fait.
 
 `prevayler` compte 103 fichiers dans `src/main` (5 671 lignes, 3 579 hors commentaires et lignes vides) et 44 dans
-`src/test` (3 905 lignes). `prevayler-1.0.jar` : 204 Ko, 144 entrées. Sur 447 fichiers suivis par git, les 300 autres
+`src/test` (3 905 lignes). `prevayler-1.0.jar` : 121 Ko (204 Ko décompressés), 144 entrées. Sur 447 fichiers suivis par git, les 300 autres
 sont des annexes (plus bas). Licence BSD (Klaus Wuestefeld), texte dans `root/docs/License.txt`.
 
 **Ce que l'application en utilise.** Seul `bv_desktop` s'en sert (16 fichiers ; ni `bv_shared`, ni `bv_server`, ni
@@ -812,6 +812,9 @@ suppression d'un utilisateur, relance.
 - Lot 0 (2026-11-20) : JUnit 3.8.1 → 4.12 et surefire fixé en 3.0.0, comme `globs` (le 3.6 hérité réclame le fournisseur
   JUnit Platform). `MultiMemberGZIPTest` désactivé et exclu dans le `pom` : une classe JUnit 3 sans test échoue
   (« No tests found »). `mvn test -pl prevayler` : 62 verts, 5 s.
+- Lot A (2026-11-20) : 299 fichiers annexes supprimés (2,9 Mo sur disque) ; `root/docs/License.txt` devient
+  `prevayler/LICENSE.txt`, [licence.md](licence.md) mis à jour (`contrib/transactionsFacade`, sous une autre BSD, est
+  parti avec `contrib/`). Restent `pom.xml`, `LICENSE.txt`, `src/main`, `src/test`. Jar inchangé ; tests 62 verts.
 
 ## Journal
 
@@ -841,5 +844,6 @@ suppression d'un utilisateur, relance.
 | 2026-11-20 | 2b, lot B (outils de test) | 13 classes (~810 lignes) et 2 classes de test sorties de `saxstack` vers `globs/src/test` ; `saxstack` 17 classes, 608 lignes ; `saxstack-2.0.jar` 17 Ko (−24 Ko). Tests de `saxstack` 5, `globs` 808 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` déjà connue comme instable (verte relancée seule, deux fois), 13 min |
 | 2026-11-20 | 2b, lot C (Xerces) | `xercesImpl` 2.11 et `xml-apis` retirés des dépendances de `globs` et de `bv_desktop` ; `target/dist` inchangé (11 Mo, 18 jars : ils en étaient déjà exclus). Tests de `globs` 808 verts, `bv_desktop` 1 026 verts, 14 min |
 | 2026-11-20 | 2b, lot D (fusion dans `globs`) | Module `saxstack` supprimé : 17 classes (608 lignes) et 2 classes de test passées dans `globs`, 13 fichiers de site et de `pom` retirés. `globs-1.0.jar` 967 Ko (+15 Ko), `target/dist` 11 Mo, 17 jars (−1). Tests de `globs` 813 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable, verte relancée seule, deux fois), 13 min ; `bv_server` compile. **2b terminé** |
-| 2026-11-20 | 2c, inventaire | Rien de modifié. `prevayler` : 103 classes, 3 579 lignes de code, `prevayler-1.0.jar` 204 Ko ; ~1 700 lignes mortes, dont 32 classes selon ProGuard et ~15 par configuration (réplication, censeur strict, `RWLock`), confirmées à 0 % par JaCoCo (65 classes sur 99) ; ~300 fichiers annexes (~2,7 Mo). Tests du module jamais lancés (JUnit 3.8.1 refusé par surefire) : 63 à la main, 1 échec (gzip, mort). Format sur disque non concerné. `bv_desktop` sous JaCoCo : 1 026 verts, 12 min. Cinq lots proposés (0, A à D) |
+| 2026-11-20 | 2c, inventaire | Rien de modifié. `prevayler` : 103 classes, 3 579 lignes de code, `prevayler-1.0.jar` 121 Ko ; ~1 700 lignes mortes, dont 32 classes selon ProGuard et ~15 par configuration (réplication, censeur strict, `RWLock`), confirmées à 0 % par JaCoCo (65 classes sur 99) ; ~300 fichiers annexes (~2,7 Mo). Tests du module jamais lancés (JUnit 3.8.1 refusé par surefire) : 63 à la main, 1 échec (gzip, mort). Format sur disque non concerné. `bv_desktop` sous JaCoCo : 1 026 verts, 12 min. Cinq lots proposés (0, A à D) |
 | 2026-11-20 | 2c, lot 0 (tests du module) | JUnit 4.12, surefire 3.0.0 : tests de `prevayler` lancés par Maven pour la première fois, 62 verts (1 désactivé, gzip), 5 s. Rien de changé hors des tests |
+| 2026-11-20 | 2c, lot A (annexes) | 299 fichiers hors build supprimés (2,9 Mo : builds Ant et Maven 1, `contrib/`, démos, jars et javadoc embarqués) ; licence BSD gardée en `LICENSE.txt`. `prevayler-1.0.jar` inchangé (121 Ko), tests de `prevayler` 62 verts |
