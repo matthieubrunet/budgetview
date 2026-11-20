@@ -16,8 +16,5 @@ public class PrevaylerError extends Error {
 		super(message, cause);
 	}
 
-	public PrevaylerError(Throwable cause) {
-		super(cause);
-	}
 
 }

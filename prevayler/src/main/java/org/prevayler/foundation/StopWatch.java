@@ -16,9 +16,6 @@ public class StopWatch {
 		return System.currentTimeMillis() - t0;
 	}
 
-	public double secondsEllapsed() {
-		return millisEllapsed() / 1000.0;
-	}
 
 	private StopWatch() {
 	}

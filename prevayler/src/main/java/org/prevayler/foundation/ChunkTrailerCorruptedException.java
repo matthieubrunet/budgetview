@@ -14,12 +14,6 @@ public class ChunkTrailerCorruptedException extends PrevaylerIOException {
 		super(message);
 	}
 
-	public ChunkTrailerCorruptedException(String message, Throwable cause) {
-		super(message, cause);
-	}
 
-	public ChunkTrailerCorruptedException(Throwable cause) {
-		super(cause);
-	}
 
 }

@@ -19,9 +19,6 @@ public class JavaSerializer implements Serializer {
 		_loader = null;
 	}
 
-	public JavaSerializer(ClassLoader loader) {
-		_loader = loader;
-	}
 
 	public void writeObject(OutputStream stream, Object object) throws IOException {
 		ObjectOutputStream objects = new ObjectOutputStream(stream);

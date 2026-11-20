@@ -46,12 +46,6 @@ public class GenericSnapshotManager {
 		_recoveredPrevalentSystem = new PrevalentSystemGuard(recoveredPrevalentSystem, recoveredVersion, journalSerializer);
 	}
 
-	GenericSnapshotManager(Object newPrevalentSystem) {
-		_strategies = Collections.singletonMap("snapshot", new JavaSerializer());
-		_primarySuffix = "snapshot";
-		_directory = null;
-		_recoveredPrevalentSystem = new PrevalentSystemGuard(newPrevalentSystem, 0, new JavaSerializer());
-	}
 
 
 	public Serializer primarySerializer() {

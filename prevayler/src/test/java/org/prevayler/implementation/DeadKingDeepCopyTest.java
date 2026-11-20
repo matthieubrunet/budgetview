@@ -3,7 +3,7 @@ package org.prevayler.implementation;
 import java.io.File;
 
 import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
+import org.prevayler.TestPrevaylers;
 import org.prevayler.foundation.FileIOTest;
 
 public class DeadKingDeepCopyTest extends FileIOTest {
@@ -57,7 +57,7 @@ public class DeadKingDeepCopyTest extends FileIOTest {
 	private void crashRecover() throws Exception {
 		if (_prevayler != null)
 			_prevayler.close();
-		_prevayler = PrevaylerFactory.createPrevayler(new AppendingSystem(), prevalenceBase());
+		_prevayler = TestPrevaylers.persistent(new AppendingSystem(), prevalenceBase());
 	}
 
 	private void append(String appendix, String expectedResult) throws Exception {

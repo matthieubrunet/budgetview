@@ -14,12 +14,6 @@ public class JournalException extends PrevaylerIOException {
 		super(message);
 	}
 
-	public JournalException(String message, Throwable cause) {
-		super(message, cause);
-	}
 
-	public JournalException(Throwable cause) {
-		super(cause);
-	}
 
 }

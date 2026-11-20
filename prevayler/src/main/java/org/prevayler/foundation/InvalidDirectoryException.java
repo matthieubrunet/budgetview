@@ -14,12 +14,6 @@ public class InvalidDirectoryException extends PrevaylerIOException {
 		super(message);
 	}
 
-	public InvalidDirectoryException(String message, Throwable cause) {
-		super(message, cause);
-	}
 
-	public InvalidDirectoryException(Throwable cause) {
-		super(cause);
-	}
 
 }

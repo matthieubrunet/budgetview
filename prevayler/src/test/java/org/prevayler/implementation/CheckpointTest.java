@@ -7,7 +7,7 @@ package org.prevayler.implementation;
 import java.io.IOException;
 
 import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
+import org.prevayler.TestPrevaylers;
 import org.prevayler.foundation.*;
 
 
@@ -48,7 +48,7 @@ public class CheckpointTest extends FileIOTest {
 
 	private void crashRecover() throws Exception {
 		out("CrashRecovery.");
-		_prevayler = PrevaylerFactory.createCheckpointPrevayler(new AppendingSystem(), _testDirectory);
+		_prevayler = TestPrevaylers.transientMode(new AppendingSystem(), _testDirectory);
 	}
 
 	private void snapshot() throws IOException {

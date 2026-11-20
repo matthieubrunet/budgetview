@@ -14,14 +14,6 @@ public class PrevaylerIOException extends IOException {
 		super(message);
 	}
 
-	public PrevaylerIOException(String message, Throwable cause) {
-		super(message);
-		initCause(cause);
-	}
 
-	public PrevaylerIOException(Throwable cause) {
-		super();
-		initCause(cause);
-	}
 
 }

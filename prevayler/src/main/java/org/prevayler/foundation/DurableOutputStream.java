@@ -188,13 +188,14 @@ public class DurableOutputStream {
 		return _file;
 	}
 
-	public synchronized int fileSyncCount() {
+	// Pour DurableOutputStreamTest : cette classe fait le format des journaux sur disque.
+	synchronized int fileSyncCount() {
 		synchronized (_syncLock) {
 			return _fileSyncCount;
 		}
 	}
 
-	public boolean reallyClosed() {
+	boolean reallyClosed() {
 		synchronized (_writeLock) {
 			return _closed;
 		}

@@ -42,10 +42,6 @@ public interface Prevayler {
 	 */
 	public Object execute(TransactionWithQuery transactionWithQuery) throws Exception;
 
-	/** The same as execute(TransactionWithQuery) except no Exception is thrown.
-	 * @return The result returned by the execution of the sureTransactionWithQuery on the prevalentSystem().
-	 */
-	public Object execute(SureTransactionWithQuery sureTransactionWithQuery);
 
 	/** Produces a complete serialized image of the underlying PrevalentSystem.
 	 * This will accelerate future system startups. Taking a snapshot once a day is enough for most applications.

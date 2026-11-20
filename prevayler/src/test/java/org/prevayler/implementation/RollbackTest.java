@@ -5,7 +5,7 @@
 package org.prevayler.implementation;
 
 import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
+import org.prevayler.TestPrevaylers;
 import org.prevayler.foundation.*;
 
 public class RollbackTest extends FileIOTest {
@@ -13,8 +13,8 @@ public class RollbackTest extends FileIOTest {
 	private Prevayler _prevayler;
 
     public void testRollback() throws Exception {
-		testRollback(PrevaylerFactory.createPrevayler(new AppendingSystem(), _testDirectory));
-		testRollback(PrevaylerFactory.createTransientPrevayler(new AppendingSystem()));
+		testRollback(TestPrevaylers.persistent(new AppendingSystem(), _testDirectory));
+		testRollback(TestPrevaylers.transientMode(new AppendingSystem(), _testDirectory));
     }
 
 	private void testRollback(Prevayler prevayler) throws Exception {

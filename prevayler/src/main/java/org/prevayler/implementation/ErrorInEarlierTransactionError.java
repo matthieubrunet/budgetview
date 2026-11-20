@@ -14,12 +14,6 @@ public class ErrorInEarlierTransactionError extends PrevaylerError {
 		super(message);
 	}
 
-	public ErrorInEarlierTransactionError(String message, Throwable cause) {
-		super(message, cause);
-	}
 
-	public ErrorInEarlierTransactionError(Throwable cause) {
-		super(cause);
-	}
 
 }

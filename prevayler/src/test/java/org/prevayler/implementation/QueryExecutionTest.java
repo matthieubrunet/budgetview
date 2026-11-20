@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
+import org.prevayler.TestPrevaylers;
 import org.prevayler.Query;
 import org.prevayler.TransactionWithQuery;
 import org.prevayler.foundation.*;
@@ -20,7 +20,7 @@ public class QueryExecutionTest extends FileIOTest {
 
 	public void testQuery() throws Exception {
 		List prevalentSystem = new LinkedList();
-		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler((Serializable)prevalentSystem);
+		Prevayler prevayler = TestPrevaylers.transientMode((Serializable)prevalentSystem, _testDirectory);
 		Object result = prevayler.execute(query());
 		assertEquals(0, ((Integer)result).intValue());
 	}
@@ -35,7 +35,7 @@ public class QueryExecutionTest extends FileIOTest {
 
 	public void testTransactionWithQuery() throws Exception {
 		List prevalentSystem = new LinkedList();
-		Prevayler prevayler = PrevaylerFactory.createTransientPrevayler((Serializable)prevalentSystem);
+		Prevayler prevayler = TestPrevaylers.transientMode((Serializable)prevalentSystem, _testDirectory);
 		Object result = prevayler.execute(transactionWithQuery());
 		assertEquals("abc", result);
 		assertEquals("added element", prevalentSystem.get(0));

@@ -14,12 +14,6 @@ public class InvalidChunkParameterValueException extends PrevaylerIOException {
 		super(message);
 	}
 
-	public InvalidChunkParameterValueException(String message, Throwable cause) {
-		super(message, cause);
-	}
 
-	public InvalidChunkParameterValueException(Throwable cause) {
-		super(cause);
-	}
 
 }

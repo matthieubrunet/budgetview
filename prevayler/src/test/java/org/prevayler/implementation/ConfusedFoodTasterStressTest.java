@@ -5,7 +5,7 @@
 package org.prevayler.implementation;
 
 import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
+import org.prevayler.TestPrevaylers;
 import org.prevayler.Transaction;
 import org.prevayler.foundation.FileIOTest;
 
@@ -25,7 +25,7 @@ public class ConfusedFoodTasterStressTest extends FileIOTest {
 	private volatile boolean _failed;
 
 	public void testFoodTasting() throws Exception {
-		_prevayler = PrevaylerFactory.createPrevayler(new CountingSystem(), _testDirectory);
+		_prevayler = TestPrevaylers.persistent(new CountingSystem(), _testDirectory);
 
 		_failed = false;
 

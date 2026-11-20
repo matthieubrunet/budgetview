@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.prevayler.Prevayler;
-import org.prevayler.PrevaylerFactory;
+import org.prevayler.TestPrevaylers;
 import org.prevayler.Transaction;
 import org.prevayler.foundation.*;
 
@@ -20,7 +20,7 @@ public class TransientPrevaylerTest extends FileIOTest {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		prevayler = PrevaylerFactory.createTransientPrevayler(new AppendingSystem());
+		prevayler = TestPrevaylers.transientMode(new AppendingSystem(), _testDirectory);
 	}
 
 
@@ -33,15 +33,6 @@ public class TransientPrevaylerTest extends FileIOTest {
 		append("b");
 		append("c");
 		assertState("abc");
-	}
-
-	public void testSnapshotAttempt() {
-		try {
-			prevayler.takeSnapshot();
-			fail("IOException expected.");
-		} catch (IOException iox) {
-			assertEquals("Transient Prevaylers are unable to take snapshots.", iox.getMessage());
-		}
 	}
 
 

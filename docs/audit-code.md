@@ -815,6 +815,17 @@ suppression d'un utilisateur, relance.
 - Lot A (2026-11-20) : 299 fichiers annexes supprimés (2,9 Mo sur disque) ; `root/docs/License.txt` devient
   `prevayler/LICENSE.txt`, [licence.md](licence.md) mis à jour (`contrib/transactionsFacade`, sous une autre BSD, est
   parti avec `contrib/`). Restent `pom.xml`, `LICENSE.txt`, `src/main`, `src/test`. Jar inchangé ; tests 62 verts.
+- Lot B (2026-11-20) : 32 classes supprimées (20 de `network`, 4 de `gzip`, `Log4jMonitor`, `NullMonitor`, `FileLocker`,
+  `AlreadyLockedException`, `SkaringaException`, `TransactionNotDeserializableError`, `SureTransactionWithQuery`,
+  `NullSnapshotManager`) et une cinquantaine de membres : fabriques statiques, réglages de moniteur et de seuils du
+  journal, sérialiseurs Java en argument, constructeurs d'exception, trois des quatre `Monitor.notify`. Dépendance `log4j`
+  retirée du `pom` (le jar reste dans `target/dist`, amené par `globs`). Reste 71 classes, 2 508 lignes de code. Gardés
+  pour les tests, qui vérifient du code vivant : `configureClock` (temps fixé), `DurableOutputStream.fileSyncCount` et
+  `reallyClosed` (passés en visibilité paquet), `Cool.sleep` (jusqu'au lot C). Tests : les fabriques statiques remplacées
+  par `TestPrevaylers` (tests) ; partis avec leur code les tests de `network` et de gzip, `PrevaylerFactoryTest`,
+  `JournalFileRollingTest` (découpage du journal par taille, jamais réglé) et le refus de snapshot du mode transitoire.
+  Tests de `prevayler` 62 → 34. Copie de la sauvegarde 5.01 ouverte par `Dump` (`PRootDataManager`) : utilisateur relu,
+  `users/` inchangé.
 
 ## Journal
 
@@ -847,3 +858,4 @@ suppression d'un utilisateur, relance.
 | 2026-11-20 | 2c, inventaire | Rien de modifié. `prevayler` : 103 classes, 3 579 lignes de code, `prevayler-1.0.jar` 121 Ko ; ~1 700 lignes mortes, dont 32 classes selon ProGuard et ~15 par configuration (réplication, censeur strict, `RWLock`), confirmées à 0 % par JaCoCo (65 classes sur 99) ; ~300 fichiers annexes (~2,7 Mo). Tests du module jamais lancés (JUnit 3.8.1 refusé par surefire) : 63 à la main, 1 échec (gzip, mort). Format sur disque non concerné. `bv_desktop` sous JaCoCo : 1 026 verts, 12 min. Cinq lots proposés (0, A à D) |
 | 2026-11-20 | 2c, lot 0 (tests du module) | JUnit 4.12, surefire 3.0.0 : tests de `prevayler` lancés par Maven pour la première fois, 62 verts (1 désactivé, gzip), 5 s. Rien de changé hors des tests |
 | 2026-11-20 | 2c, lot A (annexes) | 299 fichiers hors build supprimés (2,9 Mo : builds Ant et Maven 1, `contrib/`, démos, jars et javadoc embarqués) ; licence BSD gardée en `LICENSE.txt`. `prevayler-1.0.jar` inchangé (121 Ko), tests de `prevayler` 62 verts |
+| 2026-11-20 | 2c, lot B (mort selon ProGuard) | `prevayler` : −32 classes, ~50 membres, −1 761 lignes de code, −1 926 de tests ; 71 classes, 2 508 lignes de code ; `prevayler-1.0.jar` 90 Ko (−31 Ko), `target/dist` 11 Mo ; `log4j` retiré du `pom`. Tests de `prevayler` 34 verts (−28, partis avec leur code), `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues |

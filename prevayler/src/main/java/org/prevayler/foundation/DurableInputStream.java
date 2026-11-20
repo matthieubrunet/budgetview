@@ -59,9 +59,5 @@ public class DurableInputStream {
 	}
 
 
-	public void close() throws IOException {
-		_fileStream.close();
-		_EOF = true;
-	}
 
 }

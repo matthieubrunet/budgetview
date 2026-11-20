@@ -10,16 +10,10 @@ public class TransactionNotSerializableError extends PrevaylerError {
 		super();
 	}
 
-	public TransactionNotSerializableError(String message) {
-		super(message);
-	}
 
 	public TransactionNotSerializableError(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public TransactionNotSerializableError(Throwable cause) {
-		super(cause);
-	}
 
 }

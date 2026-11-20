@@ -7,7 +7,6 @@ public class Turn {
 
 	private Turn _next;
 	private int _tickets = 0;
-	private boolean _isAlwaysSkipped;
 
 
 	public static Turn first() { return new Turn(1000000); }  //Arbitrarily large number.
@@ -29,18 +28,9 @@ public class Turn {
 	}
 	
 	private synchronized void haveSomeTickets(int tickets) {
-		if (_isAlwaysSkipped) {
-			next().haveSomeTickets(tickets);
-			return;
-		}
 		_tickets += tickets;
 		notify();
 	}
 
-	public synchronized void alwaysSkip() {
-		end();
-		_isAlwaysSkipped = true;
-		next().haveSomeTickets(_tickets);
-	}
 
 }

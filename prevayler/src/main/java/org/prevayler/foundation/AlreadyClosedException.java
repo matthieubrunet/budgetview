@@ -14,12 +14,6 @@ public class AlreadyClosedException extends PrevaylerIOException {
 		super(message);
 	}
 
-	public AlreadyClosedException(String message, Throwable cause) {
-		super(message, cause);
-	}
 
-	public AlreadyClosedException(Throwable cause) {
-		super(cause);
-	}
 
 }

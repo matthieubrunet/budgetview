@@ -14,12 +14,6 @@ public class ChunkHeaderCorruptedException extends PrevaylerIOException {
 		super(message);
 	}
 
-	public ChunkHeaderCorruptedException(String message, Throwable cause) {
-		super(message, cause);
-	}
 
-	public ChunkHeaderCorruptedException(Throwable cause) {
-		super(cause);
-	}
 
 }

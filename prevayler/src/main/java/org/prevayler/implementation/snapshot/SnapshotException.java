@@ -14,12 +14,6 @@ public class SnapshotException extends PrevaylerIOException {
 		super(message);
 	}
 
-	public SnapshotException(String message, Throwable cause) {
-		super(message, cause);
-	}
 
-	public SnapshotException(Throwable cause) {
-		super(cause);
-	}
 
 }

@@ -9,7 +9,6 @@ import java.io.IOException;
 import org.prevayler.Clock;
 import org.prevayler.Prevayler;
 import org.prevayler.Query;
-import org.prevayler.SureTransactionWithQuery;
 import org.prevayler.Transaction;
 import org.prevayler.TransactionWithQuery;
 import org.prevayler.foundation.UnexpectedException;
@@ -78,15 +77,6 @@ public class PrevaylerImpl implements Prevayler {
 	}
 
 
-	public Object execute(SureTransactionWithQuery sureTransactionWithQuery) {
-		try {
-			return execute((TransactionWithQuery) sureTransactionWithQuery);
-		} catch (RuntimeException runtime) {
-			throw runtime;
-		} catch (Exception checked) {
-			throw new UnexpectedException("Unexpected Exception thrown.", checked);
-		}
-	}
 
 
 	public void takeSnapshot() throws IOException {
