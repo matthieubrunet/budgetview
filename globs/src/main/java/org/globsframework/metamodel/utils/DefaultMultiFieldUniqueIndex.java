@@ -9,10 +9,6 @@ public class DefaultMultiFieldUniqueIndex extends AbstractMultiFieldIndex implem
     super(name);
   }
 
-  public void visitIndex(MultifieldVisitor visitor) {
-    visitor.visitUnique(this);
-  }
-
   public void visit(MultiFieldIndexVisitor multiFieldIndexVisitor) {
     multiFieldIndexVisitor.visitUnique(this);
   }

@@ -557,6 +557,22 @@ et des tests du bureau sans perdre le code).
   héritait des 19 tests de `GlobTextViewTestCase`, qui tournent toujours pour les vues gardées.
 - Lot B (2026-11-19) : le paquet `remote` (7 classes) et `RemoteExecutorTest`. Le `DataAccess` des tests de
   `bv_desktop` est bien un homonyme (`com.budgetview.client.DataAccess`).
+- Lot C (2026-11-20) : 23 classes supprimées (`ChangeSetSequencer`, `FieldChangeListener`, `GlobLinkComparator`,
+  `CachedGlobIdGenerator`, `ChangeSetPrinter`, `LinkVisitor`, `MultifieldVisitor`, `GlobRepositoryValidator`, `IntSet`,
+  `Millis`, `DefaultComparator`, `InvalidReference`, `Rethrowable`, `Timeout`, les 9 de `utils.stream`) et leurs 3 classes
+  de test ; avec elles, 4 méthodes qui ne servaient qu'à les citer (`Log.write(ChangeSet)`, `visit(LinkVisitor)`, deux
+  `visitIndex(MultifieldVisitor)`). `XmlChangeSetParser` et `XmlGlobWriter` passent dans `globs/src/test`. `IntSet` ne
+  servait qu'à `TransactionChecker` (tests de `bv_desktop`) : remplacé par un `Set<Integer>`. Tests de `globs` : 832 → 821.
+  Reportés, parce que du code gardé les cite encore :
+  - `LinkBuilder` (et `GlobTypeLoader.defineLink`) : seule façon de déclarer un lien à plusieurs champs, et 13 fichiers de
+    test de `globs` s'en servent (`DummyObjectWithLinks`…). BudgetView déclare les siens par `LinkField` + `@Target`.
+    Le sortir du jar voudrait réécrire ces modèles de test : **gardé**. La recherche par nom de classe ne le voyait pas,
+    les tests n'appelant que `defineLink(…)`.
+  - `FieldValuesWithPreviousBuilder`, `DefaultFieldValuesWithPrevious`, `GlobArrayFieldValues` : tenus par
+    `DefaultSerializationInput.readChangeSet`, que seul `SerializationTest` appelle, et par `XmlChangeSetParser`.
+    Au lot E, avec `readChangeSet` et `writeChangeSet`.
+  - `utils.logging.Html*` (5) : seul `Debug` les atteint, et `Debug` est cité par un test de `bv_server` → lot D.
+  - `T3uples`, `XmlGlobStreamReader` et `XmlSingleGlobParser` : servent à `sqlstreams` ou à ses tests → lot D.
 - Piège : les tests d'IHM de `globs` (38 classes) échouent sous Java 21 sans les `--add-opens` du profil `jdk17` de
   `bv_desktop`, que le `pom` de `globs` n'avait pas. Ajoutés à son surefire avec une JVM par classe et une limite de
   temps : `mvn -o clean test -pl globs` suffit ([etat-des-tests.md](etat-des-tests.md)).
@@ -585,3 +601,4 @@ ProGuard est le code lancé à part (`Dump`, génération de la démo), que seul
 | 2026-11-19 | 2a, inventaire | Rien de modifié. `globs` : 608 fichiers, 43 000 lignes ; 163 classes de premier niveau inutilisées (8 465 lignes, 231 Ko du jar), dont tout `sqlstreams` (70 classes, ~3 500 lignes), que seul `bv_server` utilise ; 638 membres isolés, dont 53 sans aucune autre occurrence. Cinq lots proposés (A à E), décision attendue sur `sqlstreams` |
 | 2026-11-19 | 2a, lot A (IHM de `globs`) | `globs` : −16 classes, −854 lignes de code, −728 de tests, −709 d'exemples (dont 9 fichiers de `samples`) ; `globs-1.0.jar` 1 209 Ko (−27 Ko), `target/dist` 12 Mo. Tests de `globs` 833 verts (−40), 54 s ; `bv_desktop` 1 026 verts, 16 min |
 | 2026-11-19 | 2a, lot B (`remote`) | `globs` : −7 classes, −667 lignes avec le test ; `globs-1.0.jar` 1 187 Ko (−22 Ko). Tests de `globs` 832 verts (−1) ; `bv_desktop` 1 026 verts, 14 min |
+| 2026-11-20 | 2a, lot C (divers) | `globs` : −23 classes, −1 048 lignes de code (dont 4 méthodes), −467 de tests ; 2 outils XML (270 lignes) passés dans les tests ; `globs-1.0.jar` 1 142 Ko (−45 Ko). Tests de `globs` 821 verts (−11) ; `bv_desktop` 1 026 verts, 10 min |

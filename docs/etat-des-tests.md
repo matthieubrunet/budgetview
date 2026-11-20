@@ -174,7 +174,7 @@ Désactivés :
 | `SqlExceptionTest.testConcurrentModification` (pour HSQLDB et MySQL) | suppose une lecture non isolée, comme HSQLDB 1.8 ; depuis HSQLDB 2.3.4 (`fc89dcb0c`, 2016), la seconde connexion attend le verrou de la première, tenu par le même fil : **c'était le blocage sans fin** |
 | `MySqlExceptionTest` (classe exclue du `pom`) | demande un serveur MySQL local |
 | `GlobTableViewTest.testRefreshUpdatesTheSortingAndKeepsSelection` | **comportement réel, gardé exprès** : `refresh()` coupe les notifications de sélection, mais la remise à zéro du modèle (`globListPreReset` / `globListReset`) les rétablit avant la fin, et la sélection réappliquée part en événements transitoires (vide, puis ligne par ligne) vers le `SelectionService`. Essai d'une coupure imbriquable (compteur, demandes `sendPending` gardées pour la sortie) : `AnalysisSeriesGroupViewTest.testDeletingAndAddingGroupElements` échoue dans bv_desktop (graphique des enveloppes vide après « ajouter à un nouveau groupe »), donc l'appli dépend de ces événements. `GlobTableView` sert dans 57 fichiers de l'appli : non retouché |
-| `ReplacementInputStreamTest.testRegexp` | attente incohérente (le motif exige `</SCRIPT>\n</font>`, absent de l'entrée) ; `ReplacementInputStream` ne sert plus nulle part |
+| `ReplacementInputStreamTest.testRegexp` | attente incohérente (le motif exige `</SCRIPT>\n</font>`, absent de l'entrée) ; `ReplacementInputStream` ne servait plus nulle part. Supprimé avec sa classe (audit 2a, lot C, 2026-11-20) |
 
 Usage de globs par l'appli desktop (fichiers de `bv_desktop/src/main` qui importent le paquet) :
 `gui.splits` 235, `model.format` 87, `utils.serialization` 80, `gui.views` 57, `gui.editors` 25, `json` 2,

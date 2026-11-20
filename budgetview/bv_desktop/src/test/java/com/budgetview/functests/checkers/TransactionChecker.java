@@ -13,7 +13,6 @@ import junit.framework.Assert;
 import org.globsframework.model.Glob;
 import org.globsframework.utils.Strings;
 import org.globsframework.utils.Utils;
-import org.globsframework.utils.collections.IntSet;
 import org.uispec4j.Button;
 import org.uispec4j.*;
 import org.uispec4j.Panel;
@@ -27,6 +26,8 @@ import org.uispec4j.utils.KeyUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.uispec4j.assertion.UISpecAssert.*;
 
@@ -254,13 +255,15 @@ public class TransactionChecker extends FilteredViewChecker<TransactionChecker> 
     if (notes.length == 0) {
       Assert.fail("You must provide at least one note");
     }
-    IntSet rowSet = new IntSet();
+    Set<Integer> rowSet = new HashSet<>();
     for (String note : notes) {
       int[] rows = getTable().getRowIndices(TransactionView.NOTE_COLUMN_INDEX, note);
       Assert.assertTrue(note + " not found", rows.length > 0);
-      rowSet.addAll(rows);
+      for (int row : rows) {
+        rowSet.add(row);
+      }
     }
-    openDeletionDialog(rowSet.toIntArray())
+    openDeletionDialog(rowSet.stream().mapToInt(Integer::intValue).toArray())
       .checkMessageContains(message)
       .validate();
   }

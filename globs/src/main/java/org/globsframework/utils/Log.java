@@ -1,7 +1,5 @@
 package org.globsframework.utils;
 
-import org.globsframework.model.ChangeSet;
-import org.globsframework.model.format.ChangeSetPrinter;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -51,12 +49,6 @@ public class Log {
 
   public static void write(String text) {
     doWrite(".. ", text, true);
-  }
-
-  public static void write(ChangeSet changeSet) {
-    if (loggingEnabled) {
-      ChangeSetPrinter.printStats(changeSet, new PrintWriter(stream), indentString());
-    }
   }
 
   public static void writeStack(String text) {

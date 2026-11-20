@@ -11,7 +11,6 @@ import org.globsframework.metamodel.index.NotUniqueIndex;
 import org.globsframework.metamodel.index.UniqueIndex;
 import org.globsframework.metamodel.links.DefaultLink;
 import org.globsframework.metamodel.links.FieldMappingFunctor;
-import org.globsframework.metamodel.links.LinkVisitor;
 import org.globsframework.model.FieldValues;
 import org.globsframework.model.impl.SingleFieldKey;
 import org.globsframework.utils.exceptions.InvalidParameter;
@@ -274,10 +273,6 @@ class DefaultFieldFactory {
 
     public void apply(FieldMappingFunctor functor) {
       functor.process(this, targetKeyField);
-    }
-
-    public void visit(LinkVisitor linkVisitor) {
-      linkVisitor.visitLink(this);
     }
 
     public org.globsframework.model.Key getTargetKey(FieldValues values) {
