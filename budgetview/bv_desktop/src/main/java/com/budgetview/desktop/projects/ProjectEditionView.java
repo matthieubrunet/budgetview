@@ -268,10 +268,10 @@ public class ProjectEditionView extends View implements GlobSelectionListener {
       if (selection.isEmpty()) {
         return directory.get(TimeService.class).getCurrentMonthId();
       }
-      return selection.getSortedSet(Month.ID).last();
+      return selection.getSortedSet(Month.ID).getLast();
     }
 
-    return items.getSortedSet(ProjectItem.FIRST_MONTH).last();
+    return items.getSortedSet(ProjectItem.FIRST_MONTH).getLast();
   }
 
   private class BackToListAction extends AbstractAction {

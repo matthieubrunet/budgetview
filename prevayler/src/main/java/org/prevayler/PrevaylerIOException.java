@@ -1,10 +1,12 @@
 package org.prevayler;
 
 import java.io.IOException;
+import java.io.Serial;
 
 public class PrevaylerIOException extends IOException {
 
-	private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 1L;
 
 	public PrevaylerIOException() {
 		super();

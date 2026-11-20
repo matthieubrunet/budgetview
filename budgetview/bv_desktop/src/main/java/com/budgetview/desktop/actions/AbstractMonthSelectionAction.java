@@ -38,8 +38,8 @@ public abstract class AbstractMonthSelectionAction extends AbstractAction implem
       return;
     }
 
-    firstMonth = months.first();
-    lastMonth = months.last();
+    firstMonth = months.getFirst();
+    lastMonth = months.getLast();
     setEnabled(containsMonth(getTargetMonth()));
   }
 

@@ -302,11 +302,11 @@ public class ImportController implements Disposable {
       if (monthIds.isEmpty()) {
         return monthIds;
       }
-      int firstMonth = monthIds.first();
+      int firstMonth = monthIds.getFirst();
       TimeService time = directory.get(TimeService.class);
       int currentMonth = time.getCurrentMonthId();
       List<Integer> futureMonth = Month.createMonths(firstMonth, currentMonth);
-      futureMonth.addAll(Month.createMonths(monthIds.last(), currentMonth));
+      futureMonth.addAll(Month.createMonths(monthIds.getLast(), currentMonth));
       for (int month : futureMonth) {
         localRepository.findOrCreate(Key.create(Month.TYPE, month));
       }

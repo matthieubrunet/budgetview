@@ -4,12 +4,14 @@
 
 package org.prevayler.implementation;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 
 class AppendingSystem implements Serializable {
 
-	private static final long serialVersionUID = -1151588644550257284L;
+  @Serial
+  private static final long serialVersionUID = -1151588644550257284L;
 	private String value = "";
 	
 	String value() {

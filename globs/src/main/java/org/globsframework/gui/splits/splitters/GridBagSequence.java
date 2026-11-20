@@ -20,13 +20,10 @@ public class GridBagSequence extends Sequence {
   }
 
   public String getName() {
-    switch (direction) {
-      case HORIZONTAL:
-        return "row";
-      case VERTICAL:
-        return "column";
-    }
-    throw new InvalidParameter("Invalid direction " +  direction);
+    return switch (direction) {
+      case HORIZONTAL -> "row";
+      case VERTICAL -> "column";
+    };
   }
 
   public static SplitComponent createPanel(Splitter[] subSplitters, Direction direction, SplitsContext context, String ref) {

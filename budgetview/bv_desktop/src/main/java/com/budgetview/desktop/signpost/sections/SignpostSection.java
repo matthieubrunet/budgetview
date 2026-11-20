@@ -38,9 +38,9 @@ public enum  SignpostSection {
     return getText("completion.message");
   }
 
-  public String getHelpRef() { return "help:" + key; };
+  public String getHelpRef() { return "help:" + key; }
 
-  public String getHelpKey() { return "help.url." + key; };
+  public String getHelpKey() { return "help.url." + key; }
 
   private String getText(String postfix) {
     return Lang.get("signpostSection." + key + "." + postfix);

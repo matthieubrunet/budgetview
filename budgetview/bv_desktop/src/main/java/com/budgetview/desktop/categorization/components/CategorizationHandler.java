@@ -146,7 +146,7 @@ public class CategorizationHandler implements GlobSelectionListener, ChangeSetLi
 
   private void updateUncategorizedMessage(BudgetArea budgetArea) {
     SortedSet<Integer> areaIds = getSelectedTransactionAreas();
-    if ((areaIds.size() == 1) && BudgetArea.UNCATEGORIZED.getId().equals(areaIds.iterator().next())) {
+    if ((areaIds.size() == 1) && BudgetArea.UNCATEGORIZED.getId().equals(areaIds.getFirst())) {
       if (selectedTransactions.size() == 1) {
         uncategorizedMessage.setText(Lang.get("categorization.uncategorized.single"));
       }
@@ -253,7 +253,7 @@ public class CategorizationHandler implements GlobSelectionListener, ChangeSetLi
       return;
     }
 
-    final Integer selectedAreaId = areas.first();
+    final Integer selectedAreaId = areas.getFirst();
     BudgetArea budgetArea = BudgetArea.get(selectedAreaId);
     if (budgetArea != BudgetArea.UNCATEGORIZED) {
       select(budgetArea, true);

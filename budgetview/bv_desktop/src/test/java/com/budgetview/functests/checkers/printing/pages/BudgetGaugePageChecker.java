@@ -88,8 +88,7 @@ public class BudgetGaugePageChecker {
 
     int index = 0;
     for (PageBlock block : blocks) {
-      if (block instanceof BudgetAreaGaugeBlock) {
-        BudgetAreaGaugeBlock budgetBlock = (BudgetAreaGaugeBlock) block;
+      if (block instanceof BudgetAreaGaugeBlock budgetBlock) {
         builder
           .append("  .checkBudget(")
           .append(Integer.toString(index++))
@@ -101,8 +100,7 @@ public class BudgetGaugePageChecker {
           .append(budgetBlock.getPlannedAmount())
           .append("\")\n");
       }
-      else if (block instanceof SeriesGaugeBlock) {
-        SeriesGaugeBlock seriesBlock = (SeriesGaugeBlock) block;
+      else if (block instanceof SeriesGaugeBlock seriesBlock) {
         builder
           .append("    .checkSeries(")
           .append(Integer.toString(index++))
@@ -134,8 +132,7 @@ public class BudgetGaugePageChecker {
 
     int index = 0;
     for (PageBlock block : blocks) {
-      if (block instanceof BudgetAreaGaugeBlock) {
-        BudgetAreaGaugeBlock budgetBlock = (BudgetAreaGaugeBlock) block;
+      if (block instanceof BudgetAreaGaugeBlock budgetBlock) {
         builder
           .append(Integer.toString(index++))
           .append(" - Budget: ")
@@ -147,8 +144,7 @@ public class BudgetGaugePageChecker {
           .append(budgetBlock.getPlannedAmount())
           .append("\n");
       }
-      else if (block instanceof SeriesGaugeBlock) {
-        SeriesGaugeBlock seriesBlock = (SeriesGaugeBlock) block;
+      else if (block instanceof SeriesGaugeBlock seriesBlock) {
         builder
           .append(Integer.toString(index++))
           .append(" - Series: ")

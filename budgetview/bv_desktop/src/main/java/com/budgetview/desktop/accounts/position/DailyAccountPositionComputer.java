@@ -96,7 +96,7 @@ public class DailyAccountPositionComputer {
 
       int maxDay = Month.getLastDayNumber(monthId);
       if (!transactions.isEmpty()) {
-        maxDay = Math.max(maxDay, transactions.getSortedSet(Transaction.POSITION_DAY).last());
+        maxDay = Math.max(maxDay, transactions.getSortedSet(Transaction.POSITION_DAY).getLast());
       }
 
       Double[] minValues = new Double[maxDay];

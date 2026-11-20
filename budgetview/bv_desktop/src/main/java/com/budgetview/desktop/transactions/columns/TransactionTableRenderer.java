@@ -36,8 +36,7 @@ public class TransactionTableRenderer implements TableCellRenderer {
     if (table.getColumnModel().getColumn(column).getModelIndex() == seriesColumnIndex) {
       return component;
     }
-    if (component instanceof JLabel) {
-      JLabel label = (JLabel)component;
+    if (component instanceof JLabel label) {
       label.setBorder(border);
     }
     rendererColors.update(component, isSelected, (Glob)object, TransactionRendererColors.Mode.DEFAULT, row);

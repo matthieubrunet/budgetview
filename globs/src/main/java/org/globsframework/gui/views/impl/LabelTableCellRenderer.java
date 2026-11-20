@@ -32,7 +32,7 @@ public class LabelTableCellRenderer extends DefaultTableCellRenderer {
     this.hasFocus = hasFocus;
     this.row = row;
     this.column = column;
-    this.glob = object instanceof Glob ? (Glob)object : null;
+    this.glob = object instanceof Glob g ? g : null;
 
     if (object == null){
       return null;

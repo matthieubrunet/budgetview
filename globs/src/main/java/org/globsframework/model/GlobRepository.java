@@ -28,13 +28,13 @@ public interface GlobRepository extends ReadOnlyGlobRepository {
     throws ItemNotFound;
 
   void update(Glob glob, FieldValue... values)
-    throws ItemNotFound;;
+    throws ItemNotFound;
 
   void update(Key key, FieldValue... values)
-    throws ItemNotFound;;
+    throws ItemNotFound;
 
   void updateAll(GlobList list, FieldValue... values)
-    throws ItemNotFound;;
+    throws ItemNotFound;
 
   void updateAll(GlobType type, GlobMatcher matcher, FieldValue... values)
     throws ItemNotFound;

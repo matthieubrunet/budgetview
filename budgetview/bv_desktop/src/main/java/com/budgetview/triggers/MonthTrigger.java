@@ -49,7 +49,7 @@ public class MonthTrigger implements ChangeSetListener {
         startMonth = Math.min(currentMonthId, lastTransactionMonth == 0 ? currentMonthId : lastTransactionMonth);
       }
       else {
-        startMonth = actualMonth.first();
+        startMonth = actualMonth.getFirst();
       }
       List<Integer> pastMonth = Month.createMonths(startMonth, currentMonthId);
       for (Integer monthId : pastMonth) {

@@ -72,17 +72,12 @@ public abstract class SelectStartEndDateAction extends AbstractAction {
   }
 
   private String getTitle(MonthRangeBound bound) {
-    switch (bound) {
-      case NONE:
-        return Lang.get("seriesEdition.selectMonth.none");
-      case LOWER:
-        return Lang.get("seriesEdition.selectMonth.start");
-      case UPPER:
-        return Lang.get("seriesEdition.selectMonth.end");
-      case BOTH:
-        return Lang.get("seriesEdition.selectMonth.single");
-    }
-    throw new UnexpectedValue("Unknown bound: " + bound);
+    return switch (bound) {
+      case NONE -> Lang.get("seriesEdition.selectMonth.none");
+      case LOWER -> Lang.get("seriesEdition.selectMonth.start");
+      case UPPER -> Lang.get("seriesEdition.selectMonth.end");
+      case BOTH -> Lang.get("seriesEdition.selectMonth.single");
+    };
   }
 
   protected abstract void processValue(Integer monthId);

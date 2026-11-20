@@ -942,18 +942,18 @@ public class SplitsRepeatTest extends SplitsTestCase {
   private static void dump(Container panel, StringBuilder builder, int level) {
     for (Component component : panel.getComponents()) {
       builder.append(Strings.repeat(" ", level * 2));
-      if (component instanceof JLabel) {
-        builder.append("label:").append(((JLabel)component).getText());
+      if (component instanceof JLabel label) {
+        builder.append("label:").append(label.getText());
         builder.append('\n');
       }
-      else if (component instanceof JButton) {
-        builder.append("button:").append(((JButton)component).getText());
+      else if (component instanceof JButton button) {
+        builder.append("button:").append(button.getText());
         builder.append('\n');
       }
-      else if (component instanceof JPanel) {
+      else if (component instanceof JPanel jPanel) {
         builder.append("panel");
         builder.append('\n');
-        dump((JPanel)component, builder, level + 1);
+        dump(jPanel, builder, level + 1);
       }
       else {
         throw new RuntimeException("Unexpected component type: " + component.toString());

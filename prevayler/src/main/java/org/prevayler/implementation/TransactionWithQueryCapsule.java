@@ -3,11 +3,13 @@ package org.prevayler.implementation;
 import org.prevayler.TransactionWithQuery;
 import org.prevayler.foundation.serialization.Serializer;
 
+import java.io.Serial;
 import java.util.Date;
 
 class TransactionWithQueryCapsule extends Capsule {
 
-	private static final long serialVersionUID = 78811627002206298L;
+  @Serial
+  private static final long serialVersionUID = 78811627002206298L;
 	private transient Object _queryResult;
 	private transient Exception _queryException;
 

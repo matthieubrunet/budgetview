@@ -1112,6 +1112,16 @@ pas en découpant le patch : 13 fichiers relèvent de plusieurs familles.
 Recommandation : A et C ; B si la lisibilité des tests vaut un diff de 2 500 lignes (à mon sens oui pour les tableaux
 attendus des tests fonctionnels, mais c'est le gain le plus faible des trois).
 
+**Décision de Matthieu (2026-11-20)** : faire A et C.
+
+**Réalisation**, un commit par lot :
+- Lot A (2026-11-20) : `rewrite:run` avec un `rewrite.yml` hors de l'arbre, qui reprend les 8 recettes du lot (dont deux
+  `ChangeMethodName` pour `SortedSet.first()`/`last()`). `-Drewrite.exclusions` n'arrête pas le module racine : 4 fichiers
+  hors build (Android, `bv_server`, `uispec4j`) ont été modifiés quand même, puis remis en état à la main. 102 fichiers,
+  +441 −568 lignes : 52 `getFirst()`/`getLast()`, tous sur des `SortedSet` (aucune `GlobList`), 14 `switch` en
+  expression, ~45 `instanceof` à motif, 22 `@Serial`, 5 points-virgules. Tests de `globs` 796, `prevayler` 26,
+  `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues, `users/` identique. `mvn -o clean install` : 0 `[WARNING]`.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -1154,3 +1164,4 @@ attendus des tests fonctionnels, mais c'est le gain le plus faible des trois).
 | 2026-11-20 | 3a, lot B (petites alertes) | ~40 corrections dans 36 fichiers, sans changement de comportement ; 0 alerte `cast`, `static`, `dep-ann`, varargs (38 avant). Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 29 min (appli de dev ouverte en parallèle) |
 | 2026-11-20 | 3a, lot C (garde-fou) | 5 `pom` : alertes utiles affichées au build ; 2 alertes voulues rendues explicites, processeur d'annotations coupé dans `siteweaver`. `mvn clean install` sans aucun `[WARNING]` ; `target/dist` 11 Mo, 17 jars. Tests de `globs` 796, `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable), 9 min. **3a terminé** |
 | 2026-11-20 | 3b, inventaire | Rien de modifié. OpenRewrite `UpgradeToJava21` (plugin 6.18.0, `rewrite-migrate-java` 3.20.0) en `dryRun` : 231 fichiers du build, 13 familles. Patch appliqué dans une copie : compile, mais 62 `StackOverflowError` dans les tests de `globs` (`ListFirstAndLast` rend `GlobList.getFirst()` récursive) et `ExportTest` en échec (`UseTextBlocks` efface une tabulation finale). Quatre lots proposés (A à D) |
+| 2026-11-20 | 3b, lot A (recettes sûres) | 102 fichiers, +441 −568 lignes, sans changement de comportement ; `target/dist` 11 Mo, 17 jars, `budgetview.jar` 4,55 Mo. Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues |

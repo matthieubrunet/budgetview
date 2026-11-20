@@ -240,19 +240,13 @@ public class SeriesWrapper {
   }
 
   public static String toString(Glob wrapper, GlobRepository repository) {
-    switch (SeriesWrapperType.get(wrapper)) {
-      case SERIES:
-        return "series(" + getSeries(wrapper, repository).get(Series.NAME) + ")";
-      case SERIES_GROUP:
-        return "seriesGroup(" + getGroup(wrapper, repository).get(SeriesGroup.NAME) + ")";
-      case SUB_SERIES:
-        return "subSeries(" + getSubSeries(wrapper, repository).get(SubSeries.NAME) + ")";
-      case BUDGET_AREA:
-        return "budgetArea(" + Labels.get(getBudgetArea(wrapper)) + ")";
-      case SUMMARY:
-        return "summary";
-    }
-    throw new InvalidState("Unexpected type found for:\n" + GlobPrinter.toString(wrapper));
+    return switch (SeriesWrapperType.get(wrapper)) {
+      case SERIES -> "series(" + getSeries(wrapper, repository).get(Series.NAME) + ")";
+      case SERIES_GROUP -> "seriesGroup(" + getGroup(wrapper, repository).get(SeriesGroup.NAME) + ")";
+      case SUB_SERIES -> "subSeries(" + getSubSeries(wrapper, repository).get(SubSeries.NAME) + ")";
+      case BUDGET_AREA -> "budgetArea(" + Labels.get(getBudgetArea(wrapper)) + ")";
+      case SUMMARY -> "summary";
+    };
   }
 
   public static boolean shouldCreateWrapperForSeries(Glob seriesValues) {

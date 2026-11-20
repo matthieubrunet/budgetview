@@ -60,15 +60,11 @@ public class MessageDialog {
   }
 
   private Icon getIcon(MessageType type) {
-    switch (type) {
-      case SUCCESS:
-        return SUCCESS_ICON;
-      case INFO:
-        return INFO_ICON;
-      case ERROR:
-        return ERROR_ICON;
-    }
-    throw new InvalidParameter("Unexpected type: " + type);
+    return switch (type) {
+      case SUCCESS -> SUCCESS_ICON;
+      case INFO -> INFO_ICON;
+      case ERROR -> ERROR_ICON;
+    };
   }
 
   public final void show() {

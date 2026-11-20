@@ -96,8 +96,7 @@ public class DetailsTip implements BalloonTipHolder, Disposable {
   private void registerMouseListener() {
     mouseListener = new AWTEventListener() {
       public void eventDispatched(AWTEvent event) {
-        if (event instanceof MouseEvent) {
-          MouseEvent mouseEvent = (MouseEvent)event;
+        if (event instanceof MouseEvent mouseEvent) {
           if (mouseEvent.getID() != MouseEvent.MOUSE_PRESSED) {
             return;
           }

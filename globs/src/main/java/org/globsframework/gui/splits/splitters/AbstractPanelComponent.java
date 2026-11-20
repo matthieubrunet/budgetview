@@ -29,8 +29,8 @@ public abstract class AbstractPanelComponent<T extends JPanel> extends DefaultCo
       for (Splitter subSplitter : getSubSplitters()) {
         ComponentConstraints constraints = subSplitter.createComponentStretch(context, true).componentConstraints;
         Component subComponent = constraints.getComponent();
-        if (subComponent instanceof JPanel) {
-          ((JPanel)subComponent).setOpaque(false);
+        if (subComponent instanceof JPanel panel) {
+          panel.setOpaque(false);
         }
         String name = subComponent.getName();
         if (Strings.isNotEmpty(name)) {
@@ -44,8 +44,8 @@ public abstract class AbstractPanelComponent<T extends JPanel> extends DefaultCo
     else if (getSubSplitters().length == 1) {
       ComponentConstraints constraints = getSubSplitters()[0].createComponentStretch(context, true).componentConstraints;
       Component subComponent = constraints.getComponent();
-      if (subComponent instanceof JPanel) {
-        ((JPanel)subComponent).setOpaque(false);
+      if (subComponent instanceof JPanel panel) {
+        panel.setOpaque(false);
       }
       component.setLayout(new SingleComponentLayout(constraints.getInsets()));
       component.add(subComponent);

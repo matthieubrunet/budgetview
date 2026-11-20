@@ -1,8 +1,11 @@
 package org.prevayler;
 
+import java.io.Serial;
+
 public class PrevaylerError extends Error {
 
-	private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 1L;
 
 	public PrevaylerError() {
 		super();

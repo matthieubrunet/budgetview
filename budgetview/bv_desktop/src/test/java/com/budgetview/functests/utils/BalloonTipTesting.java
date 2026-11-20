@@ -86,8 +86,8 @@ public class BalloonTipTesting {
   }
 
   private static org.uispec4j.Window getEnclosingWindow(Component enclosingPanel) {
-    if (enclosingPanel instanceof java.awt.Window) {
-      return new org.uispec4j.Window((java.awt.Window) enclosingPanel);
+    if (enclosingPanel instanceof java.awt.Window window) {
+      return new org.uispec4j.Window(window);
 
     }
     return new org.uispec4j.Window(GuiUtils.getEnclosingFrame(enclosingPanel));

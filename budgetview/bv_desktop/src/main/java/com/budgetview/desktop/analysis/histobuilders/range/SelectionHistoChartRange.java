@@ -23,8 +23,8 @@ public class SelectionHistoChartRange extends AbstractHistoChartRange implements
   public void selectionUpdated(GlobSelection selection) {
     SortedSet<Integer> months = selection.getAll(Month.TYPE).getSortedSet(Month.ID);
     if (!months.isEmpty()) {
-      start = months.first();
-      end = months.last();
+      start = months.getFirst();
+      end = months.getLast();
     }
     else {
       start = null;

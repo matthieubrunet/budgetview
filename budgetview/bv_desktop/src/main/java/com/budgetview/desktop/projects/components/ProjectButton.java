@@ -79,7 +79,7 @@ public class ProjectButton extends JButton implements ChangeSetListener, Disposa
             if (currentMonth == null || !range.contains(currentMonth.get(Month.ID))) {
               int current = range.getMin();
               Glob month = null;
-              int max = repository.getAll(Month.TYPE).getSortedSet(Month.ID).last();
+              int max = repository.getAll(Month.TYPE).getSortedSet(Month.ID).getLast();
               while (current <= range.getMax() && month == null && current < max) {
                 month = repository.find(Key.create(Month.TYPE, current));
                 current = Month.next(current);

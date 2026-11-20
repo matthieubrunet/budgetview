@@ -187,8 +187,7 @@ public class GlobPrinter {
     if ((field instanceof TimeStampField)) {
       return Dates.toTimestampString((Date) value);
     }
-    if (field instanceof LinkField) {
-      LinkField link = (LinkField) field;
+    if (field instanceof LinkField link) {
       StringField namingField = GlobTypeUtils.findNamingField(link.getTargetType());
       if (namingField != null) {
         Glob target = repository != null ? repository.findLinkTarget(glob, link) : null;

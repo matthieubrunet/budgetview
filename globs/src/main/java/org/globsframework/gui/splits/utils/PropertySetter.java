@@ -140,8 +140,7 @@ public class PropertySetter {
   }
 
   private static void processAction(Object object, String attributeValue) {
-    if (object instanceof JComponent) {
-      JComponent component = (JComponent)object;
+    if (object instanceof JComponent component) {
       if (component.getName() == null) {
         component.setName(attributeValue);
       }

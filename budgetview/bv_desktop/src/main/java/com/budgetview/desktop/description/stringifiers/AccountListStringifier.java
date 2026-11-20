@@ -44,12 +44,10 @@ public class AccountListStringifier implements GlobListStringifier {
 
     Set<Integer> accountTypes = accounts.getValueSet(Account.ACCOUNT_TYPE);
     if (accountTypes.size() == 1) {
-      switch (AccountType.get(accountTypes.iterator().next())) {
-        case MAIN:
-          return Lang.get("accountList.multiple", accounts.size());
-        case SAVINGS:
-          return Lang.get("accountList.multiple", accounts.size());
-      }
+      return switch (AccountType.get(accountTypes.iterator().next())) {
+        case MAIN -> Lang.get("accountList.multiple", accounts.size());
+        case SAVINGS -> Lang.get("accountList.multiple", accounts.size());
+      };
     }
 
     return Lang.get("accountList.multiple", accounts.size());

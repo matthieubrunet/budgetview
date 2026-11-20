@@ -124,301 +124,190 @@ public class SeriesShape {
   }
 
   private static int getBegin10(int period) {
-    switch (period) {
-      case 1:
-        return 1;
-      case 2:
-        return 3;
-      case 3:
-        return 6;
-      case 4:
-        return 10;
-      case 5:
-        return 14;
-      case 6:
-        return 18;
-      case 7:
-        return 21;
-      case 8:
-        return 24;
-      case 9:
-        return 27;
-      case 10:
-        return 29;
-      default:
-        return 25;
-    }
+    return switch (period) {
+      case 1 -> 1;
+      case 2 -> 3;
+      case 3 -> 6;
+      case 4 -> 10;
+      case 5 -> 14;
+      case 6 -> 18;
+      case 7 -> 21;
+      case 8 -> 24;
+      case 9 -> 27;
+      case 10 -> 29;
+      default -> 25;
+    };
   }
 
   private static int getMiddle10(int period) {
-    switch (period) {
-      case 1:
-        return 2; // 1 -> 2
-      case 2:
-        return 4; // 3 -> 5
-      case 3:
-        return 8; // 6 -> 9
-      case 4:
-        return 12; // 10 -> 13
-      case 5:
-        return 15; // 14 -> 17
-      case 6:
-        return 19; // 18 -> 20
-      case 7:
-        return 22; // 21 -> 23
-      case 8:
-        return 25; // 24 -> 26
-      case 9:
-        return 27; // 27 -> 28
-      case 10:
-        return 29; // 29 -> 31
-      default:
-        return 29;
-    }
+    return switch (period) {
+      case 1 -> 2; // 1 -> 2
+      case 2 -> 4; // 3 -> 5
+      case 3 -> 8; // 6 -> 9
+      case 4 -> 12; // 10 -> 13
+      case 5 -> 15; // 14 -> 17
+      case 6 -> 19; // 18 -> 20
+      case 7 -> 22; // 21 -> 23
+      case 8 -> 25; // 24 -> 26
+      case 9 -> 27; // 27 -> 28
+      case 10 -> 29; // 29 -> 31
+      default -> 29;
+    };
   }
 
   private static int getEnd10(int period) {
-    switch (period) {
-      case 1:
-        return 2;
-      case 2:
-        return 5;
-      case 3:
-        return 9;
-      case 4:
-        return 13;
-      case 5:
-        return 17;
-      case 6:
-        return 20;
-      case 7:
-        return 23;
-      case 8:
-        return 26;
-      case 9:
-        return 28;
-      case 10:
-        return 31;
-      default:
-        return 31;
-    }
+    return switch (period) {
+      case 1 -> 2;
+      case 2 -> 5;
+      case 3 -> 9;
+      case 4 -> 13;
+      case 5 -> 17;
+      case 6 -> 20;
+      case 7 -> 23;
+      case 8 -> 26;
+      case 9 -> 28;
+      case 10 -> 31;
+      default -> 31;
+    };
   }
 
   private static int getBegin7(int period) {
-    switch (period) {
-      case 1:
-        return 1;
-      case 2:
-        return 5;
-      case 3:
-        return 9;
-      case 4:
-        return 13;
-      case 5:
-        return 17;
-      case 6:
-        return 21;
-      case 7:
-        return 25;
-      default:
-        return 25;
-    }
+    return switch (period) {
+      case 1 -> 1;
+      case 2 -> 5;
+      case 3 -> 9;
+      case 4 -> 13;
+      case 5 -> 17;
+      case 6 -> 21;
+      case 7 -> 25;
+      default -> 25;
+    };
   }
 
   private static int getMiddle7(int period) {
-    switch (period) {
-      case 1:
-        return 2; // 1 -> 4
-      case 2:
-        return 6; // 5 -> 8
-      case 3:
-        return 10; // 9 -> 12
-      case 4:
-        return 14; // 13 -> 16
-      case 5:
-        return 18; // 17 -> 20
-      case 6:
-        return 22; // 21 -> 24
-      case 7:
-        return 26; // 25 -> 31
-      default:
-        return 29;
-    }
+    return switch (period) {
+      case 1 -> 2; // 1 -> 4
+      case 2 -> 6; // 5 -> 8
+      case 3 -> 10; // 9 -> 12
+      case 4 -> 14; // 13 -> 16
+      case 5 -> 18; // 17 -> 20
+      case 6 -> 22; // 21 -> 24
+      case 7 -> 26; // 25 -> 31
+      default -> 29;
+    };
   }
 
   private static int getEnd7(int period) {
-    switch (period) {
-      case 1:
-        return 4;
-      case 2:
-        return 8;
-      case 3:
-        return 12;
-      case 4:
-        return 16;
-      case 5:
-        return 20;
-      case 6:
-        return 24;
-      case 7:
-        return 31;
-      default:
-        return 31;
-    }
+    return switch (period) {
+      case 1 -> 4;
+      case 2 -> 8;
+      case 3 -> 12;
+      case 4 -> 16;
+      case 5 -> 20;
+      case 6 -> 24;
+      case 7 -> 31;
+      default -> 31;
+    };
   }
 
   private static int getBegin6(int period) {
-    switch (period) {
-      case 1:
-        return 1;
-      case 2:
-        return 6;
-      case 3:
-        return 11;
-      case 4:
-        return 16;
-      case 5:
-        return 21;
-      case 6:
-        return 26;
-      default:
-        return 26;
-    }
+    return switch (period) {
+      case 1 -> 1;
+      case 2 -> 6;
+      case 3 -> 11;
+      case 4 -> 16;
+      case 5 -> 21;
+      case 6 -> 26;
+      default -> 26;
+    };
   }
 
   private static int getMiddle6(int period) {
-    switch (period) {
-      case 1:
-        return 3; // 1 -> 5
-      case 2:
-        return 8; // 6 -> 10
-      case 3:
-        return 13; // 11 -> 15
-      case 4:
-        return 18; // 16 -> 20
-      case 5:
-        return 23; // 21 -> 25
-      case 6:
-        return 28; // 26 -> 31
-      default:
-        return 28;
-    }
+    return switch (period) {
+      case 1 -> 3; // 1 -> 5
+      case 2 -> 8; // 6 -> 10
+      case 3 -> 13; // 11 -> 15
+      case 4 -> 18; // 16 -> 20
+      case 5 -> 23; // 21 -> 25
+      case 6 -> 28; // 26 -> 31
+      default -> 28;
+    };
   }
 
   private static int getEnd6(int period) {
-    switch (period) {
-      case 1:
-        return 5;
-      case 2:
-        return 10;
-      case 3:
-        return 15;
-      case 4:
-        return 20;
-      case 5:
-        return 25;
-      case 6:
-        return 31;
-      default:
-        return 31;
-    }
+    return switch (period) {
+      case 1 -> 5;
+      case 2 -> 10;
+      case 3 -> 15;
+      case 4 -> 20;
+      case 5 -> 25;
+      case 6 -> 31;
+      default -> 31;
+    };
   }
 
   private static int getBegin5(int period) {
-    switch (period) {
-      case 1:
-        return 1;
-      case 2:
-        return 7;
-      case 3:
-        return 13;
-      case 4:
-        return 19;
-      case 5:
-        return 25;
-      default:
-        return 25;
-    }
+    return switch (period) {
+      case 1 -> 1;
+      case 2 -> 7;
+      case 3 -> 13;
+      case 4 -> 19;
+      case 5 -> 25;
+      default -> 25;
+    };
   }
 
   private static int getMiddle5(int period) {
-    switch (period) {
-      case 1:
-        return 3; // 1 -> 6
-      case 2:
-        return 9; // 7 -> 12
-      case 3:
-        return 15; // 13 -> 18
-      case 4:
-        return 21; // 19 -> 24
-      case 5:
-        return 27; // 24 -> 31
-      default:
-        return 27;
-    }
+    return switch (period) {
+      case 1 -> 3; // 1 -> 6
+      case 2 -> 9; // 7 -> 12
+      case 3 -> 15; // 13 -> 18
+      case 4 -> 21; // 19 -> 24
+      case 5 -> 27; // 24 -> 31
+      default -> 27;
+    };
   }
 
   private static int getEnd5(int period) {
-    switch (period) {
-      case 1:
-        return 6;
-      case 2:
-        return 12;
-      case 3:
-        return 18;
-      case 4:
-        return 24;
-      case 5:
-        return 31;
-      default:
-        return 31;
-    }
+    return switch (period) {
+      case 1 -> 6;
+      case 2 -> 12;
+      case 3 -> 18;
+      case 4 -> 24;
+      case 5 -> 31;
+      default -> 31;
+    };
   }
 
 
   private static int getBegin4(int period) {
-    switch (period) {
-      case 1:
-        return 1;
-      case 2:
-        return 8;
-      case 3:
-        return 16;
-      case 4:
-        return 24;
-      default:
-        return 24;
-    }
+    return switch (period) {
+      case 1 -> 1;
+      case 2 -> 8;
+      case 3 -> 16;
+      case 4 -> 24;
+      default -> 24;
+    };
   }
 
   private static int getMiddle4(int period) {
-    switch (period) {
-      case 1:
-        return 4; //1->7
-      case 2:
-        return 11; // 8-> 15
-      case 3:
-        return 19; //16->23
-      case 4:
-        return 27; //24->31;
-      default:
-        return 27;
-    }
+    return switch (period) {
+      case 1 -> 4; //1->7
+      case 2 -> 11; // 8-> 15
+      case 3 -> 19; //16->23
+      case 4 -> 27; //24->31;
+      default -> 27;
+    };
   }
 
   private static int getEnd4(int period) {
-    switch (period) {
-      case 1:
-        return 7;
-      case 2:
-        return 15;
-      case 3:
-        return 23;
-      case 4:
-        return 31;
-      default:
-        return 31;
-    }
+    return switch (period) {
+      case 1 -> 7;
+      case 2 -> 15;
+      case 3 -> 23;
+      case 4 -> 31;
+      default -> 31;
+    };
   }
 
   public static Glob getDefault(Key key, int periodSize) {

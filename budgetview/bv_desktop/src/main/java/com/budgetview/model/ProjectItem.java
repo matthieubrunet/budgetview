@@ -162,7 +162,7 @@ public class ProjectItem {
     if (numbers.isEmpty()) {
       return 0;
     }
-    return numbers.last() + 1;
+    return numbers.getLast() + 1;
   }
 
   public static Glob duplicate(Glob item, String itemLabel, Glob targetProject, int monthOffset, GlobRepository repository) {

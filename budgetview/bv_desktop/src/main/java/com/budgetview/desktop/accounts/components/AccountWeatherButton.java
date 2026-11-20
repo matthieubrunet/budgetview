@@ -69,15 +69,11 @@ public class AccountWeatherButton implements Disposable {
   }
 
   private Icon getIcon(WeatherType weatherType) {
-    switch (weatherType) {
-      case SUNNY:
-        return SUNNY_ICON;
-      case CLOUDY:
-        return CLOUDY_ICON;
-      case RAINY:
-        return RAINY_ICON;
-    }
-    return null;
+    return switch (weatherType) {
+      case SUNNY -> SUNNY_ICON;
+      case CLOUDY -> CLOUDY_ICON;
+      case RAINY -> RAINY_ICON;
+    };
   }
 
   private void register(PanelBuilder builder, String componentName) {

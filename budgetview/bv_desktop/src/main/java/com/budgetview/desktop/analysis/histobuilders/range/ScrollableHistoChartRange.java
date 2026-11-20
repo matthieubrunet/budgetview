@@ -50,8 +50,8 @@ public class ScrollableHistoChartRange extends AbstractHistoChartRange {
     if (monthIds.isEmpty()) {
       return;
     }
-    firstMonth = monthIds.first();
-    lastMonth = monthIds.last();
+    firstMonth = monthIds.getFirst();
+    lastMonth = monthIds.getLast();
   }
 
   public void scroll(int offset) {

@@ -2,9 +2,12 @@ package org.prevayler.foundation;
 
 import org.prevayler.PrevaylerException;
 
+import java.io.Serial;
+
 public class UnexpectedException extends PrevaylerException {
 
-	private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 1L;
 
 	public UnexpectedException() {
 		super();

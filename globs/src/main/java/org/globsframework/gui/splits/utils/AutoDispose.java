@@ -11,14 +11,14 @@ import java.awt.event.ActionListener;
 public class AutoDispose {
 
   public static void register(JComponent component, Disposable disposable) {
-    if (component instanceof AbstractButton) {
-      registerButtonActivation((AbstractButton)component, disposable);
+    if (component instanceof AbstractButton button) {
+      registerButtonActivation(button, disposable);
     }
-    else if (component instanceof JComboBox) {
-      registerComboSelection((JComboBox)component, disposable);
+    else if (component instanceof JComboBox box) {
+      registerComboSelection(box, disposable);
     }
-    else if (component instanceof JTextField) {
-      registerTextEdition((JTextField)component, disposable);
+    else if (component instanceof JTextField field) {
+      registerTextEdition(field, disposable);
     }
 
   }

@@ -54,8 +54,8 @@ public class GlobRepositoryBuilder {
   public GlobRepository get() {
     DefaultGlobRepository repository = new DefaultGlobRepository(idGenerator);
     repository.add(globList);
-    if (idGenerator instanceof DefaultCheckedGlobIdGenerator) {
-      ((DefaultCheckedGlobIdGenerator)idGenerator).setRepository(repository);
+    if (idGenerator instanceof DefaultCheckedGlobIdGenerator generator) {
+      generator.setRepository(repository);
     }
     if (exceptionHanlder != null){
       return new StrictGlobRepository(repository, exceptionHanlder);

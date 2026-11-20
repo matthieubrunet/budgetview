@@ -1,8 +1,11 @@
 package org.prevayler.implementation;
 
+import java.io.Serial;
+
 public class Bomb extends Error {
 
-	private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 1L;
 
 	public Bomb() {
 		super();

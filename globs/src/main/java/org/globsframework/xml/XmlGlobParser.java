@@ -214,8 +214,7 @@ public class XmlGlobParser {
 
     private LinkField findLinkFieldByTargetName(GlobType globType, String xmlName) {
       for (Field field : globType.getFields()) {
-        if (field instanceof LinkField) {
-          LinkField linkField = (LinkField)field;
+        if (field instanceof LinkField linkField) {
           Field namingField = GlobTypeUtils.findNamingField(linkField.getTargetType());
           if (namingField != null) {
             String targetName = linkField.getName() + "Name";

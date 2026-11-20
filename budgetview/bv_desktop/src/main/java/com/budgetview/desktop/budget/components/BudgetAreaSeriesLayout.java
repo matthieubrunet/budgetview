@@ -183,15 +183,11 @@ public class BudgetAreaSeriesLayout implements RepeatLayout {
         case HORIZONTAL:
           componentWidth = columnWidth - SPACE;
       }
-      int left = columnLeft;
-      switch (alignment) {
-        case CENTER:
-          left = columnLeft + columnWidth / 2 - componentWidth / 2 - SPACE / 2;
-          break;
-        case RIGHT:
-          left = columnRight - componentWidth - SPACE;
-          break;
-      }
+      int left = switch (alignment) {
+        case CENTER -> columnLeft + columnWidth / 2 - componentWidth / 2 - SPACE / 2;
+        case RIGHT -> columnRight - componentWidth - SPACE;
+        default -> columnLeft;
+      };
       int y = isHeader ? FIRST_ROW_HEIGHT : rowBottom + yOffset - ROW_HEIGHT / 2 + size.height / 2;
       component.setBounds(left, y, componentWidth, size.height);
     }
@@ -224,11 +220,11 @@ public class BudgetAreaSeriesLayout implements RepeatLayout {
       name = "/" + name;
     }
     String label = "";
-    if (component instanceof JButton) {
-      label = "Button" + name + "/" + ((JButton)component).getText();
+    if (component instanceof JButton button) {
+      label = "Button" + name + "/" + button.getText();
     }
-    else if (component instanceof JLabel) {
-      label = "Label" + name + "/" + ((JLabel)component).getText();
+    else if (component instanceof JLabel jLabel) {
+      label = "Label" + name + "/" + jLabel.getText();
     }
     else if (component instanceof Gauge) {
       label = "Gauge" + name;

@@ -98,7 +98,7 @@ public class PeriodAccountStatUpdater implements ChangeSetListener, GlobSelectio
     }
     if (!transactionsFound) {
       GlobMatcher accountMatcher = TransactionMatchers.transactionsForAccount(accountId);
-      Double lastKnownPosition = DailyAccountPositionComputer.getLastValue(accountMatcher, monthIds.first(), Transaction.ACCOUNT_POSITION, repository);
+      Double lastKnownPosition = DailyAccountPositionComputer.getLastValue(accountMatcher, monthIds.getFirst(), Transaction.ACCOUNT_POSITION, repository);
       isOk = lastKnownPosition == null || lastKnownPosition >= 0;
     }
     repository.update(accountStatKey,

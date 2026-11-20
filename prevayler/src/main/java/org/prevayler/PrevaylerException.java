@@ -1,8 +1,11 @@
 package org.prevayler;
 
+import java.io.Serial;
+
 public class PrevaylerException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 1L;
 
 	public PrevaylerException() {
 		super();

@@ -80,7 +80,7 @@ public class StyledPanelUI extends BasicPanelUI {
     if (image != null) {
       do{
         graphics.drawImage(image, 0, 0, null);
-      } while (image != null && image instanceof VolatileImage && ((VolatileImage)image).contentsLost());
+      } while (image != null && image instanceof VolatileImage vi && vi.contentsLost());
     }
   }
 

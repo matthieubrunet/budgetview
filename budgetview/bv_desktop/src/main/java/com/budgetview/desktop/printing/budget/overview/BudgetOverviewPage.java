@@ -49,7 +49,7 @@ public class BudgetOverviewPage extends PrintablePage {
     chartsPanel.registerCharts(builder);
     chartsPanel.reset();
 
-    chartsPanel.monthSelected(selectedMonths.last(), selectedMonths);
+    chartsPanel.monthSelected(selectedMonths.getLast(), selectedMonths);
 
     return builder.load();
   }

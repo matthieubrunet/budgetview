@@ -534,7 +534,7 @@ public class SeriesChartsPanel implements GlobSelectionListener {
 
   private double getTotalAmountForSelectedPeriod(SeriesOrGroup seriesOrGroup) {
     if (selectedMonthIds.size() == 1) {
-      Integer monthId = selectedMonthIds.first();
+      Integer monthId = selectedMonthIds.getFirst();
       Glob stat = repository.find(seriesOrGroup.createSeriesStatKey(monthId));
       if ((stat != null) && stat.isTrue(SeriesStat.ACTIVE)) {
         return stat.get(SeriesStat.SUMMARY_AMOUNT, 0.00);

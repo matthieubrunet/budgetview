@@ -50,13 +50,13 @@ public class AccountMatchers {
         }
         if (account.get(Account.CLOSED_DATE) != null) {
           Integer endMonth = Month.getMonthId(account.get(Account.CLOSED_DATE));
-          if (endMonth < monthIds.first()) {
+          if (endMonth < monthIds.getFirst()) {
             return false;
           }
         }
         if (account.get(Account.OPEN_DATE) != null) {
           Integer openMonth = Month.getMonthId(account.get(Account.OPEN_DATE));
-          if (openMonth > monthIds.last()) {
+          if (openMonth > monthIds.getLast()) {
             return false;
           }
         }
@@ -102,13 +102,13 @@ public class AccountMatchers {
         }
         if (account.get(Account.CLOSED_DATE) != null) {
           Integer endMonth = Month.getMonthId(account.get(Account.CLOSED_DATE));
-          if (endMonth < monthIds.first()) {
+          if (endMonth < monthIds.getFirst()) {
             return false;
           }
         }
         if (account.get(Account.OPEN_DATE) != null) {
           Integer openMonth = Month.getMonthId(account.get(Account.OPEN_DATE));
-          if (openMonth > monthIds.last()) {
+          if (openMonth > monthIds.getLast()) {
             return false;
           }
         }
@@ -128,13 +128,13 @@ public class AccountMatchers {
         }
         if (account.get(Account.CLOSED_DATE) != null) {
           Integer endMonth = Month.getMonthId(account.get(Account.CLOSED_DATE));
-          if (endMonth < monthIds.first()) {
+          if (endMonth < monthIds.getFirst()) {
             return false;
           }
         }
         if (account.get(Account.OPEN_DATE) != null) {
           Integer openMonth = Month.getMonthId(account.get(Account.OPEN_DATE));
-          if (openMonth > monthIds.last()) {
+          if (openMonth > monthIds.getLast()) {
             return false;
           }
         }

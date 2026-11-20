@@ -326,7 +326,7 @@ public class ProjectUpgradeV40 {
       Glob item = repository.create(ProjectItem.TYPE,
                                     value(ProjectItem.ITEM_TYPE, ProjectItemType.EXPENSE.getId()),
                                     value(ProjectItem.LABEL, Lang.get("project.upgrade.misc")),
-                                    value(ProjectItem.FIRST_MONTH, monthIds.first()),
+                                    value(ProjectItem.FIRST_MONTH, monthIds.getFirst()),
                                     value(ProjectItem.ACCOUNT, Account.MAIN_SUMMARY_ACCOUNT_ID),
                                     value(ProjectItem.PROJECT, projectId),
                                     value(ProjectItem.SEQUENCE_NUMBER, ProjectItem.getNextSequenceNumber(projectId, repository)));
@@ -337,7 +337,7 @@ public class ProjectUpgradeV40 {
                           value(ProjectItem.PLANNED_AMOUNT, 0.00));
       }
       else {
-        ClosedMonthRange range = new ClosedMonthRange(monthIds.first(), monthIds.last());
+        ClosedMonthRange range = new ClosedMonthRange(monthIds.getFirst(), monthIds.getLast());
         repository.update(item.getKey(),
                           value(ProjectItem.MONTH_COUNT, range.length()),
                           value(ProjectItem.USE_SAME_AMOUNTS, false),

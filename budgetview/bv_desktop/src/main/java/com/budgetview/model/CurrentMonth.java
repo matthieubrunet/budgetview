@@ -89,11 +89,11 @@ public class CurrentMonth {
   }
 
   public static Integer getFirstMonth(GlobRepository repository) {
-    return repository.getAll(Month.TYPE).getSortedSet(Month.ID).first();
+    return repository.getAll(Month.TYPE).getSortedSet(Month.ID).getFirst();
   }
 
   public static Integer getLastMonth(GlobRepository repository) {
-    return repository.getAll(Month.TYPE).getSortedSet(Month.ID).last();
+    return repository.getAll(Month.TYPE).getSortedSet(Month.ID).getLast();
   }
 
   public static Date getAsDate(GlobRepository repository) {

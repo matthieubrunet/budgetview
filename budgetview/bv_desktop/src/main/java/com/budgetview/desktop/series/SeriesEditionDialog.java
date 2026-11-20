@@ -489,7 +489,7 @@ public class SeriesEditionDialog {
       }
 
       SortedSet<Integer> days = transactions.getSortedSet(Transaction.DAY);
-      Integer day = days.isEmpty() ? 1 : days.last();
+      Integer day = days.isEmpty() ? 1 : days.getLast();
       newSeries = createSeries(label, day, fromAccount.get(), toAccount.get(), accounts, forcedValues);
     }
     finally {

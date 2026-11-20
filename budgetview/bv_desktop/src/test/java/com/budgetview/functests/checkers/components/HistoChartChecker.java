@@ -116,8 +116,7 @@ public class HistoChartChecker extends AbstractHistoChecker<HistoChartChecker> {
     HistoDataset dataset = chart.getCurrentDataset();
     builder.append(".checkColumnCount(").append(dataset.size()).append(")\n");
 
-    if (dataset instanceof HistoDiffDataset) {
-      HistoDiffDataset diffDataset = (HistoDiffDataset) dataset;
+    if (dataset instanceof HistoDiffDataset diffDataset) {
       for (int i = 0; i < diffDataset.size(); i++) {
         builder.append(".checkDiffColumn(").append(i).append(", \"")
           .append(diffDataset.getLabel(i)).append("\", \"")
@@ -128,8 +127,7 @@ public class HistoChartChecker extends AbstractHistoChecker<HistoChartChecker> {
           .append(")\n");
       }
     }
-    else if (dataset instanceof HistoLineDataset) {
-      HistoLineDataset lineDataset = (HistoLineDataset) dataset;
+    else if (dataset instanceof HistoLineDataset lineDataset) {
       for (int i = 0; i < lineDataset.size(); i++) {
         builder.append(".checkLineColumn(").append(i).append(", \"")
           .append(lineDataset.getLabel(i)).append("\", \"")

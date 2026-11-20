@@ -381,13 +381,13 @@ public class GuiUtils {
   }
 
   public static void opacify(Container container) {
-    if (container instanceof JPanel) {
-      ((JPanel)container).setOpaque(false);
+    if (container instanceof JPanel panel) {
+      panel.setOpaque(false);
     }
     Component[] components = container.getComponents();
     for (Component component : components) {
-      if (component instanceof Container) {
-        opacify((Container)component);
+      if (component instanceof Container container1) {
+        opacify(container1);
       }
     }
   }
@@ -414,11 +414,11 @@ public class GuiUtils {
 
   public static String getText(JComponent component) {
 
-    if (component instanceof JLabel) {
-      return ((JLabel)component).getText();
+    if (component instanceof JLabel label) {
+      return label.getText();
     }
-    else if (component instanceof AbstractButton) {
-      return ((AbstractButton)component).getText();
+    else if (component instanceof AbstractButton button) {
+      return button.getText();
     }
     return "";
   }

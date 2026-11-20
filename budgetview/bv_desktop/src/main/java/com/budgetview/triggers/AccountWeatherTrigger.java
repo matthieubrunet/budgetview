@@ -62,7 +62,7 @@ public class AccountWeatherTrigger implements ChangeSetListener {
       repository.create(AccountWeather.TYPE,
                         value(AccountWeather.ACCOUNT, accountId),
                         value(AccountWeather.WEATHER, weather.getId()),
-                        value(AccountWeather.LAST_FORECAST_MONTH, months.last()),
+                        value(AccountWeather.LAST_FORECAST_MONTH, months.getLast()),
                         value(AccountWeather.FUTURE_MIN, periodMin));
     }
   }

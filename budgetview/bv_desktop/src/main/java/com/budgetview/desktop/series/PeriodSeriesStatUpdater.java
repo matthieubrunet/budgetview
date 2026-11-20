@@ -137,10 +137,10 @@ public class PeriodSeriesStatUpdater implements GlobSelectionListener, ChangeSet
     }
 
     if (monthIds.size() > 1) {
-      initEvolutionFields(monthIds.first(), monthIds.last());
+      initEvolutionFields(monthIds.getFirst(), monthIds.getLast());
     }
     else {
-      int lastMonth = monthIds.first();
+      int lastMonth = monthIds.getFirst();
       initEvolutionFields(Month.previous(lastMonth), lastMonth);
     }
   }

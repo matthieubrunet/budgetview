@@ -75,8 +75,8 @@ public abstract class AbstractGlob extends AbstractFieldValues implements Glob {
       throw new InvalidParameter("Link '" + link + " cannot be used with " + this);
     }
 
-    if (link instanceof LinkField) {
-      Integer value = get((LinkField)link);
+    if (link instanceof LinkField field) {
+      Integer value = get(field);
       if (value == null) {
         return null;
       }

@@ -129,8 +129,8 @@ class DefaultFieldFactory {
     if (isKeyField) {
       type.addKey(field);
     }
-    if (field instanceof Link) {
-      type.addLink((Link)field);
+    if (field instanceof Link link) {
+      type.addLink(link);
     }
     field.setKeyField(isKeyField);
     return field;

@@ -373,7 +373,7 @@ public class SeriesAmountEditionPanel {
       return;
     }
 
-    Integer firstMonthId = monthIds.first();
+    Integer firstMonthId = monthIds.getFirst();
 
     if (autoSelectFutureMonths) {
       propagateValue(firstMonthId);
@@ -432,7 +432,7 @@ public class SeriesAmountEditionPanel {
       return;
     }
 
-    Range<Integer> selectionRange = new Range<Integer>(selectedMonths.first(), selectedMonths.last());
+    Range<Integer> selectionRange = new Range<Integer>(selectedMonths.getFirst(), selectedMonths.getLast());
     if (!seriesRange.overlaps(selectionRange)) {
       if (seriesRange.contains(current)) {
         select(current);

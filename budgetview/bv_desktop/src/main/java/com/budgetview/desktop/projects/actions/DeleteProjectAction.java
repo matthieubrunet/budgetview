@@ -96,7 +96,7 @@ public class DeleteProjectAction extends MultiSelectionAction {
     monthIds.addAll(selectionService.getSelection(Month.TYPE).getValueSet(Month.ID));
 
     GlobList months = new GlobList();
-    for (Integer monthId : Month.range(monthIds.first(), monthIds.last())) {
+    for (Integer monthId : Month.range(monthIds.getFirst(), monthIds.getLast())) {
       months.add(repository.get(Key.create(Month.TYPE, monthId)));
     }
     selectionService.select(months, Month.TYPE);

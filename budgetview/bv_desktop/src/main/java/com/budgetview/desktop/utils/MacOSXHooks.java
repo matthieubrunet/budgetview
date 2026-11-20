@@ -117,8 +117,8 @@ public class MacOSXHooks implements InvocationHandler {
     if (isJava9OrLater()) {
       // Lu par sun.lwawt.macosx.CPlatformWindow. com.apple.eawt.FullScreenUtilities existe encore,
       // mais java.desktop ne l'exporte plus.
-      if (window instanceof RootPaneContainer) {
-        ((RootPaneContainer)window).getRootPane().putClientProperty("apple.awt.fullscreenable", Boolean.TRUE);
+      if (window instanceof RootPaneContainer container) {
+        container.getRootPane().putClientProperty("apple.awt.fullscreenable", Boolean.TRUE);
       }
       return;
     }

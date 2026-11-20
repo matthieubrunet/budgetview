@@ -44,8 +44,8 @@ public class TimeGraph {
     for (Glob month : months) {
       int year = Month.toYear(month.get(Month.ID));
       if (currentYear != year) {
-        yearGraphs.add(new YearGraph(years.first().equals(currentYear),
-                                     years.last().equals(currentYear),
+        yearGraphs.add(new YearGraph(years.getFirst().equals(currentYear),
+                                     years.getLast().equals(currentYear),
                                      currentYear, monthForYear, colors,
                                      new MonthChainedSelectableElement(yearCount),
                                      new YearChainedSelectableElement(yearCount), timeService, positionProvider));
@@ -55,7 +55,7 @@ public class TimeGraph {
       }
       monthForYear.add(month);
     }
-    yearGraphs.add(new YearGraph(years.first().equals(currentYear), years.last().equals(currentYear),
+    yearGraphs.add(new YearGraph(years.getFirst().equals(currentYear), years.getLast().equals(currentYear),
                                  currentYear, monthForYear, colors,
                                  new MonthChainedSelectableElement(yearCount),
                                  new YearChainedSelectableElement(yearCount), timeService, positionProvider));

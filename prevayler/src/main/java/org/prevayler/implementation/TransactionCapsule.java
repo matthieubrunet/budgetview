@@ -3,11 +3,13 @@ package org.prevayler.implementation;
 import org.prevayler.Transaction;
 import org.prevayler.foundation.serialization.Serializer;
 
+import java.io.Serial;
 import java.util.Date;
 
 class TransactionCapsule extends Capsule {
 
-	private static final long serialVersionUID = 3283271592697928351L;
+  @Serial
+  private static final long serialVersionUID = 3283271592697928351L;
 
 	public TransactionCapsule(Transaction transaction, Serializer journalSerializer) {
 		super(transaction, journalSerializer);

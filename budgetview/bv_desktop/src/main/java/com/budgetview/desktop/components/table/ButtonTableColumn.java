@@ -51,8 +51,8 @@ public abstract class ButtonTableColumn extends AbstractRolloverEditor implement
   }
 
   public boolean isCellEditable(EventObject anEvent) {
-    if (anEvent instanceof MouseEvent) {
-      return ((MouseEvent)anEvent).getClickCount() >= 1;
+    if (anEvent instanceof MouseEvent event) {
+      return event.getClickCount() >= 1;
     }
     return true;
   }

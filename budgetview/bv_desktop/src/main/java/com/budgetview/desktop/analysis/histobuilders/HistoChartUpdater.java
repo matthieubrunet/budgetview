@@ -93,7 +93,7 @@ public abstract class HistoChartUpdater implements GlobSelectionListener, Dispos
       return;
     }
     this.currentMonths = directory.get(SelectionService.class).getSelection(selectionType).getSortedSet(selectionMonthField);
-    this.currentMonthId = currentMonths.isEmpty() ? null : currentMonths.last();
+    this.currentMonthId = currentMonths.isEmpty() ? null : currentMonths.getLast();
   }
 
   protected abstract void update(Integer currentMonthId, boolean resetPosition);

@@ -88,7 +88,7 @@ public class AutoCompletionModel extends Searchable {
     if (selection.isEmpty()) {
       return -1;
     }
-    return selection.first();
+    return selection.getFirst();
   }
 
   protected void setSelectedIndex(int index, boolean incremental) {

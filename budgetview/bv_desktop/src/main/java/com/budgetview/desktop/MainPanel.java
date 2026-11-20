@@ -195,7 +195,7 @@ public class MainPanel {
     if (transactions.isEmpty()) {
       return;
     }
-    Integer lastMonth = transactions.getSortedSet(Transaction.MONTH).last();
+    Integer lastMonth = transactions.getSortedSet(Transaction.MONTH).getLast();
     directory.get(SelectionService.class).select(repository.get(Key.create(Month.TYPE, lastMonth)));
   }
 

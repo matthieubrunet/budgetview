@@ -91,8 +91,8 @@ public class HistoChart extends JPanel implements Disposable {
 
   public void setBorder(Border border) {
     super.setBorder(border);
-    if (border != null && border instanceof EmptyBorder) {
-      this.insets = ((EmptyBorder) border).getBorderInsets();
+    if (border != null && border instanceof EmptyBorder emptyBorder) {
+      this.insets = emptyBorder.getBorderInsets();
     }
   }
 

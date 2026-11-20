@@ -340,13 +340,10 @@ public class BudgetAreaSeriesView extends View implements Filterable {
     }
 
     private NameLabelPopupButton getNameButton(Glob periodSeriesStat, Glob target) {
-      switch (PeriodSeriesStat.getSeriesType(periodSeriesStat)) {
-        case SERIES:
-          return seriesButtons.createSeriesPopupButton(target);
-        case SERIES_GROUP:
-          return seriesGroupButtons.createPopupButton(target);
-      }
-      throw new UnexpectedValue(periodSeriesStat);
+      return switch (PeriodSeriesStat.getSeriesType(periodSeriesStat)) {
+        case SERIES -> seriesButtons.createSeriesPopupButton(target);
+        case SERIES_GROUP -> seriesGroupButtons.createPopupButton(target);
+      };
     }
 
     private class SeriesButtonsUpdater implements ChangeSetListener, Disposable {

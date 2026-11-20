@@ -39,7 +39,7 @@ public class PrintBudgetDialog {
   public void show(SortedSet<Integer> selectedMonths) {
     this.selectedMonths = selectedMonths;
 
-    this.currentMonth = selectedMonths.last();
+    this.currentMonth = selectedMonths.getLast();
     this.currentMonthAction.update(currentMonth);
     this.currentYearAction.update(currentMonth);
 
@@ -115,7 +115,7 @@ public class PrintBudgetDialog {
 
     protected ClosedMonthRange getExistingRange(GlobRepository repository) {
       SortedSet<Integer> months = repository.getAll(Month.TYPE).getSortedSet(Month.ID);
-      return new ClosedMonthRange(months.first(), months.last());
+      return new ClosedMonthRange(months.getFirst(), months.getLast());
     }
 
     public ClosedMonthRange getRange() {

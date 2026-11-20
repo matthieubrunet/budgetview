@@ -25,9 +25,9 @@ public class GlobCheck {
           if (field.isRequired() && glob.getValue(field) == null) {
             report.addError(field + " should not be null", glob.toString());
           }
-          if (field instanceof LinkField) {
+          if (field instanceof LinkField linkField) {
             Object value = glob.getValue(field);
-            if ((value != null) && repository.findLinkTarget(glob, (LinkField)field) == null) {
+            if ((value != null) && repository.findLinkTarget(glob, linkField) == null) {
               report.addError("Link " + field + " has value " + value + " but no corresponding object", glob.toString());
             }
           }

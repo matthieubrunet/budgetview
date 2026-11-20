@@ -2,11 +2,13 @@ package org.prevayler.implementation;
 
 import org.prevayler.TransactionWithQuery;
 
+import java.io.Serial;
 import java.util.Date;
 
 public class AppendTransactionWithQuery implements TransactionWithQuery {
 
-	private static final long serialVersionUID = 7725358482908916942L;
+  @Serial
+  private static final long serialVersionUID = 7725358482908916942L;
 	public String toAdd;
 
 	private AppendTransactionWithQuery() {

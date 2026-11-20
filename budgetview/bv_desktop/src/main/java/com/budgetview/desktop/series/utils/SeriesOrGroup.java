@@ -103,13 +103,10 @@ public class SeriesOrGroup {
   }
 
   public Key getKey() {
-    switch (type) {
-      case SERIES:
-        return Key.create(Series.TYPE, id);
-      case SERIES_GROUP:
-        return Key.create(SeriesGroup.TYPE, id);
-    }
-    throw new UnexpectedValue("Unexpected type " + type);
+    return switch (type) {
+      case SERIES -> Key.create(Series.TYPE, id);
+      case SERIES_GROUP -> Key.create(SeriesGroup.TYPE, id);
+    };
   }
 
   public static Set<Key> createKeys(Set<SeriesOrGroup> seriesOrGroups) {

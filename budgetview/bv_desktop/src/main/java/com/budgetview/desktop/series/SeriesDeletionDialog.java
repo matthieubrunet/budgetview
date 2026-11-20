@@ -62,8 +62,8 @@ public class SeriesDeletionDialog {
     builder.add("introMessage", introMessage);
 
     SortedSet<Integer> transactionMonths = transactionsForSeries.getSortedSet(Transaction.MONTH);
-    Integer firstMonth = transactionMonths.first();
-    Integer lastMonth = transactionMonths.last();
+    Integer firstMonth = transactionMonths.getFirst();
+    Integer lastMonth = transactionMonths.getLast();
 
     // Transfer
     builder.add("transfer", new TransferAction(transactionsForSeries, firstMonth));

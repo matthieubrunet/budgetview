@@ -182,7 +182,7 @@ public class SeriesEvolutionTableView extends View {
       public void selectionUpdated(GlobSelection selection) {
         SortedSet<Integer> monthIds = selection.getAll(Month.TYPE).getSortedSet(Month.ID);
         if (!monthIds.isEmpty()) {
-          referenceMonthId = monthIds.iterator().next();
+          referenceMonthId = monthIds.getFirst();
           for (SeriesEvolutionMonthColumn column : monthColumns) {
             column.setReferenceMonthId(referenceMonthId);
           }

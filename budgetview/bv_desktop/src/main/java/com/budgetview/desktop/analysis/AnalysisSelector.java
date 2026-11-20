@@ -68,15 +68,11 @@ public class AnalysisSelector extends View {
     }
 
     public String getIconFile(AnalysisViewType type) {
-      switch (type) {
-        case BUDGET:
-          return "analysis/analysis_composition.png";
-        case EVOLUTION:
-          return "analysis/analysis_evolution.png";
-        case TABLE:
-          return "analysis/analysis_table.png";
-      }
-      throw new UnexpectedValue(type);
+      return switch (type) {
+        case BUDGET -> "analysis/analysis_composition.png";
+        case EVOLUTION -> "analysis/analysis_evolution.png";
+        case TABLE -> "analysis/analysis_table.png";
+      };
     }
   }
 }

@@ -98,13 +98,10 @@ public class PeriodSeriesStat {
     if (target == null) {
       return null;
     }
-    switch (getSeriesType(periodStat)) {
-      case SERIES:
-        return Series.getBudgetArea(target);
-      case SERIES_GROUP:
-        return SeriesGroup.getBudgetArea(target);
-    }
-    throw new InvalidParameter("Unexpected type for " + periodStat);
+    return switch (getSeriesType(periodStat)) {
+      case SERIES -> Series.getBudgetArea(target);
+      case SERIES_GROUP -> SeriesGroup.getBudgetArea(target);
+    };
   }
 
   public static String getName(Glob periodStat, GlobRepository repository) {
@@ -112,13 +109,10 @@ public class PeriodSeriesStat {
     if (target == null) {
       return null;
     }
-    switch (getSeriesType(periodStat)) {
-      case SERIES:
-        return target.get(Series.NAME);
-      case SERIES_GROUP:
-        return target.get(SeriesGroup.NAME);
-    }
-    throw new InvalidParameter("Unexpected type for " + periodStat);
+    return switch (getSeriesType(periodStat)) {
+      case SERIES -> target.get(Series.NAME);
+      case SERIES_GROUP -> target.get(SeriesGroup.NAME);
+    };
   }
 
   public static Glob findOrCreateForSeries(Integer seriesId, GlobRepository repository) {
@@ -160,13 +154,10 @@ public class PeriodSeriesStat {
     if (target == null) {
       return false;
     }
-    switch (getSeriesType(periodStat)) {
-      case SERIES:
-        return target.get(Series.GROUP) != null;
-      case SERIES_GROUP:
-        return false;
-    }
-    throw new InvalidParameter("Unexpected type for " + periodStat);
+    return switch (getSeriesType(periodStat)) {
+      case SERIES -> target.get(Series.GROUP) != null;
+      case SERIES_GROUP -> false;
+    };
   }
 
 
@@ -177,13 +168,10 @@ public class PeriodSeriesStat {
         if (target == null) {
           return false;
         }
-        switch (getSeriesType(periodStat)) {
-          case SERIES:
-            return Series.isSeriesForAccounts(target, accountIds, repository);
-          case SERIES_GROUP:
-            return Series.isSeriesInGroupForAccount(target, accountIds, repository);
-        }
-        throw new InvalidParameter("Unexpected type for " + periodStat);
+        return switch (getSeriesType(periodStat)) {
+          case SERIES -> Series.isSeriesForAccounts(target, accountIds, repository);
+          case SERIES_GROUP -> Series.isSeriesInGroupForAccount(target, accountIds, repository);
+        };
       }
 
       public String toString() {

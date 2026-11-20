@@ -245,8 +245,8 @@ public abstract class AbstractSplitsContext implements SplitsContext {
 
     private void setVisible(boolean visible) {
       targetComponent.setVisible(visible);
-      if (targetComponent instanceof JComponent) {
-        GuiUtils.revalidate((JComponent)targetComponent);
+      if (targetComponent instanceof JComponent component) {
+        GuiUtils.revalidate(component);
       }
 
     }

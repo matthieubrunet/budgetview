@@ -112,7 +112,7 @@ public class NavigationService implements GlobSelectionListener {
     SortedSet<Integer> transactionMonthIds = transactions.getSortedSet(Transaction.MONTH);
     SortedSet<Integer> selectedMonthIds = selectionService.getSelection(Month.TYPE).getSortedSet(Month.ID);
     if (Collections.disjoint(transactionMonthIds, selectedMonthIds)) {
-      ClosedMonthRange range = new ClosedMonthRange(transactionMonthIds.first(), transactionMonthIds.last());
+      ClosedMonthRange range = new ClosedMonthRange(transactionMonthIds.getFirst(), transactionMonthIds.getLast());
       GlobList months = repository.getAll(Month.TYPE, GlobMatchers.fieldIn(Month.ID, range.asList()));
       selectionService.select(months, Month.TYPE);
     }

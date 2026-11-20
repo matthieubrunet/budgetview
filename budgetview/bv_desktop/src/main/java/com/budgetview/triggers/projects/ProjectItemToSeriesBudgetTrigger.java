@@ -113,7 +113,7 @@ public class ProjectItemToSeriesBudgetTrigger extends AbstractChangeSetListener 
     }
 
     // Create missing SeriesBudget and set Series range
-    ClosedMonthRange range = new ClosedMonthRange(months.first(), months.last());
+    ClosedMonthRange range = new ClosedMonthRange(months.getFirst(), months.getLast());
     for (Integer monthId : range.asList()) {
       SeriesBudget.findOrCreate(seriesId, monthId, repository);
     }

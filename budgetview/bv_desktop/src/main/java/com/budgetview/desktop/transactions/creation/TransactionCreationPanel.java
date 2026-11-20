@@ -157,7 +157,7 @@ public class TransactionCreationPanel extends View implements GlobSelectionListe
         return;
       }
 
-      Integer currentMonth = months.getSortedSet(Month.ID).last();
+      Integer currentMonth = months.getSortedSet(Month.ID).getLast();
       repository.findOrCreate(PROTOTYPE_TRANSACTION_KEY, value(Transaction.TO_RECONCILE, false));
       updateMonth(repository, currentMonth);
     }

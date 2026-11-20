@@ -18,13 +18,10 @@ public class BoxSequence extends Sequence {
   }
 
   public String getName() {
-    switch (direction) {
-      case HORIZONTAL:
-        return "horizontalBoxes";
-      case VERTICAL:
-        return "verticalBoxes";
-    }
-    throw new InvalidParameter("Invalid direction " +  direction);
+    return switch (direction) {
+      case HORIZONTAL -> "horizontalBoxes";
+      case VERTICAL -> "verticalBoxes";
+    };
   }
 
   private static class BoxSequenceBuilder implements SequenceBuilder {
@@ -41,13 +38,10 @@ public class BoxSequence extends Sequence {
     }
 
     public int getBoxDirection(Direction direction) {
-      switch (direction) {
-        case HORIZONTAL:
-          return BoxLayout.X_AXIS;
-        case VERTICAL:
-          return BoxLayout.Y_AXIS;
-      }
-      throw new RuntimeException("Unexpected direction " + direction);
+      return switch (direction) {
+        case HORIZONTAL -> BoxLayout.X_AXIS;
+        case VERTICAL -> BoxLayout.Y_AXIS;
+      };
     }
   }
 }

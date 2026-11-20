@@ -229,8 +229,8 @@ public class TestUtils {
     }
     XmlTag childTag = tag.createChildTag(name);
     childTag.addAttribute("name", awtComponent.getName());
-    if (awtComponent instanceof Container) {
-      for (Component component : ((Container)awtComponent).getComponents()) {
+    if (awtComponent instanceof Container container) {
+      for (Component component : container.getComponents()) {
         out(component, childTag);
       }
     }

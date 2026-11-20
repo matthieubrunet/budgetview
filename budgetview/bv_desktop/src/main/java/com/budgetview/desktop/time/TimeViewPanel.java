@@ -264,11 +264,11 @@ public class TimeViewPanel extends JPanel implements MouseListener, MouseMotionL
   }
 
   private void sendMouseOverEvent() {
-    if (lastMouseOverSelectable instanceof MonthGraph) {
-      mouseOverHandler.enterMonth(((MonthGraph) lastMouseOverSelectable).getMonth().get(Month.ID));
+    if (lastMouseOverSelectable instanceof MonthGraph graph1) {
+      mouseOverHandler.enterMonth(graph1.getMonth().get(Month.ID));
     }
-    else if (lastMouseOverSelectable instanceof YearGraph) {
-      mouseOverHandler.enterYear(((YearGraph) lastMouseOverSelectable).getYear());
+    else if (lastMouseOverSelectable instanceof YearGraph graph) {
+      mouseOverHandler.enterYear(graph.getYear());
     }
   }
 

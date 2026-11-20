@@ -67,8 +67,8 @@ public abstract class AbstractRolloverEditor extends AbstractCellEditor implemen
   }
 
   public boolean isCellEditable(EventObject anEvent) {
-    if (anEvent instanceof MouseEvent) {
-      return ((MouseEvent)anEvent).getClickCount() >= 2;
+    if (anEvent instanceof MouseEvent event) {
+      return event.getClickCount() >= 2;
     }
     return true;
   }

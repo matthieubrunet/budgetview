@@ -78,11 +78,10 @@ public class DefaultGlobRepository implements GlobRepository, IndexSource {
     if (target == null) {
       return GlobList.EMPTY;
     }
-    if (link instanceof LinkField) {
-      LinkField linkField = (LinkField)link;
+    if (link instanceof LinkField linkField) {
       IntegerField targetKeyField = linkField.getTargetKeyField();
       Integer id = target.get(targetKeyField);
-      return getAll(link.getSourceType(), GlobMatchers.fieldEquals((LinkField)link, id));
+      return getAll(link.getSourceType(), GlobMatchers.fieldEquals(linkField, id));
     }
 
     Key targetKey = target;
@@ -617,9 +616,9 @@ public class DefaultGlobRepository implements GlobRepository, IndexSource {
   }
 
   private void disable(Glob glob) {
-    if (glob instanceof AbstractGlob) {
-      pendingDeletions.put(glob.getKey(), (AbstractGlob)glob);
-      ((AbstractGlob)glob).dispose();
+    if (glob instanceof AbstractGlob abstractGlob) {
+      pendingDeletions.put(glob.getKey(), abstractGlob);
+      abstractGlob.dispose();
     }
   }
 

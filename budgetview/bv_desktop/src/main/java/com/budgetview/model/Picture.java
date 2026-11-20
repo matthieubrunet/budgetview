@@ -147,8 +147,8 @@ public class Picture {
   }
 
   public static ImageIcon toImageIcon(Icon icon) {
-    if (icon instanceof ImageIcon) {
-      return (ImageIcon)icon;
+    if (icon instanceof ImageIcon imageIcon) {
+      return imageIcon;
     }
     else {
       int w = icon.getIconWidth();

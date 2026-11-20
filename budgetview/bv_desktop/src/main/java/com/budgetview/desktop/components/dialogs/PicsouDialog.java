@@ -50,11 +50,11 @@ public class PicsouDialog extends JDialog {
         return JFrame.class.isInstance(component) || JDialog.class.isInstance(component);
       }
     });
-    if (parent instanceof JFrame) {
-      return new PicsouDialog(creator, (JFrame) parent, modal, directory);
+    if (parent instanceof JFrame frame) {
+      return new PicsouDialog(creator, frame, modal, directory);
     }
-    else if (parent instanceof JDialog) {
-      return new PicsouDialog(creator, (JDialog) parent, modal, directory);
+    else if (parent instanceof JDialog dialog) {
+      return new PicsouDialog(creator, dialog, modal, directory);
     }
     else {
       return new PicsouDialog(creator, (JFrame) null, modal, directory);

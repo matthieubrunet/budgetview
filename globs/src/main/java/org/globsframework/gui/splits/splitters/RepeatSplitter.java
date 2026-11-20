@@ -40,11 +40,11 @@ public class RepeatSplitter extends AbstractSplitter {
   private void initSplitters(Splitter[] subSplitters) {
     java.util.List<Splitter> splitters = new ArrayList<Splitter>();
     for (Splitter subSplitter : subSplitters) {
-      if (subSplitter instanceof Header) {
+      if (subSplitter instanceof Header header) {
         if (headerSplitters != null) {
           throw new InvalidParameter("Only one Header is accepted for a given repeat");
         }
-        this.headerSplitters  = ((Header)subSplitter).getHeaderSplitters();
+        this.headerSplitters  = header.getHeaderSplitters();
       }
       else {
         splitters.add(subSplitter);
