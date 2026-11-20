@@ -141,6 +141,9 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   `InputEvent` à 4a.
 - [ ] **3b. OpenRewrite** : passer les recettes de migration Java 8 → 21 en mode `dryRun`,
   relire le diff et n'appliquer que par familles.
+  Inventaire fait le 2026-11-20, voir [3b, inventaire](#3b-inventaire) plus bas : 231 fichiers dans le build, 13 familles.
+  Deux familles sont fautives : `ListFirstAndLast` rend `GlobList.getFirst()` récursive, et `UseTextBlocks` efface des
+  blancs de fin de ligne. Quatre lots proposés (A à D), décision attendue.
 - [ ] **3c. Intégration macOS** : `com.apple.eawt` (2 fichiers) → `java.awt.Desktop` (Java 9 et +).
 - [ ] **3d. Utilitaires maison** (`Utils`, `Strings`, `Files`…) comparés à `java.util`,
   `java.nio.file`, `Objects`, `String` (`isBlank`, `repeat`, `strip`…).
@@ -1050,6 +1053,65 @@ Recommandation : A, B et C ; D attend l'étape 5.
   `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable ; 4 passages verts seul, avec
   et sans le lot), 9 min.
 
+## 3b, inventaire
+
+Fait le 2026-11-20, sans rien modifier dans l'arbre.
+
+**Méthode.** `mvn org.openrewrite.maven:rewrite-maven-plugin:6.18.0:dryRun` avec
+`-Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-migrate-java:3.20.0` et
+`-Drewrite.activeRecipes=org.openrewrite.java.migrate.UpgradeToJava21`, à la racine (1 min). Le patch tombe dans
+`target/rewrite/rewrite.patch` ; la liste des recettes par fichier n'est que dans la sortie de Maven. Le module racine
+balaie tout le dépôt, modules hors build compris (`uispec4j`, `bv_server`, Android : 13 fichiers, laissés de côté).
+Le patch a ensuite été appliqué dans une copie (`git worktree` hors de l'arbre) : il compile, mais les tests de `globs`
+donnent 62 erreurs sur 796 et `ExportTest` échoue.
+
+| Famille | Fichiers (code / tests) | Ce qu'elle fait | Verdict |
+|---|---|---|---|
+| `ListFirstAndLast` | 50 / 16 | `get(0)` → `getFirst()`, `get(size() - 1)` → `getLast()`, `remove(size() - 1)` → `removeLast()`, `add(0, x)` → `addFirst(x)` | **à rejeter** |
+| `UseTextBlocks` | 2 / 61 | chaînes concaténées sur plusieurs lignes → blocs `"""` | à appliquer après correction de 2 fichiers |
+| `InstanceOfPatternMatch` | 26 / 5 | `instanceof` suivi d'un transtypage → variable de motif | sûr |
+| `SortedSet.first()`/`last()` → `getFirst()`/`getLast()` | 31 / 0 | même méthode sous le nom de Java 21 | sûr, gain nul |
+| `@Serial` sur `serialVersionUID` | 16 / 6 (`prevayler`) | annotation de compilation, l'identifiant ne change pas | sûr |
+| `SwitchCaseReturnsToSwitchExpression`, `…Assignments…` | 14 / 0 | `switch` à `return` → `return switch (…) { case X -> … }` | sûr |
+| `IteratorNext` | 3 / 0 | `set.iterator().next()` → `set.getFirst()` sur des `SortedSet<Integer>` | sûr |
+| `RemoveExtraSemicolons` | 2 / 1 | `;;` et `;` après une méthode | sûr |
+| `ReplaceMathRandomWithThreadLocalRandom` | 4 / 0 | `Math.random()` → `ThreadLocalRandom` (générateurs de données, `Utils.randomInt`) | inutile |
+| Version des plugins | 6 `pom` | `maven-compiler-plugin` 3.13.0 → 3.16.0, `jacoco` 0.8.13 → 0.8.16 | à part, facultatif |
+| `maven.compiler.release` dans `budgetview/pom.xml` | 1 `pom` | propriété redondante avec la configuration des modules | inutile |
+| `ReplaceDeprecatedRuntimeExecMethods` | 1 (`WindowsBrowsingService`) | `exec(cmd)` → `exec(cmd.split(" "))`, découpage plus pauvre que celui du JDK | non : le code part en **3c** |
+
+**Les deux familles fautives.**
+- `ListFirstAndLast` : `GlobList` hérite d'`ArrayList` et définit depuis toujours `getFirst()` et `getLast()`, qui
+  **rendent `null`** sur une liste vide. Depuis Java 21, ces méthodes redéfinissent celles de `List`, qui lèvent
+  `NoSuchElementException`. La recette ne le sait pas : 1) dans `GlobList.getFirst()` même, `return get(0)` devient
+  `return getFirst()`, qui s'appelle sans fin (62 `StackOverflowError` dans les tests de `globs`) ; 2) sur toute
+  `GlobList`, un `get(0)` qui levait une exception sur liste vide rendrait `null`. Gain purement cosmétique : rejet.
+  À retenir hors de cet audit : tout appel à `getFirst()` sur une `List<Glob>` qui est en fait une `GlobList` suit le
+  contrat de `GlobList`, pas celui du JDK.
+- `UseTextBlocks` : le compilateur efface les blancs de fin de ligne d'un bloc de texte. La recette les protège par
+  `\s` quand ce sont des espaces suivis d'autre chose, mais pas une **tabulation finale** (`ExportTest.testTSVExport`
+  échoue : `"To categorize\t\n"` devient `"To categorize\n"`) ni une **ligne faite de seuls espaces**
+  (`"    \n"` de `HtmlUtilsTest` devient `"\n"` : le test passe toujours, avec une entrée changée). Fichiers concernés :
+  `ExportTest`, `HtmlUtilsTest` ; `ColorServiceEditorTest` et `CsvImportTest` signalés par `git apply` mais justes
+  (lignes vides à l'origine). À corriger à la main (`\t`, `\s`) avant de commiter. Les `\t` du milieu de ligne
+  deviennent de vraies tabulations, invisibles à la relecture : les garder en `\t`.
+
+**Ce que la recette ne fait pas.** Les types bruts et conversions non vérifiées (~720 alertes en 3a) : aucune recette
+de `UpgradeToJava21` n'y touche. Pas de piste sûre ici ; ils restent hors audit.
+
+**Lots proposés.** Chacun s'applique par `rewrite:run` avec ses seules recettes (fichier `rewrite.yml` hors de l'arbre),
+pas en découpant le patch : 13 fichiers relèvent de plusieurs familles.
+
+| Lot | Contenu | Taille | Risque |
+|---|---|---|---|
+| A. Code livré | `instanceof` à motif, `switch` en expression, `IteratorNext`, `SortedSet.getFirst/getLast`, `@Serial`, points-virgules | ~75 fichiers | faible : chaque cas relu, tests de `globs`, `prevayler`, `bv_desktop`, données 5.01 relues (`@Serial`) |
+| B. Blocs de texte | `UseTextBlocks`, 2 fichiers corrigés à la main, `\t` gardés | 63 fichiers, ~2 500 lignes, presque tout des tests | faible : les tests se vérifient eux-mêmes, sauf ce qui passe quel que soit le texte (cas `HtmlUtilsTest`) |
+| C. Plugins | `maven-compiler-plugin` 3.16.0, `jacoco` 0.8.16 | 6 `pom` | nul ; garder 0 `[WARNING]` |
+| D. Rejeté | `ListFirstAndLast`, `Math.random`, propriété de `budgetview/pom.xml`, `Runtime.exec` (→ 3c) | — | — |
+
+Recommandation : A et C ; B si la lisibilité des tests vaut un diff de 2 500 lignes (à mon sens oui pour les tableaux
+attendus des tests fonctionnels, mais c'est le gain le plus faible des trois).
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -1091,3 +1153,4 @@ Recommandation : A, B et C ; D attend l'étape 5.
 | 2026-11-20 | 3a, lot A (`removal`) | 5 `finalize` et 1 classe de test supprimés, 14 constructeurs enveloppes remplacés (−37 lignes) ; 0 alerte `removal` (24 avant). Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 12 min ; données 5.01 relues |
 | 2026-11-20 | 3a, lot B (petites alertes) | ~40 corrections dans 36 fichiers, sans changement de comportement ; 0 alerte `cast`, `static`, `dep-ann`, varargs (38 avant). Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 29 min (appli de dev ouverte en parallèle) |
 | 2026-11-20 | 3a, lot C (garde-fou) | 5 `pom` : alertes utiles affichées au build ; 2 alertes voulues rendues explicites, processeur d'annotations coupé dans `siteweaver`. `mvn clean install` sans aucun `[WARNING]` ; `target/dist` 11 Mo, 17 jars. Tests de `globs` 796, `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable), 9 min. **3a terminé** |
+| 2026-11-20 | 3b, inventaire | Rien de modifié. OpenRewrite `UpgradeToJava21` (plugin 6.18.0, `rewrite-migrate-java` 3.20.0) en `dryRun` : 231 fichiers du build, 13 familles. Patch appliqué dans une copie : compile, mais 62 `StackOverflowError` dans les tests de `globs` (`ListFirstAndLast` rend `GlobList.getFirst()` récursive) et `ExportTest` en échec (`UseTextBlocks` efface une tabulation finale). Quatre lots proposés (A à D) |
