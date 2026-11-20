@@ -18,6 +18,19 @@
           <release>21</release>
         </configuration>
       </plugin>
+      <plugin>
+        <!-- Même version que globs : sous JUnit 3.8.1, surefire refusait de lancer les tests, qui n'avaient jamais
+             tourné (audit 2c, docs/audit-code.md). -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <excludes>
+            <!-- Seul test désactivé (voir la classe) : supprimé avec les classes gzip au lot B de l'audit 2c. -->
+            <exclude>**/MultiMemberGZIPTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -25,7 +38,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
     <dependency>
