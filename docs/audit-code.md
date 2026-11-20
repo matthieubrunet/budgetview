@@ -98,6 +98,8 @@ n'utilise sans doute qu'une partie de leurs API.
   supprimées, tests de `globs` 873 → 787.
 - [ ] **2b. `saxstack`** : ce qu'il apporte par rapport au SAX ou au StAX du JDK. Peut-il être
   remplacé, ou au moins réduit ?
+  Inventaire fait le 2026-11-20 (rapport ProGuard de `usage.sh`), voir [2b, inventaire](#2b-inventaire) plus bas :
+  le remplacer n'apporterait rien, le réduire de moitié, oui. Quatre lots proposés, décision attendue sur le lot D.
 - [ ] **2c. `prevayler`** : quelles parties du fork servent ? Ne rien changer au format sur
   disque.
 - [ ] **2d. `splits`** : balises et composants jamais utilisés dans les `.splits`.
@@ -626,6 +628,64 @@ Les lots A, B, C ne touchent ni le format des données ni l'IHM de BudgetView (r
 vérification par build `clean`, tests de `globs` puis suite complète de `bv_desktop`. Rappel de 1e : l'angle mort de
 ProGuard est le code lancé à part (`Dump`, génération de la démo), que seule la compilation révèle.
 
+## 2b, inventaire
+
+Fait le 2026-11-20, sans rien modifier.
+
+**Méthode.** Le rapport ProGuard de `docs/audit/usage.sh` (qui analyse `saxstack` depuis `DesktopApp.main`), puis, pour
+chaque classe morte, les autres sources qui la citent, et la fermeture de ce que ces clients entraînent.
+
+`saxstack` compte 37 classes : 2 047 lignes de code, 1 330 de tests (44 tests). `saxstack-2.0.jar` : 87 Ko, 64 entrées.
+Clients : `globs` (le parseur des `.splits`, `XmlGlobParser`, `XmlChangeSetVisitor`), `bv_desktop` (`BankFormatExporter`,
+`TransactionAnalyzerFactory`) et des outils de test de `globs` et de `bv_server`. Android ne le cite pas.
+
+**Remplacer par le JDK : non.** `SaxStackParser` est déjà un adaptateur de 99 lignes au-dessus du SAX du JDK
+(`XmlUtils.getXmlReader` passe par `SAXParserFactory`) : il tient une pile de `XmlNode` et confie chaque balise au nœud
+courant. Ses clients sont une dizaine de classes de nœuds, presque toutes dans `splits`. Passer à SAX nu ou à StAX
+voudrait réécrire ce parseur des `.splits` pour retrouver la même pile. Ce qui vaut d'être fait, c'est réduire.
+
+| | Classes | Lignes |
+|---|---|---|
+| Vivantes : parseur (`SaxStackParser`, `XmlNode`, `DefaultXmlNode`, `SilentXmlNode`, `XmlBootstrapNode`, 4 exceptions), écriture (`XmlTag`, `WriterXmlTag`, `PrettyPrintXmlTag`, `AbstractRootXmlTag`, `PrettyPrintRootXmlTag`, `XmlWriter`, `XmlWriterException`), `XmlUtils` | 16 | 735 |
+| Mortes, tenues par des outils de test : `XmlComparator` (`XmlTestUtils` de `globs`, dont se sert aussi `BankFormatExportTest`) et ce qu'il entraîne (`DomXmlNode`, `BootstrapDomXmlNode`, `NodeType`, `NodeTypeFilter`, `SaxStackWriter`, `SaxStackBuilder`, `XmlRootBuilder`, `XmlNodeBuilder`, `Filter`, `FilterNone`), `XmlNodeToBuilder` (`XmlUtils.format`, pour afficher l'écart quand une comparaison échoue) | 12 | 792 |
+| Mortes sans client : `PathFilter`, `XmlPrettyPrinter`, `FixedXmlNodeBuilder`, `IteratorBasedXmlNodeBuilder`, `NullXmlTag`, `NullAttributes`, `AttributeOrderProvider`, `UnexpectedTagException` | 8 | 392 |
+| `RootXmlTag` : sert à `XmlChangeSetWriter.write`, que seuls des tests de `globs` appellent | 1 | 19 |
+
+Membres morts des classes vivantes (une trentaine, sans compter les constantes que le compilateur recopie) :
+`SaxStackParser.parse(File)` et `parse(…, EntityResolver)`, la classe interne `SAXExceptionHolder` (jamais construite, donc
+la branche `catch` qui la traite non plus), `XmlUtils.format` à filtre, `build`, `write`, `get*AttrValue` à valeur par
+défaut, `addInCDataValue`, les deux `getCurrentTagName`, `getAttrName`, `XmlParsingException(Throwable)`,
+`XmlTag.addAttribute` en `double`, `long`, `float`. Les `addValue`, `addCDataValue`, `addXmlSubtree` et `getTagName` de la
+hiérarchie `XmlTag` ne servent pas non plus à l'application, mais des tests les citent : à lire au lot A.
+
+**Constats en marge.**
+- Les tests de `saxstack` **n'avaient jamais tourné** sur ce poste : le réacteur se construit en `-DskipTests` et les suites
+  lancées sont celles de `bv_desktop` et de `globs`. Il manquait même le fournisseur JUnit 3 de surefire, téléchargé ce jour.
+  `mvn test -pl saxstack` : 44 verts, moins d'une seconde.
+- `xercesImpl` 2.11 (et `xml-apis`) est une dépendance **de compilation** de `globs`, alors que seul `XmlTestUtils` (test)
+  s'en sert, par `new org.apache.xerces.parsers.SAXParser()`. Le `pom` de `bv_desktop` l'exclut à la main de `target/dist`.
+  `siteweaver` a sa propre dépendance à Xerces, pour son `XmlDomParser`.
+- Le `pom` de `saxstack` déclare la *Common Public License* alors que son `LICENSE.txt` est l'Apache 2.0, comme le dit
+  [licence.md](licence.md). Il garde aussi un dépôt Maven mort (`startupxp.dynalias.org`), l'adresse CVS de java.net et
+  JUnit 3.8.1 ; `www/index.html` est la page d'accueil par défaut d'un projet java.net, jamais remplie.
+- `SaxStackParser` utilise `Stack` et `StringBuffer` : pour 3e.
+
+**Lots proposés.**
+
+| Lot | Contenu | Classes, lignes | Tests |
+|---|---|---|---|
+| A. Code mort sans client | Les 8 classes mortes sans client et les membres morts ci-dessus | 8 + membres, ~500 | `XmlUtilsTest` (`PathFilter`), `FixedXmlNodeBuilderTest`, `XmlPrettyPrinterTest`, à lire |
+| B. Outils de test hors du livrable | Les 12 classes tenues par `XmlTestUtils` passent dans `globs/src/test`, sous leurs paquets, avec leurs tests (`XmlComparatorTest`, `SaxStackWriter*Test`, `XmlNodeToBuilderTest`) ; `XmlUtils.format` va dans `XmlTestUtils`. `RootXmlTag` reste (19 lignes, pendant de `PrettyPrintRootXmlTag`) | 12, ~800 déplacées | suivent leur code |
+| C. Xerces | `XmlTestUtils` passe par `XmlUtils.getXmlReader()` ; `xercesImpl` sort du `pom` de `globs`, et son exclusion de celui de `bv_desktop` | — | `globs`, `BankFormatExportTest` |
+| D. Fondre `saxstack` dans `globs` (à décider) | Les 16 classes vivantes (~700 lignes après A) rejoignent `globs` sous `org.saxstack`, sans changer un import ; le module, son `pom` et `www/` disparaissent, un jar de moins dans `target/dist` | 1 module | les tests restants passent dans `globs` |
+
+**Décision à prendre pour le lot D.** Après A et B, `saxstack` n'est plus qu'un parseur et un écrivain XML de ~700 lignes,
+dont `globs` est le principal client et que `bv_desktop` appelle à peine (2 classes). Le garder comme module coûte un
+`pom` à entretenir et un jar à livrer ; le fondre dans `globs` éloigne le code de sa forme publiée en 2008, sans autre
+perte, la licence étant la même. Recommandation : le fondre.
+
+**Décision de Matthieu (2026-11-20)** : faire les lots A à D, donc fondre `saxstack` dans `globs`.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -649,3 +709,4 @@ ProGuard est le code lancé à part (`Dump`, génération de la démo), que seul
 | 2026-11-20 | 2a, lot C (divers) | `globs` : −23 classes, −1 048 lignes de code (dont 4 méthodes), −467 de tests ; 2 outils XML (270 lignes) passés dans les tests ; `globs-1.0.jar` 1 142 Ko (−45 Ko). Tests de `globs` 821 verts (−11) ; `bv_desktop` 1 026 verts, 10 min |
 | 2026-11-20 | 2a, lot D (`sqlstreams`) | Rien de supprimé : 111 classes (5 426 lignes) et 11 fichiers de test (681 lignes) sortis de `globs`, 110 vers `bv_server`, 1 vers `bv_analytics` ; `hsqldb` et `mysql-connector-java` retirés du `pom` de `globs`. `globs-1.0.jar` 982 Ko (−160 Ko), `target/dist` 11 Mo. Tests de `globs` 794 verts (−27, partis avec leur code ; 18 relancés à part dans `bv_server`, verts) ; `bv_desktop` 1 026 verts, 9 min |
 | 2026-11-20 | 2a, lot E (membres) | `globs` : 50 membres morts, la sérialisation des changesets et 7 utilitaires de test supprimés (−804 lignes de code, −68 de tests) ; 3 classes passées dans les tests. `globs` 446 fichiers, 33 800 lignes ; `globs-1.0.jar` 952 Ko (−30 Ko), `target/dist` 11 Mo. Tests de `globs` 787 verts (−7) ; `bv_desktop` 1 026 verts après E1 et après E3, 9 min. **2a terminé** |
+| 2026-11-20 | 2b, inventaire | Rien de modifié. `saxstack` : 37 classes, 2 047 lignes de code, 44 tests (jamais lancés jusque-là, verts) ; `saxstack-2.0.jar` 87 Ko. Vivantes 16 classes (735 lignes) ; mortes 21 (1 203 lignes), dont 12 tenues par les outils de test de `globs` (`XmlComparator`) et 8 sans client. `xercesImpl` en dépendance de compilation de `globs` pour un seul outil de test. Remplacement par le JDK écarté ; quatre lots proposés (A à D), décision attendue sur la fusion dans `globs` |
