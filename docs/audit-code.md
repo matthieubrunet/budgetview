@@ -35,6 +35,11 @@ Il faut mesurer (étapes 1 et 2), puis interroger l'historique git (étape 4).
   JaCoCo. Aux étapes 2 à 4, avant de réécrire une classe à comportement constant, écrire d'abord
   les tests qui figent son comportement actuel, défauts compris. Les corrections de comportement
   attendent le chantier des tests unitaires, après l'audit.
+- **Lancer les tests propres d'un module avant d'y toucher** (`mvn test -pl <module>`). Le réacteur se construit en
+  `-DskipTests` et les suites lancées d'habitude sont celles de `bv_desktop` et de `globs` : ceux des autres modules
+  peuvent n'avoir jamais tourné (cas de `saxstack` en 2b, dont il manquait jusqu'au fournisseur JUnit 3 de surefire).
+- **Un membre que ProGuard dit inutilisé peut avoir été inliné** dans son appelant (`XmlUtils.addInCDataValue` en 2b) :
+  la compilation tranche, pas le seul rapport.
 
 ## Étape 1 : le code mort, mesuré
 
