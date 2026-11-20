@@ -21,8 +21,7 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 
 | Module | Rôle | Dans le build ? |
 |---|---|---|
-| `globs/` | GlobsFramework, **version privée et ancienne** du framework de MarcGuiot : modèle de données réactif (`GlobType`, champs statiques annotés `@Key`, `@Target`…), repository, changesets. Contient depuis le 2026-11-20 l'ancien module `saxstack` (parseur SAX à pile, écriture XML, paquets `org.saxstack`) | oui |
-| `splits/` | Moteur de mise en page Swing déclaratif (fichiers `.splits` en XML) — son code est dans `globs` | via globs |
+| `globs/` | GlobsFramework, **version privée et ancienne** du framework de MarcGuiot : modèle de données réactif (`GlobType`, champs statiques annotés `@Key`, `@Target`…), repository, changesets. Contient aussi `splits` (`org.globsframework.gui.splits`), le moteur de mise en page Swing déclaratif des fichiers `.splits`, dont le dossier séparé a été supprimé le 2026-11-20. Contient depuis le 2026-11-20 l'ancien module `saxstack` (parseur SAX à pile, écriture XML, paquets `org.saxstack`) | oui |
 | `prevayler/` | Prevayler (persistance par journal de transactions + snapshots), forké | oui |
 | `siteweaver/` | Générateur du site web statique | oui |
 | `budgetview/bv_shared` | Code commun client/serveur | oui |

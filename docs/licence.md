@@ -35,7 +35,7 @@ avec les dépendances, et protège les auteurs (copyright conservé, aucune gara
 
 | Dossier | Licence |
 |---|---|
-| `globs/` (dont `org.saxstack`, fondu le 2026-11-20 depuis le module `saxstack/`, sous la même licence), `splits/` | Apache 2.0 |
+| `globs/` (dont `org.saxstack`, fondu le 2026-11-20 depuis le module `saxstack/`, sous la même licence, et `splits`, dont le dossier séparé a été supprimé en audit 2d) | Apache 2.0 |
 | `prevayler/` | BSD (Klaus Wuestefeld), texte dans `prevayler/LICENSE.txt` (les `contrib/`, dont `transactionsFacade` sous BSD de Jay Sachs, ont été supprimés en audit 2c) |
 | `uispec4j/` | Common Public License 1.0, tests seulement |
 | bibliothèques embarquées | liste dans `bv_desktop/src/main/resources/docs/licenses.html` |

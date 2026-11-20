@@ -908,6 +908,9 @@ avec les autres et réécrire ces tests sur `panel`, qui a les mêmes attributs 
 **Décision de Matthieu (2026-11-20)** : faire les lots A à C, `frame` compris.
 
 **Réalisation**, un commit par lot :
+- Lot A (2026-11-20) : dossier `splits/` supprimé (5 fichiers ; `CLAUDE.md` et [licence.md](licence.md) disent
+  désormais que `splits` vit dans `globs`), ainsi que les 9 démos et `resources/demo/` des tests de `globs`. Code livré
+  inchangé ; tests de `globs` 813 verts.
 
 ## Journal
 
@@ -943,3 +946,4 @@ avec les autres et réécrire ces tests sur `panel`, qui a les mêmes attributs 
 | 2026-11-20 | 2c, lot B (mort selon ProGuard) | `prevayler` : −32 classes, ~50 membres, −1 761 lignes de code, −1 926 de tests ; 71 classes, 2 508 lignes de code ; `prevayler-1.0.jar` 90 Ko (−31 Ko), `target/dist` 11 Mo ; `log4j` retiré du `pom`. Tests de `prevayler` 34 verts (−28, partis avec leur code), `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues |
 | 2026-11-20 | 2c, lot C (mort par configuration) | `prevayler` : −15 classes (réplication, censeur strict, `RWLock`), −1 223 lignes de code, −662 de tests ; 56 classes, 1 686 lignes de code ; `prevayler-1.0.jar` 60 Ko (−30 Ko), `target/dist` 11 Mo. Tests de `prevayler` 26 verts (−8), `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues. **2c terminé** (lot D gardé) |
 | 2026-11-20 | 2d, inventaire | Rien de modifié. `splits` (dans `globs`) : 138 classes, 7 790 lignes de code ; 5 balises sur 34 jamais écrites, 2 bordures, 3 icônes et 2 attributs explicites sur 36 jamais utilisés (~310 lignes, 6 classes) ; dossier `splits/` réduit à une coquille (5 fichiers) ; 9 démos (297 lignes) dans les tests de `globs`. Tests de `globs` 813 verts, 49 s. Trois lots proposés (A à C), décision attendue sur `frame` |
+| 2026-11-20 | 2d, lot A (fichiers morts) | Dossier `splits/` (5 fichiers) et 9 démos de `globs/src/test` (297 lignes, plus 2 fichiers XML) supprimés ; code livré inchangé. Tests de `globs` 813 verts |
