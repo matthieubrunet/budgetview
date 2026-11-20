@@ -1,7 +1,6 @@
 package org.globsframework.utils.serialization;
 
 import org.globsframework.metamodel.GlobModel;
-import org.globsframework.model.ChangeSet;
 import org.globsframework.model.Glob;
 import org.globsframework.utils.exceptions.UnexpectedApplicationState;
 
@@ -21,16 +20,6 @@ public class SerializationInputChecker implements SerializedInput {
     }
     else {
       throw new UnexpectedApplicationState("Glob expected but got " + value);
-    }
-  }
-
-  public ChangeSet readChangeSet(GlobModel model) {
-    String value = serializedInput.readJavaString();
-    if ("ChangeSet".equals(value)) {
-      return serializedInput.readChangeSet(model);
-    }
-    else {
-      throw new UnexpectedApplicationState("ChangeSet expected but got " + value);
     }
   }
 

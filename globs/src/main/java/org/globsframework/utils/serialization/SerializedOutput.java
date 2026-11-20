@@ -1,6 +1,5 @@
 package org.globsframework.utils.serialization;
 
-import org.globsframework.model.ChangeSet;
 import org.globsframework.model.Glob;
 
 import java.util.Date;
@@ -35,8 +34,6 @@ public interface SerializedOutput {
   void writeUtf8String(String value);
 
   void writeGlob(Glob glob);
-
-  void writeChangeSet(ChangeSet changeSet);
 
   void write(int[] array);
 

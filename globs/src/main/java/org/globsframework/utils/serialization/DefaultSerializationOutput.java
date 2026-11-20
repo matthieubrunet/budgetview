@@ -11,10 +11,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
-public class DefaultSerializationOutput implements SerializedOutput, ChangeSetVisitor {
+public class DefaultSerializationOutput implements SerializedOutput {
   private OutputStream outputStream;
-  private FieldValues.Functor fieldValuesFunctor = new FieldValuesFunctor();
-  private FieldValuesWithPrevious.Functor fieldValuesWithPreviousFunctor = new FieldValuesWithPreviousFunctor();
 
   DefaultSerializationOutput(OutputStream outputStream) {
     this.outputStream = outputStream;
@@ -25,11 +23,6 @@ public class DefaultSerializationOutput implements SerializedOutput, ChangeSetVi
     for (Field field : glob.getType().getFields()) {
       field.safeVisit(new OutputStreamFieldVisitor(glob));
     }
-  }
-
-  public void writeChangeSet(ChangeSet changeSet) {
-    writeInteger(changeSet.getChangeCount());
-    changeSet.safeVisit(this);
   }
 
   public void write(int[] array) {
@@ -195,126 +188,6 @@ public class DefaultSerializationOutput implements SerializedOutput, ChangeSetVi
     catch (IOException e) {
       throw new UnexpectedApplicationState(e);
     }
-  }
-
-  public void visitCreation(Key key, FieldValues values) throws Exception {
-    writeJavaString(key.getGlobType().getName());
-    writeValues(key);
-    writeByte(1);
-    writeValues(values);
-  }
-
-  public void visitUpdate(Key key, FieldValuesWithPrevious values) throws Exception {
-    writeJavaString(key.getGlobType().getName());
-    writeValues(key);
-    writeByte(2);
-    writeValues(values);
-  }
-
-  public void visitDeletion(Key key, FieldValues values) throws Exception {
-    writeJavaString(key.getGlobType().getName());
-    writeValues(key);
-    writeByte(3);
-    writeValues(values);
-  }
-
-  private void writeValues(FieldValues values) {
-    write(values.size());
-    values.safeApply(fieldValuesFunctor);
-  }
-
-  private class FieldValuesFunctor implements FieldValues.Functor, FieldValueVisitor {
-    public void process(Field field, Object value) throws Exception {
-      write(field.getIndex());
-      field.safeVisit(this, value);
-    }
-
-    public void visitInteger(IntegerField field, Integer value) throws Exception {
-      writeInteger(value);
-    }
-
-    public void visitDouble(DoubleField field, Double value) throws Exception {
-      writeDouble(value);
-    }
-
-    public void visitString(StringField field, String value) throws Exception {
-      writeJavaString(value);
-    }
-
-    public void visitDate(DateField field, Date value) throws Exception {
-      writeDate(value);
-    }
-
-    public void visitBoolean(BooleanField field, Boolean value) throws Exception {
-      writeBoolean(value);
-    }
-
-    public void visitTimeStamp(TimeStampField field, Date value) throws Exception {
-      writeDate(value);
-    }
-
-    public void visitBlob(BlobField field, byte[] value) throws Exception {
-      writeBytes(value);
-    }
-
-    public void visitLong(LongField field, Long value) throws Exception {
-      writeLong(value);
-    }
-
-    public void visitLink(LinkField field, Integer value) throws Exception {
-      writeInteger(value);
-    }
-  }
-
-  private void writeValues(FieldValuesWithPrevious values) {
-    write(values.size());
-    values.safeApply(fieldValuesWithPreviousFunctor);
-  }
-
-  public class FieldValuesWithPreviousFunctor implements FieldValuesWithPrevious.Functor, FieldValueVisitor {
-
-    public void process(Field field, Object value, Object previousValue) throws Exception {
-      write(field.getIndex());
-      field.safeVisit(this, value);
-      field.safeVisit(this, previousValue);
-    }
-
-    public void visitInteger(IntegerField field, Integer value) throws Exception {
-      writeInteger(value);
-    }
-
-    public void visitDouble(DoubleField field, Double value) throws Exception {
-      writeDouble(value);
-    }
-
-    public void visitString(StringField field, String value) throws Exception {
-      writeJavaString(value);
-    }
-
-    public void visitDate(DateField field, Date value) throws Exception {
-      writeDate(value);
-    }
-
-    public void visitBoolean(BooleanField field, Boolean value) throws Exception {
-      writeBoolean(value);
-    }
-
-    public void visitTimeStamp(TimeStampField field, Date value) throws Exception {
-      writeDate(value);
-    }
-
-    public void visitBlob(BlobField field, byte[] value) throws Exception {
-      writeBytes(value);
-    }
-
-    public void visitLong(LongField field, Long value) throws Exception {
-      writeLong(value);
-    }
-
-    public void visitLink(LinkField field, Integer value) throws Exception {
-      writeInteger(value);
-    }
-
   }
 
   private class OutputStreamFieldVisitor implements FieldVisitor {

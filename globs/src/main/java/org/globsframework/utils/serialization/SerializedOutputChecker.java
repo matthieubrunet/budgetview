@@ -1,6 +1,5 @@
 package org.globsframework.utils.serialization;
 
-import org.globsframework.model.ChangeSet;
 import org.globsframework.model.Glob;
 
 import java.util.Date;
@@ -15,11 +14,6 @@ class SerializedOutputChecker implements SerializedOutput {
   public void writeGlob(Glob glob) {
     serializationOutput.writeJavaString("Glob");
     serializationOutput.writeGlob(glob);
-  }
-
-  public void writeChangeSet(ChangeSet changeSet) {
-    serializationOutput.writeJavaString("ChangeSet");
-    serializationOutput.writeChangeSet(changeSet);
   }
 
   public void write(int[] array) {

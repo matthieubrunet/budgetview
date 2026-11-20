@@ -5,8 +5,6 @@ import org.globsframework.metamodel.GlobModel;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.*;
-import org.globsframework.model.delta.DefaultChangeSet;
-import org.globsframework.model.delta.MutableChangeSet;
 import org.globsframework.model.utils.GlobBuilder;
 import org.globsframework.utils.exceptions.EOFIOFailure;
 import org.globsframework.utils.exceptions.InvalidData;
@@ -37,63 +35,6 @@ public class DefaultSerializationInput implements SerializedInput {
     return builder.get();
   }
 
-  public ChangeSet readChangeSet(GlobModel model) {
-    MutableChangeSet changeSet = new DefaultChangeSet();
-    int count = readInteger();
-    for (int i = 0; i < count; i++) {
-      GlobType type = model.getType(readJavaString());
-      Key key = KeyBuilder.createFromValues(type, readValues(type));
-      int state = readByte();
-      switch (state) {
-        case 1: {
-          FieldValues values = readValues(type);
-          changeSet.processCreation(key, values);
-          break;
-        }
-        case 2: {
-          FieldValuesWithPrevious values = readValuesWithPrevious(type);
-          changeSet.processUpdate(key, values);
-          break;
-        }
-        case 3: {
-          FieldValues values = readValues(type);
-          changeSet.processDeletion(key, values);
-          break;
-        }
-        default:
-          throw new UnexpectedApplicationState("Invalid state '" + state + "' undefined for: " + key);
-      }
-    }
-    return changeSet;
-  }
-
-  private FieldValues readValues(GlobType type) {
-    FieldValuesBuilder builder = FieldValuesBuilder.init();
-    FieldReader fieldReader = new FieldReader(this, builder);
-    int fieldCount = readNotNullInt();
-    while (fieldCount != 0) {
-      int fieldIndex = readNotNullInt();
-      Field field = type.getField(fieldIndex);
-      field.safeVisit(fieldReader);
-      fieldCount--;
-    }
-    return builder.get();
-  }
-
-  private FieldValuesWithPrevious readValuesWithPrevious(GlobType type) {
-    FieldValuesWithPreviousBuilder builder = FieldValuesWithPreviousBuilder.init(type);
-    FieldWithPreviousReader fieldReader = new FieldWithPreviousReader(this, builder);
-    int fieldCount = readNotNullInt();
-    while (fieldCount != 0) {
-      int fieldIndex = readNotNullInt();
-      Field field = type.getField(fieldIndex);
-      field.safeVisit(fieldReader);
-      fieldCount--;
-    }
-    return builder.get();
-  }
-
-
   public int[] readIntArray() {
     int length = readNotNullInt();
     int array[] = new int[length];
@@ -118,98 +59,6 @@ public class DefaultSerializationInput implements SerializedInput {
     }
     catch (IOException e) {
       throw new RuntimeException("fail to close", e);
-    }
-  }
-
-  static class FieldReader implements FieldVisitor {
-    private DefaultSerializationInput input;
-    private FieldValuesBuilder builder;
-
-    public FieldReader(DefaultSerializationInput input, FieldValuesBuilder builder) {
-      this.input = input;
-      this.builder = builder;
-    }
-
-    public void visitInteger(IntegerField field) throws Exception {
-      builder.set(field, input.readInteger());
-    }
-
-    public void visitDouble(DoubleField field) throws Exception {
-      builder.set(field, input.readDouble());
-    }
-
-    public void visitString(StringField field) throws Exception {
-      builder.set(field, input.readJavaString());
-    }
-
-    public void visitDate(DateField field) throws Exception {
-      builder.set(field, input.readDate());
-    }
-
-    public void visitBoolean(BooleanField field) throws Exception {
-      builder.set(field, input.readBoolean());
-    }
-
-    public void visitTimeStamp(TimeStampField field) throws Exception {
-      builder.set(field, input.readDate());
-    }
-
-    public void visitBlob(BlobField field) throws Exception {
-      builder.set(field, input.readBytes());
-    }
-
-    public void visitLong(LongField field) throws Exception {
-      builder.set(field, input.readLong());
-    }
-
-    public void visitLink(LinkField field) throws Exception {
-      builder.set(field, input.readInteger());
-    }
-  }
-
-  static class FieldWithPreviousReader implements FieldVisitor {
-    private DefaultSerializationInput input;
-    private FieldValuesWithPreviousBuilder builder;
-
-    public FieldWithPreviousReader(DefaultSerializationInput input, FieldValuesWithPreviousBuilder builder) {
-      this.input = input;
-      this.builder = builder;
-    }
-
-    public void visitInteger(IntegerField field) throws Exception {
-      builder.set(field, input.readInteger(), input.readInteger());
-    }
-
-    public void visitDouble(DoubleField field) throws Exception {
-      builder.set(field, input.readDouble(), input.readDouble());
-    }
-
-    public void visitString(StringField field) throws Exception {
-      builder.set(field, input.readJavaString(), input.readJavaString());
-    }
-
-    public void visitDate(DateField field) throws Exception {
-      builder.set(field, input.readDate(), input.readDate());
-    }
-
-    public void visitBoolean(BooleanField field) throws Exception {
-      builder.set(field, input.readBoolean(), input.readBoolean());
-    }
-
-    public void visitTimeStamp(TimeStampField field) throws Exception {
-      builder.set(field, input.readDate(), input.readDate());
-    }
-
-    public void visitBlob(BlobField field) throws Exception {
-      builder.set(field, input.readBytes(), input.readBytes());
-    }
-
-    public void visitLong(LongField field) throws Exception {
-      builder.set(field, input.readLong(), input.readLong());
-    }
-
-    public void visitLink(LinkField field) throws Exception {
-      builder.set(field, input.readInteger(), input.readInteger());
     }
   }
 

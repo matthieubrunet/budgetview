@@ -7,7 +7,6 @@ import org.globsframework.model.*;
 import org.globsframework.model.delta.*;
 import org.globsframework.model.utils.GlobBuilder;
 import org.globsframework.utils.ArrayTestUtils;
-import org.globsframework.utils.Dates;
 import org.globsframework.utils.TestUtils;
 
 import java.io.*;
@@ -85,31 +84,6 @@ public class SerializationTest extends TestCase {
     assertEquals(glob.getKey(), newGlob.getKey());
     assertEquals("end", input.readJavaString());
     inputStream.close();
-  }
-
-  public void testChangeSet() throws Exception {
-    MutableChangeSet changeSet = new DefaultChangeSet();
-    changeSet.processCreation(KeyBuilder.newKey(DummyObject.TYPE, 1),
-                              FieldValuesBuilder.init()
-                                .set(DummyObject.ID, 1)
-                                .set(DummyObject.NAME, "name1")
-                                .set(DummyObject.DATE, currentDate)
-                                .get());
-    changeSet.processUpdate(KeyBuilder.newKey(DummyObject.TYPE, 2), DummyObject.NAME, "name2", null);
-    changeSet.processDeletion(KeyBuilder.newKey(DummyObject.TYPE, 3),
-                              FieldValuesBuilder.init()
-                                .set(DummyObject.ID, 3)
-                                .set(DummyObject.NAME, "name3")
-                                .set(DummyObject.VALUE, 3.14156)
-                                .get());
-    output.writeChangeSet(changeSet);
-    outputStream.close();
-
-    ChangeSet readChangeSet = input.readChangeSet(DummyModel.get());
-    GlobTestUtils.assertChangesEqual(readChangeSet,
-                                     "<create type='dummyObject' id='1' name='name1' date='" + Dates.getStandardDate(currentDate) + "'/>" +
-                                     "<update type='dummyObject' id='2' name='name2' _name='(null)'/>" +
-                                     "<delete type='dummyObject' id='3' _name='name3' _value='3.14'/>");
   }
 
 //  public void testBigWrite() throws Exception {
