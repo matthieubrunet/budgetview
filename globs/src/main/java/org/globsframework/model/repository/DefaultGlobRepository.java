@@ -835,37 +835,6 @@ public class DefaultGlobRepository implements GlobRepository, IndexSource {
     }
   }
 
-  public void checkConsistency() {
-    boolean firstCall = true;
-    for (Iterator<Glob> iterator = globs.iterator(); iterator.hasNext(); ) {
-      final Glob glob = iterator.next();
-      Link[] links = glob.getType().getOutboundLinks();
-      for (Link link : links) {
-        final FieldValuesBuilder valuesBuilder = FieldValuesBuilder.init();
-        link.apply(new FieldMappingFunctor() {
-          public void process(Field sourceField, Field targetField) {
-            Object value = glob.getValue(sourceField);
-            if (value != null) {
-              valuesBuilder.setValue(targetField, value);
-            }
-          }
-        });
-        FieldValues targetValues = valuesBuilder.get();
-        if (targetValues.size() == link.getTargetType().getKeyFields().length) {
-          Key key = KeyBuilder.createFromValues(link.getTargetType(), targetValues);
-          Glob target = find(key);
-          if (target == null) {
-            if (firstCall) {
-              new Exception().printStackTrace();
-              firstCall = false;
-            }
-            System.out.println(glob.getKey() + " ==> " + key);
-          }
-        }
-      }
-    }
-  }
-
   private class LinkFieldMappingFunctor implements FieldMappingFunctor {
     private final Key targetKey;
     private final MutableGlob sourceGlob;

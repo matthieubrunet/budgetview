@@ -112,16 +112,6 @@ public class GlobsPanelBuilder extends SplitsBuilder {
     return store(GlobNumericEditor.init(field, repository, directory));
   }
 
-  public void addEditors(StringField... fields) {
-    for (StringField field : fields) {
-      addEditor(field);
-    }
-  }
-
-  public GlobPasswordEditor addPassword(StringField field) {
-    return store(GlobPasswordEditor.init(field, repository, directory));
-  }
-
   public GlobLabelView addLabel(String name, GlobType type, GlobListStringifier stringifier) {
     return store(GlobLabelView.init(type, repository, directory, stringifier)).setName(name);
   }
@@ -141,10 +131,6 @@ public class GlobsPanelBuilder extends SplitsBuilder {
   public GlobLabelView addLabel(String name, LinkField link, String textForEmptySelection, String textForMultipleValues) {
     return store(GlobLabelView.init(link, textForEmptySelection, textForMultipleValues, repository, directory))
       .setName(name);
-  }
-
-  public GlobHtmlView addHtmlView(String name, GlobType type, GlobListStringifier stringifier) {
-    return store(GlobHtmlView.init(type, repository, directory, stringifier).setName(name));
   }
 
   public GlobButtonView addButton(String name, GlobType type, GlobListStringifier stringifier, GlobListFunctor callback) {

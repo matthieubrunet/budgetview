@@ -58,14 +58,6 @@ public class Utils {
     return o1.toLowerCase().compareTo(o2.toLowerCase());
   }
 
-  public static <T> List<T> toList(Iterator<T> iterator) {
-    List<T> list = new ArrayList<T>();
-    while (iterator.hasNext()) {
-      list.add(iterator.next());
-    }
-    return list;
-  }
-
   public static Double zeroIfNull(Double value) {
     return value != null ? value : 0.;
   }
@@ -124,10 +116,6 @@ public class Utils {
 
   public static int minInt(int... values) {
     return minOrMax(-1, values);
-  }
-
-  public static int maxInt(int... values) {
-    return minOrMax(1, values);
   }
 
   private static int minOrMax(int sign, int... values) {
@@ -300,10 +288,6 @@ public class Utils {
   }
 
   public static void endRemove() {
-  }
-
-  public static void throwException(RuntimeException exception) {
-    throw exception;
   }
 
   public static void dumpStack() {

@@ -48,10 +48,6 @@ public class JsonGlobParser {
     return repository.create(type, fieldValues.toArray());
   }
 
-  public FieldValues toFieldValues(JSONObject json, GlobType type) throws ParsingFailed {
-    return getFieldValues(json, type, null);
-  }
-
   private MutableFieldValues getFieldValues(final JSONObject json, GlobType type, Integer id, FieldValue... additionalValues) throws ParsingFailed {
     final FieldValuesBuilder builder = FieldValuesBuilder.init(additionalValues);
     for (Field field : type.getFields()) {

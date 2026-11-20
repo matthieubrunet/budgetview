@@ -28,14 +28,6 @@ public class StyledToggleButtonUI extends BasicToggleButtonUI {
     this.borderColor = borderColor;
   }
 
-  public Color getTopColor() {
-    return topColor;
-  }
-
-  public Color getRolloverColor() {
-    return rolloverColor;
-  }
-
   public void setRolloverColor(Color rolloverColor) {
     this.rolloverColor = rolloverColor;
   }
@@ -44,24 +36,12 @@ public class StyledToggleButtonUI extends BasicToggleButtonUI {
     this.topColor = topColor;
   }
 
-  public Color getBottomColor() {
-    return bottomColor;
-  }
-
   public void setBottomColor(Color bottomColor) {
     this.bottomColor = bottomColor;
   }
 
-  public int getBorderWidth() {
-    return borderWidth;
-  }
-
   public void setBorderWidth(int borderWidth) {
     this.borderWidth = borderWidth;
-  }
-
-  public int getCornerRadius() {
-    return cornerRadius;
   }
 
   public void setCornerRadius(int cornerRadius) {

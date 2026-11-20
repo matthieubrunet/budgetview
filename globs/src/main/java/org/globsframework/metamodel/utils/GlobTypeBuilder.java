@@ -77,11 +77,6 @@ public class GlobTypeBuilder {
     return this;
   }
 
-  public GlobTypeBuilder addLinkField(String fieldName) {
-    factory.addLink(fieldName, false, Collections.EMPTY_MAP);
-    return this;
-  }
-
   public GlobType get() {
     type.completeInit();
     return type;

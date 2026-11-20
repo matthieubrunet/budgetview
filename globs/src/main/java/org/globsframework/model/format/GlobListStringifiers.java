@@ -6,11 +6,9 @@ import org.globsframework.model.Glob;
 import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.format.utils.GlobListFieldStringifier;
-import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.utils.Strings;
 
 import java.text.DecimalFormat;
-import java.util.Comparator;
 
 public class GlobListStringifiers {
 
@@ -23,33 +21,6 @@ public class GlobListStringifiers {
       public String toString(GlobList list, GlobRepository repository) {
         String string = stringifier.toString(list, repository);
         return Strings.cut(string, maxWidth);
-      }
-    };
-  }
-
-  public static GlobListStringifier singularOrPlural(final String emptyText,
-                                                     final String singularText,
-                                                     final String pluralText) {
-    return new GlobListStringifier() {
-      public String toString(GlobList list, GlobRepository repository) {
-        if (list.isEmpty()) {
-          return emptyText;
-        }
-        if (list.size() == 1) {
-          return singularText;
-        }
-        return pluralText;
-      }
-    };
-  }
-
-  public static GlobListStringifier valueForEmpty(final String text, final GlobListStringifier stringifier) {
-    return new GlobListStringifier() {
-      public String toString(GlobList list, GlobRepository repository) {
-        if (list.isEmpty()) {
-          return text;
-        }
-        return stringifier.toString(list, repository);
       }
     };
   }
@@ -92,31 +63,6 @@ public class GlobListStringifiers {
     };
   }
 
-  public static GlobListStringifier conditionalSum(final GlobMatcher matcher,
-                                                   final DecimalFormat format,
-                                                   final DoubleField... fields) {
-    return new GlobListStringifier() {
-      public String toString(GlobList list, GlobRepository repository) {
-        if (list.isEmpty()) {
-          return "";
-        }
-
-        double total = 0;
-        for (Glob glob : list) {
-          if (matcher.matches(glob, repository)) {
-            for (DoubleField field : fields) {
-              final Double value = glob.get(field);
-              if (value != null) {
-                total += glob.get(field);
-              }
-            }
-          }
-        }
-        return format.format(total);
-      }
-    };
-  }
-
   public static GlobListStringifier minimum(final DoubleField field, final DecimalFormat format) {
     return new GlobListStringifier() {
       public String toString(GlobList list, GlobRepository repository) {
@@ -145,22 +91,6 @@ public class GlobListStringifiers {
           max = Math.max(max, glob.get(field));
         }
         return format.format(max);
-      }
-    };
-  }
-
-  public static GlobListStringifier average(final DoubleField field, final DecimalFormat format) {
-    return new GlobListStringifier() {
-      public String toString(GlobList list, GlobRepository repository) {
-        if (list.isEmpty()) {
-          return "";
-        }
-
-        double total = 0;
-        for (Glob glob : list) {
-          total += glob.get(field);
-        }
-        return format.format(total / list.size());
       }
     };
   }

@@ -54,10 +54,6 @@ public class FieldConverter {
     }
   }
 
-  public void setDateFormat(DateFormat dateFormat) {
-    this.dateFormat = dateFormat;
-  }
-
   public String toString(Date date) {
     return dateFormat.format(date);
   }

@@ -93,11 +93,6 @@ public class GlobListViewFilter implements ComponentHolder {
     return this;
   }
 
-  public void clearText() {
-    textField.setText("");
-    update();
-  }
-
   public void update() {
     String filter = textField.getText();
     filters = filter.split(" ");

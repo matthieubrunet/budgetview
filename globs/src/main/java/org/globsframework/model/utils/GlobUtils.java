@@ -18,13 +18,6 @@ public class GlobUtils {
     return types.toArray(new GlobType[types.size()]);
   }
 
-  public static boolean safeIsTrue(Glob glob, BooleanField field) {
-    if (glob == null) {
-      return false;
-    }
-    return glob.isTrue(field);
-  }
-
   public static Boolean safeGet(Glob glob, BooleanField field) {
     if (glob == null) {
       return null;
@@ -44,14 +37,6 @@ public class GlobUtils {
       return null;
     }
     return glob.get(field);
-  }
-
-  public static SortedSet<Integer> getSortedValues(FieldValues[] valuesList, IntegerField field) {
-    SortedSet<Integer> result = new TreeSet<Integer>();
-    for (FieldValues values : valuesList) {
-      result.add(values.get(field));
-    }
-    return result;
   }
 
   public static Set<Key> createKeys(GlobType type, Set<Integer> ids) {
@@ -126,13 +111,6 @@ public class GlobUtils {
       }
     }
     return result;
-  }
-
-  public static void updateIfExists(GlobRepository repository, Key key, Field field, Object value) {
-    final Glob glob = repository.find(key);
-    if (glob != null) {
-      repository.update(key, field, value);
-    }
   }
 
   public static void copy(GlobRepository repository, Glob from, Glob to, Field... fields) {

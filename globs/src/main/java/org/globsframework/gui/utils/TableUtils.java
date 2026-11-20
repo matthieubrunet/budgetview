@@ -6,7 +6,6 @@ import java.awt.*;
 import java.util.Enumeration;
 
 public class TableUtils {
-  public static final int DEFAULT_COLUMN_WIDTH = 75;
   public static final int MIN_COLUMN_WIDTH = 15;
   public static final int MAX_COLUMN_WIDTH = Integer.MAX_VALUE;
 
@@ -21,12 +20,6 @@ public class TableUtils {
                                     table.isCellSelected(row, column),
                                     false,
                                     row, column);
-  }
-
-  public static Component getRenderedComponent(JTable table, Object value, int row, int column) {
-    return table.
-      getCellRenderer(0, column).
-      getTableCellRendererComponent(table, value, false, false, row, column);
   }
 
   public static void autosizeColumn(JTable table, int columnIndex) {

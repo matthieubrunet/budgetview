@@ -206,11 +206,6 @@ public class GlobTableView extends AbstractGlobComponentHolder<GlobTableView> im
     return builder;
   }
 
-  public GlobTableView setHeaderHidden() {
-    this.headerHidden = true;
-    return this;
-  }
-
   public GlobTableView setHeaderActionsDisabled() {
     this.headerActionsDisabled = true;
     return this;

@@ -4,16 +4,12 @@ import org.globsframework.metamodel.Field;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.Link;
 import org.globsframework.metamodel.annotations.Key;
-import org.globsframework.metamodel.annotations.MaxSize;
 import org.globsframework.metamodel.annotations.Name;
 import org.globsframework.metamodel.annotations.Required;
 import org.globsframework.metamodel.fields.LinkField;
 import org.globsframework.metamodel.index.*;
 import org.globsframework.metamodel.links.DefaultLink;
 import org.globsframework.metamodel.links.LinkBuilder;
-import org.globsframework.model.Glob;
-import org.globsframework.model.GlobList;
-import org.globsframework.model.impl.ReadOnlyGlob;
 import org.globsframework.model.utils.GlobConstantContainer;
 import org.globsframework.utils.Strings;
 import org.globsframework.utils.exceptions.InvalidParameter;
@@ -273,17 +269,6 @@ public class GlobTypeLoader {
 
   private boolean isGlobLink(java.lang.reflect.Field field) {
     return Link.class.isAssignableFrom(field.getType());
-  }
-
-  public void addConstants(GlobList globs) {
-    for (Glob glob : globs) {
-      if (glob instanceof ReadOnlyGlob) {
-        type.addConstant((ReadOnlyGlob)glob);
-      }
-      else {
-        type.addConstant(new ReadOnlyGlob(glob.getType(), glob.toArray()));
-      }
-    }
   }
 
   public void defineUniqueIndex(UniqueIndex index, Field field) {

@@ -4,7 +4,6 @@ import org.globsframework.gui.views.LabelCustomizer;
 import org.globsframework.model.Glob;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.format.GlobStringifier;
-import org.globsframework.metamodel.fields.StringField;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -124,16 +123,6 @@ public class LabelCustomizers {
     return new LabelCustomizer() {
       public void process(JLabel label, Glob glob, boolean isSelected, boolean hasFocus, int row, int column) {
         label.setToolTipText(label.getText());
-      }
-    };
-  }
-
-  public static LabelCustomizer fieldTooltip(final StringField field) {
-    return new LabelCustomizer() {
-      public void process(JLabel label, Glob glob, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (glob.exists()) {
-          label.setToolTipText(glob.get(field));
-        }
       }
     };
   }

@@ -65,14 +65,6 @@ public class GlobListMatchers {
     }
   };
 
-  public static GlobListMatcher atLeast(final int number) {
-    return new GlobListMatcher() {
-      public boolean matches(GlobList list, GlobRepository repository) {
-        return list.size() > number;
-      }
-    };
-  }
-
   public static GlobListMatcher contains(final Glob glob) {
     return new GlobListMatcher() {
       public boolean matches(GlobList list, GlobRepository repository) {

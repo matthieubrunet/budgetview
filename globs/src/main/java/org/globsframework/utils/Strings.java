@@ -259,23 +259,6 @@ public class Strings {
     return null;
   }
 
-  public static String replaceSpace(String text) {
-    if (text == null) {
-      return null;
-    }
-    StringBuilder builder = new StringBuilder(text.length());
-    for (int i = 0; i < text.length(); i++) {
-      char ch = text.charAt(i);
-      if (Character.isSpaceChar(ch)) {
-        builder.append(" ");
-      }
-      else {
-        builder.append(ch);
-      }
-    }
-    return builder.toString();
-  }
-
   public static String removeSpaces(String text) {
     return text.replaceAll("[ \t\n]", "");
   }

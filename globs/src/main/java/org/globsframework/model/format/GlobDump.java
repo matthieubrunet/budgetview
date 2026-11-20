@@ -35,13 +35,6 @@ public class GlobDump {
     return add(field, Integer.toString(glob.get(field)));
   }
 
-  public GlobDump addIfTrue(BooleanField field) {
-    if (glob.isTrue(field)) {
-      add(field.getName(), "true");
-    }
-    return this;
-  }
-
   public GlobDump add(Field field, String value) {
     return add(field.getName(), value);
   }

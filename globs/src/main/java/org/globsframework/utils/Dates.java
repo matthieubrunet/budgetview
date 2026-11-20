@@ -20,12 +20,6 @@ public class Dates {
     return new Date();
   }
 
-  public static Date yesterday() {
-    Calendar cal = Calendar.getInstance();
-    cal.add(Calendar.DATE, -1);
-    return cal.getTime();
-  }
-
   public static Date tomorrow() {
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DATE, +1);
@@ -133,10 +127,6 @@ public class Dates {
     return Math.abs(date1.getTimeInMillis() - date2.getTimeInMillis());
   }
 
-  public static long minutesBetween(Date date1, Date date2) {
-    return millisBetween(date1, date2) / (1000 * 60);
-  }
-  
   public static Date extractDateDDMMYYYY(String str){
     str = str.replaceAll(".*([0-9]{2}/[0-9]{2}/[0-9]{4}).*", "$1");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");

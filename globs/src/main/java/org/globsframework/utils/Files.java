@@ -228,23 +228,6 @@ public class Files {
     parent.mkdirs();
   }
 
-  public static void copyInUtf8(InputStream contentAsStream, String charset, OutputStream fileOutputStream) throws IOException {
-    InputStreamReader inputStreamReader;
-    if (Strings.isNotEmpty(charset)) {
-      inputStreamReader = new InputStreamReader(contentAsStream, charset);
-    }
-    else {
-      inputStreamReader = new InputStreamReader(contentAsStream);
-    }
-    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
-    char[] chars = new char[1024];
-    int readed;
-    while ((readed = inputStreamReader.read(chars)) != -1) {
-      outputStreamWriter.write(chars, 0, readed);
-    }
-    outputStreamWriter.close();
-  }
-
   public static boolean copyDirectory(File source, File target, Set<String> filesToIgnore) {
     try {
       File[] files = source.listFiles();

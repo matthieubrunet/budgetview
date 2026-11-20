@@ -139,10 +139,6 @@ public class ColorService implements ColorLocator {
     colorCreationListeners.add(listener);
   }
 
-  public void removeCreationListener(ColorCreationListener listener) {
-    colorCreationListeners.remove(listener);
-  }
-
   public void autoUpdate(final Container container) {
     addListener(new ColorChangeListener() {
       public void colorsChanged(ColorLocator colorLocator) {

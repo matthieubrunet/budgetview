@@ -143,10 +143,6 @@ public abstract class AbstractSplitsContext implements SplitsContext {
     return builder.toString();
   }
 
-  public String getResourceFile() {
-    return resourceFile;
-  }
-
   public void setResourceFile(String resourceFile) {
     this.resourceFile = resourceFile;
   }

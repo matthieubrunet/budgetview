@@ -39,14 +39,6 @@ public class GlobList extends ArrayList<Glob> {
     }
   }
 
-  public void addNotNull(Glob... globs) {
-    for (Glob glob : globs) {
-      if (glob != null) {
-        add(glob);
-      }
-    }
-  }
-
   public String toString() {
     List<String> strings = new ArrayList<String>();
     for (Glob glob : this) {
@@ -75,17 +67,6 @@ public class GlobList extends ArrayList<Glob> {
     GlobList result = new GlobList();
     for (Glob glob : this) {
       if (matcher.matches(glob, repository)) {
-        result.add(glob);
-      }
-    }
-    return result;
-  }
-
-  public GlobList getExistingGlobs(GlobRepository repository) {
-    GlobList result = new GlobList();
-    for (Iterator<Glob> iter = iterator(); iter.hasNext(); ) {
-      Glob glob = iter.next();
-      if (repository.contains(glob)) {
         result.add(glob);
       }
     }
@@ -386,10 +367,6 @@ public class GlobList extends ArrayList<Glob> {
       return null;
     }
     return get(size() - 1);
-  }
-
-  public Glob getSingle() {
-    return size() == 1 ? get(0) : null;
   }
 
   public GlobList getAll(GlobType type) {

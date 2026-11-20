@@ -2,7 +2,6 @@ package org.globsframework.gui.splits.utils;
 
 import org.globsframework.utils.Strings;
 import org.globsframework.utils.Utils;
-import org.globsframework.utils.exceptions.ResourceAccessFailed;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -13,10 +12,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public class GuiUtils {
 
@@ -182,14 +177,6 @@ public class GuiUtils {
     });
   }
 
-  public static JComponent getEnclosingValidateRoot(Component component) {
-    return (JComponent)getEnclosingComponent(component, new ComponentMatcher() {
-      public boolean matches(Component component) {
-        return JComponent.class.isInstance(component) && ((JComponent)component).isValidateRoot();
-      }
-    });
-  }
-
   public static void revalidate(final JComponent component) {
     runLater(new Runnable() {
       public void run() {
@@ -202,14 +189,6 @@ public class GuiUtils {
     return (JFrame)getEnclosingComponent(component, new ComponentMatcher() {
       public boolean matches(Component component) {
         return JFrame.class.isInstance(component);
-      }
-    });
-  }
-
-  public static JDialog getEnclosingDialog(Component component) {
-    return (JDialog)getEnclosingComponent(component, new ComponentMatcher() {
-      public boolean matches(Component component) {
-        return JDialog.class.isInstance(component);
       }
     });
   }
@@ -333,11 +312,6 @@ public class GuiUtils {
     return debugModeEnabled;
   }
 
-  public static Font getDefaultLabelFont() {
-    Font ref = new JLabel().getFont();
-    return ref.deriveFont(Font.PLAIN, ref.getSize());
-  }
-
   public static JEditorPane createReadOnlyHtmlComponent() {
     JEditorPane editorPane = new JEditorPane();
     initReadOnlyHtmlComponent(editorPane);
@@ -376,24 +350,6 @@ public class GuiUtils {
     textArea.setCaretPosition(0);
     textArea.setEditable(false);
     return textArea;
-  }
-
-  public static void loadCssResource(String path, JEditorPane htmlEditor, Class referenceClass) {
-    InputStream is = referenceClass.getResourceAsStream(path);
-    if (is == null) {
-      return;
-    }
-
-    HTMLEditorKit editorKit = (HTMLEditorKit)htmlEditor.getEditorKit();
-    StyleSheet styleSheet = editorKit.getStyleSheet();
-    try {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-      styleSheet.loadRules(reader, null);
-      reader.close();
-    }
-    catch (IOException e) {
-      throw new ResourceAccessFailed("Couldn't find resource file: " + path, e);
-    }
   }
 
   public static void scrollToTop(JScrollPane scrollPane) {
@@ -470,44 +426,6 @@ public class GuiUtils {
   public static boolean isRightClick(MouseEvent event) {
     int modifiers = event.getModifiers();
     return (modifiers & MouseEvent.BUTTON3_MASK) != 0;
-  }
-
-  public static Icon scaleDown(Icon icon, int maxWidth, int maxHeight) {
-    int w = icon.getIconWidth();
-    int h = icon.getIconHeight();
-    if (maxWidth > w && maxHeight > h) {
-      return icon;
-    }
-
-    BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-    Graphics2D g2d = (Graphics2D)image.getGraphics();
-    icon.paintIcon(null, g2d, 0, 0);
-    g2d.dispose();
-
-    double hRatio = (double)maxWidth / (double)w;
-    double vRatio = (double)maxHeight / (double)h;
-    double ratio = Math.min(hRatio, vRatio);
-
-    double targetWidth = ratio * w;
-    double targetHeight = ratio * h;
-
-    final BufferedImage scaledImage =
-      getScaledInstance(image, (int)targetWidth, (int)targetHeight,
-                        RenderingHints.VALUE_INTERPOLATION_BILINEAR, true);
-
-    return new Icon() {
-      public void paintIcon(Component component, Graphics graphics, int x, int y) {
-        graphics.drawImage(scaledImage, x, y, null);
-      }
-
-      public int getIconWidth() {
-        return scaledImage.getWidth();
-      }
-
-      public int getIconHeight() {
-        return scaledImage.getHeight();
-      }
-    };
   }
 
   /**

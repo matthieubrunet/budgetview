@@ -25,10 +25,6 @@ public abstract class AbstractGlobTextFieldEditor<PARENT extends AbstractGlobTex
     return (PARENT)this;
   }
 
-  protected void registerActions() {
-//    textComponent.addActionListener(validationAction);
-  }
-
   public void dispose() {
     super.dispose();
     for (ActionListener listener : textComponent.getActionListeners()) {
