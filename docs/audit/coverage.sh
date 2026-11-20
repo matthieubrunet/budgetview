@@ -15,7 +15,7 @@ set -e
 cd "$(dirname "$0")/../.."
 EXEC=${1:-budgetview/bv_desktop/target/jacoco.exec}
 OUT=${2:-budgetview/bv_desktop/target/coverage}
-VERSION=0.8.13
+VERSION=0.8.16
 CLI=$HOME/.m2/repository/org/jacoco/org.jacoco.cli/$VERSION/org.jacoco.cli-$VERSION-nodeps.jar
 [ -f "$CLI" ] || mvn -q dependency:get -Dartifact=org.jacoco:org.jacoco.cli:$VERSION:jar:nodeps
 mkdir -p "$OUT"

@@ -139,11 +139,12 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   bruit ou hors sujet. Lots A à C faits le 2026-11-20 : ~70 corrections mécaniques, et le build affiche désormais les
   catégories utiles, à 0 alerte. Lot D (`junit.framework.Assert`) renvoyé à l'étape 5 ; `Runtime.exec` à 3c, masques
   `InputEvent` à 4a.
-- [ ] **3b. OpenRewrite** : passer les recettes de migration Java 8 → 21 en mode `dryRun`,
+- [x] **3b. OpenRewrite** : passer les recettes de migration Java 8 → 21 en mode `dryRun`,
   relire le diff et n'appliquer que par familles.
   Inventaire fait le 2026-11-20, voir [3b, inventaire](#3b-inventaire) plus bas : 231 fichiers dans le build, 13 familles.
   Deux familles sont fautives : `ListFirstAndLast` rend `GlobList.getFirst()` récursive, et `UseTextBlocks` efface des
-  blancs de fin de ligne. Quatre lots proposés (A à D), décision attendue.
+  blancs de fin de ligne. Lots A (recettes sûres, 102 fichiers) et C (plugins) faits le 2026-11-20 ; B (blocs de texte)
+  non retenu, D rejeté.
 - [ ] **3c. Intégration macOS** : `com.apple.eawt` (2 fichiers) → `java.awt.Desktop` (Java 9 et +).
 - [ ] **3d. Utilitaires maison** (`Utils`, `Strings`, `Files`…) comparés à `java.util`,
   `java.nio.file`, `Objects`, `String` (`isBlank`, `repeat`, `strip`…).
@@ -1121,6 +1122,11 @@ attendus des tests fonctionnels, mais c'est le gain le plus faible des trois).
   +441 −568 lignes : 52 `getFirst()`/`getLast()`, tous sur des `SortedSet` (aucune `GlobList`), 14 `switch` en
   expression, ~45 `instanceof` à motif, 22 `@Serial`, 5 points-virgules. Tests de `globs` 796, `prevayler` 26,
   `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues, `users/` identique. `mvn -o clean install` : 0 `[WARNING]`.
+- Lot C (2026-11-20) : `maven-compiler-plugin` 3.13.0 → 3.16.0 (6 `pom`), `jacoco-maven-plugin` 0.8.13 → 0.8.16, et
+  `docs/audit/coverage.sh` aligné (il fixe sa propre version de l'outil `jacococli`). `mvn -o clean install` : 0
+  `[WARNING]`. Profil `coverage` vérifié sur `LoginTest` : l'agent écrit `jacoco.exec`, le rapport se génère. Tests de
+  `globs` 796, `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable, verte relancée
+  seule, deux fois), 9 min.
 
 ## Journal
 
@@ -1165,3 +1171,4 @@ attendus des tests fonctionnels, mais c'est le gain le plus faible des trois).
 | 2026-11-20 | 3a, lot C (garde-fou) | 5 `pom` : alertes utiles affichées au build ; 2 alertes voulues rendues explicites, processeur d'annotations coupé dans `siteweaver`. `mvn clean install` sans aucun `[WARNING]` ; `target/dist` 11 Mo, 17 jars. Tests de `globs` 796, `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable), 9 min. **3a terminé** |
 | 2026-11-20 | 3b, inventaire | Rien de modifié. OpenRewrite `UpgradeToJava21` (plugin 6.18.0, `rewrite-migrate-java` 3.20.0) en `dryRun` : 231 fichiers du build, 13 familles. Patch appliqué dans une copie : compile, mais 62 `StackOverflowError` dans les tests de `globs` (`ListFirstAndLast` rend `GlobList.getFirst()` récursive) et `ExportTest` en échec (`UseTextBlocks` efface une tabulation finale). Quatre lots proposés (A à D) |
 | 2026-11-20 | 3b, lot A (recettes sûres) | 102 fichiers, +441 −568 lignes, sans changement de comportement ; `target/dist` 11 Mo, 17 jars, `budgetview.jar` 4,55 Mo. Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues |
+| 2026-11-20 | 3b, lot C (plugins) | `maven-compiler-plugin` 3.16.0, `jacoco` 0.8.16 (6 `pom`, `coverage.sh`) ; 0 `[WARNING]`, `target/dist` 11 Mo. Tests de `globs` 796, `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable), 9 min. **3b terminé** |
