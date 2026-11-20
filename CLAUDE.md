@@ -28,7 +28,7 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 | `siteweaver/` | Générateur du site web statique | oui |
 | `budgetview/bv_shared` | Code commun client/serveur | oui |
 | `budgetview/bv_desktop` | **L'application** (~1 100 classes, ~350 tests) | oui |
-| `budgetview/bv_server` | Serveur (licences, cloud, mobile ; Jetty, MySQL, Stripe) | **commenté** |
+| `budgetview/bv_server` | Serveur (licences, cloud, mobile ; Jetty, MySQL, Stripe). Porte depuis le 2026-11-20 la couche SQL `sqlstreams` sortie de `globs` | **commenté** |
 | `budgetview/bv_analytics` | Analyse de logs | **commenté** |
 | `budgetview/bv_website` | Contenu du site (fr/en). **Référence du comportement attendu** : aide utilisateur dans `fr/content/support/` (`faq/`, `guides/`) et journal des versions `support/derniers_changements.html` (5.0 du 2017-10-29 = Sync/Budgea ; 5.01 du 2017-11-12 = jar 156, la version officielle). À consulter avant de trancher entre le code et un test | hors Maven |
 | `uispec4j/` | Framework de tests d'IHM Swing (fork) | **commenté** |
@@ -232,9 +232,16 @@ Adaptations des tests faites pour la 6.00 :
   et vérifier la ligne `Tests run:` finale.
 
 Tests de `globs` : `mvn -o clean test -pl globs` (~1 min ; le `pom` fixe JVM par classe, limite de temps et `--add-opens`),
-821 verts au 2026-11-20 (détail dans [docs/etat-des-tests.md](docs/etat-des-tests.md)). `clean` après un changement de signature (le vieux
+794 verts au 2026-11-20 (détail dans [docs/etat-des-tests.md](docs/etat-des-tests.md)). `clean` après un changement de signature (le vieux
 compilateur ne recompile pas les tests non touchés) ; `mvn -o install -pl globs -DskipTests` avant de tester bv_desktop,
 qui prend globs dans `~/.m2`.
+
+Modules hors build (`bv_server`, `bv_analytics`) : après `mvn install` du réacteur, `mvn -f budgetview/bv_server/pom.xml compile`
+(la première fois en ligne, pour télécharger ses dépendances) vérifie le `main`. Ses tests ne compilent plus en bloc
+(`functests` de licence, qui dépendent de checkers supprimés de bv_desktop). Pour vérifier des tests précis :
+classpath par `mvn -o dependency:build-classpath -Dmdep.outputFile=<fichier>`, `javac -d <dossier>` sur ces seuls
+fichiers, puis `java -cp … org.junit.runner.JUnitCore <classes>`. JUnitCore compte comme échec (« Cannot instantiate
+test case ») une classe de test abstraite que surefire ignorerait.
 - Le dépôt `http://download.java.net/maven/2/` déclaré dans `bv_desktop/pom.xml`
   est mort mais ne gêne pas : tout se résout depuis Maven Central.
 

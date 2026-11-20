@@ -179,6 +179,8 @@ Désactivés :
 Usage de globs par l'appli desktop (fichiers de `bv_desktop/src/main` qui importent le paquet) :
 `gui.splits` 235, `model.format` 87, `utils.serialization` 80, `gui.views` 57, `gui.editors` 25, `json` 2,
 `sqlstreams` 0, `remote` 0.
+Depuis l'audit 2a, `remote` est supprimé (lot B) et `sqlstreams` est passé dans `bv_server` avec ses tests (lot D,
+2026-11-20) : les corrections SQL ci-dessus y vivent désormais.
 
 ### Lien avec globsframework (projet actuel de MarcGuiot)
 

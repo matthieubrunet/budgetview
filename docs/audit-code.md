@@ -573,6 +573,23 @@ et des tests du bureau sans perdre le code).
     Au lot E, avec `readChangeSet` et `writeChangeSet`.
   - `utils.logging.Html*` (5) : seul `Debug` les atteint, et `Debug` est cité par un test de `bv_server` → lot D.
   - `T3uples`, `XmlGlobStreamReader` et `XmlSingleGlobParser` : servent à `sqlstreams` ou à ses tests → lot D.
+- Lot D (2026-11-20) : rien de supprimé, **111 classes déplacées** hors de `globs` (5 426 lignes), sous leurs paquets
+  d'origine pour que `bv_server` compile sans changer un import :
+  - vers `bv_server/src/main` (102) : tout `sqlstreams` sauf `annotations.AutoIncrement`, `streams` (`GlobStream`,
+    `GlobStreamBuilder`, les 23 `accessors`), `JsonGlobWriter`, `GlobTreePrinter`, `InvalidConfiguration`,
+    `ItemAlreadyUsed`, `TimeExpired`, `TooManyItems`, `T3uples` ;
+  - vers `bv_server/src/test` (8) : `XmlGlobStreamReader`, `XmlSingleGlobParser`, `Debug` et ses 5 `Html*`, que seuls
+    des tests citent (ceux de `sqlstreams`, et `UserEvaluationTest` pour `Debug`) ;
+  - vers `bv_analytics` : `StringComparator`, son seul client ;
+  - avec eux 11 fichiers de test (681 lignes) : les 10 de `sqlstreams`, `DebugTest`, `StringComparatorTest`.
+  `AutoIncrement` reste dans `globs` : annotation de modèle de 10 lignes, posée sur les `DummyObject` des tests de
+  `globs`, que les tests SQL déplacés réutilisent par le `test-jar` de `globs` (le `pom` de `bv_server` le déclarait
+  déjà, ainsi que `hsqldb` et `mysql-connector-java`, retirés du `pom` de `globs`). Ces deux pilotes étaient déjà
+  exclus de `target/dist` : pas de gain de ce côté. `bv_desktop` déclare encore `hsqldb` pour un seul test
+  (`JsonImporterTest`, `ReaderInputStream`).
+  Vérifié : `bv_server` compile en `main` (ses tests ne compilaient déjà plus : `functests` de licence) ; les tests
+  déplacés compilés à part et lancés par `JUnitCore` : 18 verts, MySQL compris (traduction de codes d'erreur).
+  Tests de `globs` : 821 → 794.
 - Piège : les tests d'IHM de `globs` (38 classes) échouent sous Java 21 sans les `--add-opens` du profil `jdk17` de
   `bv_desktop`, que le `pom` de `globs` n'avait pas. Ajoutés à son surefire avec une JVM par classe et une limite de
   temps : `mvn -o clean test -pl globs` suffit ([etat-des-tests.md](etat-des-tests.md)).
@@ -602,3 +619,4 @@ ProGuard est le code lancé à part (`Dump`, génération de la démo), que seul
 | 2026-11-19 | 2a, lot A (IHM de `globs`) | `globs` : −16 classes, −854 lignes de code, −728 de tests, −709 d'exemples (dont 9 fichiers de `samples`) ; `globs-1.0.jar` 1 209 Ko (−27 Ko), `target/dist` 12 Mo. Tests de `globs` 833 verts (−40), 54 s ; `bv_desktop` 1 026 verts, 16 min |
 | 2026-11-19 | 2a, lot B (`remote`) | `globs` : −7 classes, −667 lignes avec le test ; `globs-1.0.jar` 1 187 Ko (−22 Ko). Tests de `globs` 832 verts (−1) ; `bv_desktop` 1 026 verts, 14 min |
 | 2026-11-20 | 2a, lot C (divers) | `globs` : −23 classes, −1 048 lignes de code (dont 4 méthodes), −467 de tests ; 2 outils XML (270 lignes) passés dans les tests ; `globs-1.0.jar` 1 142 Ko (−45 Ko). Tests de `globs` 821 verts (−11) ; `bv_desktop` 1 026 verts, 10 min |
+| 2026-11-20 | 2a, lot D (`sqlstreams`) | Rien de supprimé : 111 classes (5 426 lignes) et 11 fichiers de test (681 lignes) sortis de `globs`, 110 vers `bv_server`, 1 vers `bv_analytics` ; `hsqldb` et `mysql-connector-java` retirés du `pom` de `globs`. `globs-1.0.jar` 982 Ko (−160 Ko), `target/dist` 11 Mo. Tests de `globs` 794 verts (−27, partis avec leur code ; 18 relancés à part dans `bv_server`, verts) ; `bv_desktop` 1 026 verts, 9 min |
