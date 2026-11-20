@@ -26,70 +26,6 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 
 public class SplitsComponentsTest extends SplitsTestCase {
-  public void testBorderLayout() throws Exception {
-    builder.add(aTable, aList, aButton);
-
-    JPanel panel =
-      parse(
-        "<borderLayout>" +
-        "  <component ref='aButton' borderPos='north'/>" +
-        "  <component ref='aTable' borderPos='center'/>" +
-        "  <component ref='aList' borderPos='west'/>" +
-        "</borderLayout>");
-
-    BorderLayout layout = (BorderLayout)panel.getLayout();
-    assertEquals("North", layout.getConstraints(aButton));
-    assertEquals("Center", layout.getConstraints(aTable));
-    assertEquals("West", layout.getConstraints(aList));
-  }
-
-  public void testBorderLayoutWithNoBorderPosError() throws Exception {
-    builder.add(aTable, aList);
-    checkParsingError("<borderLayout>" +
-                      "  <component ref='aList' borderPos='center'/>" +
-                      "  <component ref='aTable'/>" +
-                      "</borderLayout>",
-                      "Element 'component' in borderLayout must have a property 'borderPos' set to " +
-                      "[center|north|south|east|west]");
-  }
-
-  public void testBorderLayoutWithUnknownBorderPosError() throws Exception {
-    builder.add(aTable, aList);
-    checkParsingError("<borderLayout>" +
-                      "  <component ref='aList' borderPos='center'/>" +
-                      "  <component ref='aTable' borderPos='__UNKNOWN__'/>" +
-                      "</borderLayout>",
-                      "Element 'component' in borderLayout must have a property 'borderPos' set to " +
-                      "[center|north|south|east|west]");
-  }
-
-  public void testCreatingAFrame() throws Exception {
-    JFrame frame =
-      parse(
-        "<frame title='The Title'>" +
-        "  <button text='Click'/>" +
-        "</frame>");
-    assertNotNull(frame);
-    checkFrame(frame);
-  }
-
-  public void testReferencingAFrame() throws Exception {
-    JFrame frame = new JFrame();
-    builder.add("theFrame", frame);
-    parse(
-      "<frame ref='theFrame' title='The Title'>" +
-      "  <button text='Click'/>" +
-      "</frame>");
-    checkFrame(frame);
-  }
-
-  private void checkFrame(JFrame frame) {
-    assertEquals("The Title", frame.getTitle());
-    JButton button = (JButton)frame.getContentPane().getComponent(0);
-    assertNotNull(button);
-    assertEquals("Click", button.getText());
-  }
-
   public void testCreatingAList() throws Exception {
     JList list = parse("<list/>");
     assertNotNull(list);
@@ -158,11 +94,6 @@ public class SplitsComponentsTest extends SplitsTestCase {
   public void testCreatingATextArea() throws Exception {
     JTextArea textArea = parse("<textArea text='blah'/>");
     assertEquals("blah", textArea.getText());
-  }
-
-  public void testCreatingAnEditorPane() throws Exception {
-    JEditorPane editorPane = parse("<editorPane text='blah'/>");
-    assertEquals("blah", editorPane.getText());
   }
 
   public void testCreatingAHtmlEditorPane() throws Exception {
@@ -242,11 +173,6 @@ public class SplitsComponentsTest extends SplitsTestCase {
   public void testCreatingARadioButton() throws Exception {
     JRadioButton button = parse("<radioButton/>");
     assertNotNull(button);
-  }
-
-  public void testCreatingAProgressBar() throws Exception {
-    JProgressBar progressBar = parse("<progressBar/>");
-    assertNotNull(progressBar);
   }
 
   public void testReferencingACheckBox() throws Exception {

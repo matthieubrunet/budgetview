@@ -911,6 +911,15 @@ avec les autres et réécrire ces tests sur `panel`, qui a les mêmes attributs 
 - Lot A (2026-11-20) : dossier `splits/` supprimé (5 fichiers ; `CLAUDE.md` et [licence.md](licence.md) disent
   désormais que `splits` vit dans `globs`), ainsi que les 9 démos et `resources/demo/` des tests de `globs`. Code livré
   inchangé ; tests de `globs` 813 verts.
+- Lot B (2026-11-20) : balises `borderLayout`, `footer`, `frame`, `editorPane`, `progressBar` retirées de
+  `DefaultSplitterFactory` et de `splits.xsd` (schéma livré dans le jar de `globs`, qui ne sert qu'à valider les extraits
+  des tests), avec `BorderLayoutComponent`, `Footer`, `FrameComponent` et le pied de liste de `RepeatSplitter` et
+  `RepeatPanel`. L'attribut `borderPos`, qui ne servait qu'à `borderLayout`, sort de `DEFAULT_EXCLUDES` et du schéma ; son
+  unique occurrence, sans effet (`transactionView.splits`, un `scrollPane` dans une `column`), est retirée, sans quoi
+  `PropertySetter` chercherait un `setBorderPos`. Tests : 8 partis avec leur balise ; `testCreatingAComponentWithAName`,
+  `testSizes`, `testComplexContainment` et `testCanUseReferencedComponentsForColumnsAndRows` passent de `frame` ou
+  `borderLayout` à `panel` ou `column` ; les deux tests d'en-tête et de pied en disposition `verticalGrid` gardent
+  l'en-tête. Tests de `globs` 805 verts.
 
 ## Journal
 
@@ -947,3 +956,4 @@ avec les autres et réécrire ces tests sur `panel`, qui a les mêmes attributs 
 | 2026-11-20 | 2c, lot C (mort par configuration) | `prevayler` : −15 classes (réplication, censeur strict, `RWLock`), −1 223 lignes de code, −662 de tests ; 56 classes, 1 686 lignes de code ; `prevayler-1.0.jar` 60 Ko (−30 Ko), `target/dist` 11 Mo. Tests de `prevayler` 26 verts (−8), `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues. **2c terminé** (lot D gardé) |
 | 2026-11-20 | 2d, inventaire | Rien de modifié. `splits` (dans `globs`) : 138 classes, 7 790 lignes de code ; 5 balises sur 34 jamais écrites, 2 bordures, 3 icônes et 2 attributs explicites sur 36 jamais utilisés (~310 lignes, 6 classes) ; dossier `splits/` réduit à une coquille (5 fichiers) ; 9 démos (297 lignes) dans les tests de `globs`. Tests de `globs` 813 verts, 49 s. Trois lots proposés (A à C), décision attendue sur `frame` |
 | 2026-11-20 | 2d, lot A (fichiers morts) | Dossier `splits/` (5 fichiers) et 9 démos de `globs/src/test` (297 lignes, plus 2 fichiers XML) supprimés ; code livré inchangé. Tests de `globs` 813 verts |
+| 2026-11-20 | 2d, lot B (balises) | 5 balises, 3 classes et le pied de liste des répétitions supprimés (−184 lignes de Java, −195 de tests), schéma `splits.xsd` −58 lignes ; `globs-1.0.jar` 962 Ko (−5 Ko). Tests de `globs` 805 verts (−8) ; `bv_desktop` 1 026 verts, 9 min |

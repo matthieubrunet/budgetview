@@ -36,9 +36,6 @@ public class DefaultSplitterFactory implements SplitterFactory {
     if (name.equals("verticalBoxes")) {
       return new BoxSequence(subSplitters, Sequence.Direction.VERTICAL, properties);
     }
-    else if (name.equals("borderLayout")) {
-      return new BorderLayoutComponent(properties, subSplitters);
-    }
     else if (name.equals("cards")) {
       return new CardLayoutComponent(properties, subSplitters);
     }
@@ -56,9 +53,6 @@ public class DefaultSplitterFactory implements SplitterFactory {
     }
     else if (name.equals("filler")) {
       return new Filler(properties, subSplitters);
-    }
-    else if (name.equals("frame")) {
-      return new FrameComponent(properties, subSplitters);
     }
     else if (name.equals("panel")) {
       return new PanelComponent(properties, subSplitters);
@@ -93,14 +87,8 @@ public class DefaultSplitterFactory implements SplitterFactory {
     else if (name.equals("textArea")) {
       return createDefaultComponent(JTextArea.class, "textArea", properties, subSplitters);
     }
-    else if (name.equals("editorPane")) {
-      return createDefaultComponent(JEditorPane.class, "editorPane", properties, subSplitters);
-    }
     else if (name.equals("htmlEditorPane")) {
       return new HtmlEditorPane(properties, subSplitters, false);
-    }
-    else if (name.equals("progressBar")) {
-      return createDefaultComponent(JProgressBar.class, "progressBar", properties, subSplitters);
     }
     else if (name.equals("separator")) {
       return createDefaultComponent(JSeparator.class, "separator", properties, subSplitters);
@@ -113,9 +101,6 @@ public class DefaultSplitterFactory implements SplitterFactory {
     }
     else if (name.equals("header")) {
       return new Header(properties, subSplitters);
-    }
-    else if (name.equals("footer")) {
-      return new Footer(properties, subSplitters);
     }
     throw new SplitsException("Unknown splitter name: " + name);
   }

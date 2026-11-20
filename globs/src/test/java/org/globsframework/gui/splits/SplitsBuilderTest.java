@@ -115,10 +115,10 @@ public class SplitsBuilderTest extends SplitsTestCase {
   }
 
   public void testCreatingAComponentWithAName() throws Exception {
-    JFrame frame = parse("<frame>" +
+    JPanel panel = parse("<panel>" +
                          "  <button text='Click!'/>" +
-                         "</frame>");
-    JButton button = (JButton)frame.getContentPane().getComponent(0);
+                         "</panel>");
+    JButton button = (JButton)panel.getComponent(0);
     assertEquals("Click!", button.getText());
   }
 
@@ -147,11 +147,11 @@ public class SplitsBuilderTest extends SplitsTestCase {
   }
 
   public void testSizes() throws Exception {
-    JFrame frame =
-      parse("<frame size='(800,600)' minimumSize='(200, 150)' maximumSize='(1000, 900)'/>");
-    assertEquals(new Dimension(800, 600), frame.getSize());
-    assertEquals(new Dimension(200, 150), frame.getMinimumSize());
-    assertEquals(new Dimension(1000, 900), frame.getMaximumSize());
+    JPanel panel =
+      parse("<panel size='(800,600)' minimumSize='(200, 150)' maximumSize='(1000, 900)'/>");
+    assertEquals(new Dimension(800, 600), panel.getSize());
+    assertEquals(new Dimension(200, 150), panel.getMinimumSize());
+    assertEquals(new Dimension(1000, 900), panel.getMaximumSize());
 
     JButton button =
       parse("<button text='Click!' size='(80,60)' minimumSize='(20, 15)' maximumSize='(100, 90)'/>");
@@ -215,9 +215,9 @@ public class SplitsBuilderTest extends SplitsTestCase {
     CardHandler handler = builder.addCardHandler("myHandler");
 
     JPanel panel = parse("<row>" +
-                         "  <borderLayout>" +
-                         "    <label text='hello' borderPos='north'/>" +
-                         "    <cards ref='myHandler' borderPos='center'>" +
+                         "  <column>" +
+                         "    <label text='hello'/>" +
+                         "    <cards ref='myHandler'>" +
                          "      <card name='a'>" +
                          "        <grid>" +
                          "          <button ref='aButton' gridPos='(0,0)'/>" +
@@ -230,7 +230,7 @@ public class SplitsBuilderTest extends SplitsTestCase {
                          "        <list ref='aList'/>" +
                          "      </card>" +
                          "    </cards>" +
-                         "  </borderLayout>" +
+                         "  </column>" +
                          "</row>");
 
     ComponentFinder finder = new ComponentFinder(panel, new org.uispec4j.Panel(panel));

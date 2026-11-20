@@ -388,84 +388,6 @@ public class SplitsRepeatTest extends SplitsTestCase {
     assertTrue(panel.isVisible());
   }
 
-  public void testFooter() throws Exception {
-    Repeat<String> repeat =
-      builder.addRepeat("myRepeat", Arrays.asList("aa", "bb"),
-                        new RepeatComponentFactory<String>() {
-                          public void registerComponents(PanelBuilder cellBuilder, String object) {
-                            cellBuilder.add("label", new JLabel(object));
-                            cellBuilder.add("btn", new JButton(object));
-                          }
-                        });
-
-    JPanel panel = parse(
-      "<repeat ref='myRepeat'>" +
-      "  <header>" +
-      "    <label text='header'/>" +
-      "  </header>" +
-      "  <row>" +
-      "    <label ref='label'/>" +
-      "    <button ref='btn'/>" +
-      "  </row>" +
-      "  <footer>" +
-      "    <label text='footer'/>" +
-      "  </footer>" +
-      "</repeat>");
-
-    assertEquals("myRepeat", panel.getName());
-    assertSame(panel, builder.getComponent("myRepeat"));
-
-    checkPanel(panel,
-               "label:header\n" +
-               "panel\n" +
-               "  label:aa\n" +
-               "  button:aa\n" +
-               "panel\n" +
-               "  label:bb\n" +
-               "  button:bb\n" +
-               "label:footer\n");
-
-    repeat.insert("cc", 1);
-    checkPanel(panel,
-               "label:header\n" +
-               "panel\n" +
-               "  label:aa\n" +
-               "  button:aa\n" +
-               "panel\n" +
-               "  label:cc\n" +
-               "  button:cc\n" +
-               "panel\n" +
-               "  label:bb\n" +
-               "  button:bb\n" +
-               "label:footer\n");
-    assertTrue(panel.isVisible());
-
-    repeat.remove(0);
-    checkPanel(panel,
-               "label:header\n" +
-               "panel\n" +
-               "  label:cc\n" +
-               "  button:cc\n" +
-               "panel\n" +
-               "  label:bb\n" +
-               "  button:bb\n" +
-               "label:footer\n");
-    assertTrue(panel.isVisible());
-
-    repeat.remove(0);
-    checkPanel(panel,
-               "label:header\n" +
-               "panel\n" +
-               "  label:bb\n" +
-               "  button:bb\n" +
-               "label:footer\n");
-    assertTrue(panel.isVisible());
-
-    repeat.remove(0);
-    checkPanel(panel, "");
-    assertTrue(panel.isVisible());
-  }
-
   public void testOnlyOneHeaderItemAllowedInDefaultLayout() throws Exception {
     Repeat<String> repeat =
       builder.addRepeat("myRepeat", Arrays.asList("aa", "bb"),
@@ -495,9 +417,8 @@ public class SplitsRepeatTest extends SplitsTestCase {
     }
   }
 
-  public void testHeaderAndFooterRepeatInitializedWithEmptyList() throws Exception {
+  public void testHeaderRepeatInitializedWithEmptyList() throws Exception {
     builder.add("title1", new JLabel("col1"));
-    builder.add("title2", new JLabel("footerCol1"));
     Repeat<String> repeat = builder.addRepeat("repeat", new ArrayList<String>(), new RepeatComponentFactory<String>() {
       public void registerComponents(PanelBuilder cellBuilder, String object) {
         cellBuilder.add("label", new JLabel(object));
@@ -512,10 +433,6 @@ public class SplitsRepeatTest extends SplitsTestCase {
       "  </header>" +
       "  <label ref='label' fill='horizontal' anchor='south' marginTop='10' marginBottom='5'/>" +
       "  <button ref='button' marginLeft='5' marginRight='5'/>" +
-      "  <footer>" +
-      "    <label ref='title2'/>" +
-      "    <label text='footerCol2'/>" +
-      "  </footer>" +
       "</repeat>");
 
     checkPanel(panel, "");
@@ -525,14 +442,11 @@ public class SplitsRepeatTest extends SplitsTestCase {
     checkPanel(panel, "label:col1\n" +
                       "label:col2\n" +
                       "label:a\n" +
-                      "button:a\n" +
-                      "label:footerCol1\n" +
-                      "label:footerCol2\n");
+                      "button:a\n");
   }
 
-  public void testHeaderAndFooterInVerticalGridLayout() throws Exception {
+  public void testHeaderInVerticalGridLayout() throws Exception {
     builder.add("title1", new JLabel("col1"));
-    builder.add("title2", new JLabel("footerCol1"));
     Repeat<String> repeat = builder.addRepeat("repeat", Arrays.asList("aa", "bb"), new RepeatComponentFactory<String>() {
       public void registerComponents(PanelBuilder cellBuilder, String object) {
         cellBuilder.add("label", new JLabel(object));
@@ -547,10 +461,6 @@ public class SplitsRepeatTest extends SplitsTestCase {
       "  </header>" +
       "  <label ref='label' fill='horizontal' anchor='south' marginTop='10' marginBottom='5'/>" +
       "  <button ref='button' marginLeft='5' marginRight='5'/>" +
-      "  <footer>" +
-      "    <label ref='title2'/>" +
-      "    <label text='footerCol2'/>" +
-      "  </footer>" +
       "</repeat>");
 
     checkPanel(panel,
@@ -559,9 +469,7 @@ public class SplitsRepeatTest extends SplitsTestCase {
                "label:aa\n" +
                "button:aa\n" +
                "label:bb\n" +
-               "button:bb\n" +
-               "label:footerCol1\n" +
-               "label:footerCol2\n");
+               "button:bb\n");
 
     checkDefaultLabel(panel, 0, "col1", 0, 0);
     checkDefaultLabel(panel, 1, "col2", 1, 0);
@@ -569,8 +477,6 @@ public class SplitsRepeatTest extends SplitsTestCase {
     checkButton(panel, 3, "aa", 1, 1);
     checkLabel(panel, 4, "bb", 0, 2);
     checkButton(panel, 5, "bb", 1, 2);
-    checkDefaultLabel(panel, 6, "footerCol1", 0, 3);
-    checkDefaultLabel(panel, 7, "footerCol2", 1, 3);
 
     repeat.insert("cc", 1);
 
@@ -582,9 +488,7 @@ public class SplitsRepeatTest extends SplitsTestCase {
                "label:cc\n" +
                "button:cc\n" +
                "label:bb\n" +
-               "button:bb\n" +
-               "label:footerCol1\n" +
-               "label:footerCol2\n");
+               "button:bb\n");
     checkDefaultLabel(panel, 0, "col1", 0, 0);
     checkDefaultLabel(panel, 1, "col2", 1, 0);
     checkLabel(panel, 2, "aa", 0, 1);
@@ -593,8 +497,6 @@ public class SplitsRepeatTest extends SplitsTestCase {
     checkButton(panel, 5, "cc", 1, 2);
     checkLabel(panel, 6, "bb", 0, 3);
     checkButton(panel, 7, "bb", 1, 3);
-    checkDefaultLabel(panel, 8, "footerCol1", 0, 4);
-    checkDefaultLabel(panel, 9, "footerCol2", 1, 4);
 
     repeat.remove(0);
 
@@ -604,9 +506,7 @@ public class SplitsRepeatTest extends SplitsTestCase {
                "label:cc\n" +
                "button:cc\n" +
                "label:bb\n" +
-               "button:bb\n" +
-               "label:footerCol1\n" +
-               "label:footerCol2\n");
+               "button:bb\n");
     checkDefaultLabel(panel, 0, "col1", 0, 0);
     checkDefaultLabel(panel, 1, "col2", 1, 0);
     checkLabel(panel, 2, "cc", 0, 1);

@@ -19,7 +19,6 @@ public class RepeatPanel implements Repeat {
   private boolean autoHideIfEmpty;
   private Splitter[] headerSplitters;
   private Splitter[] splitterTemplates;
-  private Splitter[] footerSplitters;
   private SplitsContext context;
   private List<RepeatContext> repeatContexts = new ArrayList<RepeatContext>();
   private RepeatLayout layout;
@@ -29,13 +28,11 @@ public class RepeatPanel implements Repeat {
   public RepeatPanel(String name, RepeatHandler repeatHandler, RepeatLayout layout,
                      boolean autoHideIfEmpty,
                      Splitter[] headerSplitters,
-                     Splitter[] splitterTemplates,
-                     Splitter[] footerSplitters, SplitsContext context) {
+                     Splitter[] splitterTemplates, SplitsContext context) {
     this.repeatHandler = repeatHandler;
     this.autoHideIfEmpty = autoHideIfEmpty;
     this.headerSplitters = headerSplitters;
     this.splitterTemplates = splitterTemplates;
-    this.footerSplitters = footerSplitters;
     this.context = context;
     this.layout = layout;
     repeatHandler.register(this);
@@ -70,10 +67,6 @@ public class RepeatPanel implements Repeat {
       index++;
     }
 
-    if (!items.isEmpty() && hasFooter()) {
-      constraints.add(createFooterStretchers());
-    }
-
     layout.set(panel, constraints);
     GuiUtils.revalidate(panel);
     updateVisibility();
@@ -81,10 +74,6 @@ public class RepeatPanel implements Repeat {
 
   private boolean hasHeader() {
     return headerSplitters != null;
-  }
-
-  private boolean hasFooter() {
-    return footerSplitters != null;
   }
 
   public void insert(Object item, int index) {
@@ -95,10 +84,6 @@ public class RepeatPanel implements Repeat {
     }
 
     layout.insert(panel, createStretches(item, index), adjustIndex(index));
-
-    if (firstItem && hasFooter()) {
-      layout.insert(panel, createFooterStretchers(), adjustIndex(index + 1));
-    }
 
     if (!updateInProgress) {
       GuiUtils.revalidate(panel);
@@ -158,19 +143,6 @@ public class RepeatPanel implements Repeat {
 
       Splitter.SplitComponent component =
         headerSplitters[i].createComponentStretch(context, !layout.managesInsets());
-      constraints[i] = component.componentConstraints;
-    }
-
-    return constraints;
-  }
-
-  private ComponentConstraints[] createFooterStretchers() {
-    ComponentConstraints[] constraints = new ComponentConstraints[footerSplitters.length];
-
-    for (int i = 0; i < footerSplitters.length; i++) {
-
-      Splitter.SplitComponent component =
-        footerSplitters[i].createComponentStretch(context, !layout.managesInsets());
       constraints[i] = component.componentConstraints;
     }
 

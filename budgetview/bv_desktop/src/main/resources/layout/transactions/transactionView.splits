@@ -15,7 +15,7 @@
       <button ref="actionsMenu" styleClass="actionsButton" marginLeft="20"/>
     </row>
 
-    <scrollPane borderPos="center" viewportBackground="transactionTable.bg"
+    <scrollPane viewportBackground="transactionTable.bg"
                 border="line(transactionTable.border)" opaque="true"
                 marginTop="10" marginBottom="3" weightY="50">
       <table ref="transactionsTable" background="transactionTable.bg" rowHeight="20"

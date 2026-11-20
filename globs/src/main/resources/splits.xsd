@@ -23,7 +23,6 @@
           <xs:element ref="styles"/>
         </xs:choice>
         <xs:choice minOccurs="0" maxOccurs="1">
-          <xs:element ref="frame"/>
           <xs:group ref="splitsComponents"/>
         </xs:choice>
       </xs:sequence>
@@ -95,7 +94,6 @@
       <xs:element ref="grid"/>
       <xs:element ref="horizontalBoxes"/>
       <xs:element ref="verticalBoxes"/>
-      <xs:element ref="borderLayout"/>
       <xs:element ref="horizontalSplit"/>
       <xs:element ref="verticalSplit"/>
       <xs:element ref="panel"/>
@@ -117,36 +115,17 @@
       <xs:element ref="checkBox"/>
       <xs:element ref="radioButton"/>
       <xs:element ref="comboBox"/>
-      <xs:element ref="progressBar"/>
       <xs:element ref="table"/>
       <xs:element ref="list"/>
       <xs:element ref="textField"/>
       <xs:element ref="textArea"/>
-      <xs:element ref="editorPane"/>
       <xs:element ref="htmlEditorPane"/>
       <xs:element ref="filler"/>
       <xs:element ref="separator"/>
     </xs:choice>
   </xs:group>
 
-  <!-- ====================================  -->
-  <!-- Top-level window elements             -->
-  <!-- ====================================  -->
 
-  <xs:element name="frame">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">
-        Represents a JFrame component
-      </xs:documentation>
-    </xs:annotation>
-    <xs:complexType>
-      <xs:sequence minOccurs="0" maxOccurs="unbounded">
-        <xs:group ref="splitsComponents"/>
-      </xs:sequence>
-      <xs:attribute name="title" type="xs:string" use="optional"/>
-      <xs:attributeGroup ref="jComponentAttributes"/>
-    </xs:complexType>
-  </xs:element>
 
   <xs:element name="dialog">
     <xs:annotation>
@@ -216,14 +195,6 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="borderLayout">
-    <xs:complexType>
-      <xs:sequence minOccurs="1" maxOccurs="unbounded">
-        <xs:group ref="splitsComponents"/>
-      </xs:sequence>
-      <xs:attributeGroup ref="componentAttributes"/>
-    </xs:complexType>
-  </xs:element>
 
   <xs:element name="horizontalSplit">
     <xs:complexType>
@@ -340,19 +311,11 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="footer">
-    <xs:complexType>
-      <xs:sequence minOccurs="1" maxOccurs="unbounded">
-        <xs:group ref="splitsComponents"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
 
   <xs:group name="repeatComponents">
     <xs:choice>
       <xs:group ref="splitsComponents"/>
       <xs:element ref="header"/>
-      <xs:element ref="footer"/>
     </xs:choice>
   </xs:group>
 
@@ -610,11 +573,6 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="progressBar">
-    <xs:complexType>
-      <xs:attributeGroup ref="componentAttributes"/>
-    </xs:complexType>
-  </xs:element>
 
   <xs:element name="label">
     <xs:complexType>
@@ -661,14 +619,6 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="editorPane">
-    <xs:complexType>
-      <xs:attributeGroup ref="componentAttributes"/>
-      <xs:attribute name="text" type="xs:string"/>
-      <xs:attribute name="editable" type="xs:boolean"/>
-      <xs:attribute name="contentType" type="xs:string"/>
-    </xs:complexType>
-  </xs:element>
 
   <xs:element name="htmlEditorPane">
     <xs:annotation>
@@ -753,14 +703,6 @@
     <xs:attributeGroup ref="gridAttributes"/>
     <xs:attributeGroup ref="jComponentAttributes"/>
 
-    <xs:attribute name="borderPos" type="xs:string">
-      <xs:annotation>
-        <xs:documentation xml:lang="en">
-          Indicates the location of the component when placed inside a &lt;border&gt; layout tag. Value can be one of
-          north/center/south/left/right.
-        </xs:documentation>
-      </xs:annotation>
-    </xs:attribute>
 
     <xs:attribute name="border" type="xs:string">
       <xs:annotation>

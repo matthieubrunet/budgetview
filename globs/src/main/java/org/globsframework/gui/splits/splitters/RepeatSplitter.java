@@ -20,7 +20,6 @@ import java.util.ArrayList;
 public class RepeatSplitter extends AbstractSplitter {
   private Splitter[] headerSplitters;
   private Splitter[] contentSplitters;
-  private Splitter[] footerSplitters;
   private String ref;
   private RepeatLayout layout;
 
@@ -47,12 +46,6 @@ public class RepeatSplitter extends AbstractSplitter {
         }
         this.headerSplitters  = ((Header)subSplitter).getHeaderSplitters();
       }
-      else if (subSplitter instanceof Footer){
-        if (footerSplitters != null) {
-          throw new InvalidParameter("Only one Footer is accepted for a given repeat");
-        }
-        this.footerSplitters  = ((Footer)subSplitter).getFooterSplitters();
-      }
       else {
         splitters.add(subSplitter);
       }
@@ -69,7 +62,7 @@ public class RepeatSplitter extends AbstractSplitter {
       throw new ItemNotFound("Repeat '" + ref + "' not declared");
     }
     RepeatPanel repeatPanel =
-      new RepeatPanel(ref, repeatHandler, layout, autoHideIfEmpty, headerSplitters, contentSplitters, footerSplitters, context);
+      new RepeatPanel(ref, repeatHandler, layout, autoHideIfEmpty, headerSplitters, contentSplitters, context);
     return repeatPanel.getSplitComponent();
   }
 
