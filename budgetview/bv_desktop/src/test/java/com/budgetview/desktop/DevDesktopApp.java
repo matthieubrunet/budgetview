@@ -2,8 +2,8 @@ package com.budgetview.desktop;
 
 import com.budgetview.desktop.components.PicsouFrame;
 import com.budgetview.desktop.components.layoutconfig.LayoutConfigService;
-import com.budgetview.desktop.plaf.PicsouMacLookAndFeel;
 import com.budgetview.desktop.utils.Gui;
+import com.budgetview.desktop.utils.MacOSXHooks;
 import com.budgetview.utils.Lang;
 import org.globsframework.utils.directory.Directory;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class DevDesktopApp {
 
   static {
-    PicsouMacLookAndFeel.initApplicationName();
+    MacOSXHooks.initApplicationName();
     Gui.init();
   }
 

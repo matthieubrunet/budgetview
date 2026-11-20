@@ -66,10 +66,8 @@ public class Gui {
   public static void init() {
 
     try {
-      if (GuiUtils.isMacOSX()) {
-//        UIManager.setLookAndFeel(new PicsouMacLookAndFeel());
-      }
-      else {
+      // Sous macOS, le look and feel du système (Aqua).
+      if (!GuiUtils.isMacOSX()) {
         Options.setUseSystemFonts(true);
         Options.setUseNarrowButtons(false);
 

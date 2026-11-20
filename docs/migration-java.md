@@ -64,7 +64,7 @@ N'empêchent pas la migration : log4j 1.2 (fin de vie, sans conséquence en loca
 
 Constat du 2026-11-16 (`Gui.init`) :
 
-- **macOS** : aucun look & feel n'est posé (`PicsouMacLookAndFeel` est commenté). L'application garde
+- **macOS** : aucun look & feel n'est posé (`PicsouMacLookAndFeel` était commenté ; supprimé en audit 3c). L'application garde
   **Aqua**, le thème natif du JDK, maintenu et à jour. JGoodies n'y sert pas.
 - **Windows et Linux** : `PicsouWindowsLookAndFeel`, sous-classe de `Plastic3DLookAndFeel` (JGoodies Looks
   2.2.0, 2008), placée dans le paquet `com.jgoodies.looks.plastic`. Elle y ajoute deux rendus maison :

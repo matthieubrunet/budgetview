@@ -1177,6 +1177,12 @@ l'utilisateur (saisie libre), licences de l'écran « À propos ». Différences
 
 **Décision de Matthieu (2026-11-20)** : faire A et B.
 
+**Réalisation**, un commit par lot :
+- Lot A (2026-11-20) : `MacOSXHooks` appelle directement `Desktop` (quatre lambdas), sans proxy ni repli
+  `com.apple.eawt` ; `initApplicationName` y est passée et `PicsouMacLookAndFeel` est supprimé, avec la propriété
+  `com.apple.mrj…` et la ligne commentée de `Gui.init`. 5 fichiers, +56 −202 lignes. Tests de `bv_desktop` 1 026 verts,
+  11 min ; vérifié par Matthieu dans l'appli de dev : À propos, Préférences, plein écran, ⌘Q.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -1222,3 +1228,4 @@ l'utilisateur (saisie libre), licences de l'écran « À propos ». Différences
 | 2026-11-20 | 3b, lot A (recettes sûres) | 102 fichiers, +441 −568 lignes, sans changement de comportement ; `target/dist` 11 Mo, 17 jars, `budgetview.jar` 4,55 Mo. Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues |
 | 2026-11-20 | 3b, lot C (plugins) | `maven-compiler-plugin` 3.16.0, `jacoco` 0.8.16 (6 `pom`, `coverage.sh`) ; 0 `[WARNING]`, `target/dist` 11 Mo. Tests de `globs` 796, `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable), 9 min. **3b terminé** |
 | 2026-11-20 | 3c, inventaire | Rien de modifié. `MacOSXHooks` déjà sur `java.awt.Desktop`, mais par réflexion avec un repli `com.apple.eawt` mort (~130 lignes à retirer avec `PicsouMacLookAndFeel`) ; navigateur par trois `Runtime.exec(String)` (dépréciés), remplaçables par `Desktop.browse`. Deux lots proposés (A et B) |
+| 2026-11-20 | 3c, lot A (hooks macOS) | `MacOSXHooks` sans réflexion ni `com.apple.eawt`, `PicsouMacLookAndFeel` supprimé (+56 −202 lignes) ; 2 139 `.class`, `target/dist` 11 Mo, `budgetview.jar` 4,55 Mo. Tests de `bv_desktop` 1 026 verts, 11 min ; menus vérifiés dans l'appli |

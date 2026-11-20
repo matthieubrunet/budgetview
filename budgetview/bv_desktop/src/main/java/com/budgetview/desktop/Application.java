@@ -11,7 +11,6 @@ import com.budgetview.desktop.model.DesktopModel;
 import com.budgetview.desktop.notifications.NotificationService;
 import com.budgetview.desktop.notifications.standard.StandardMessageNotificationHandler;
 import com.budgetview.desktop.plaf.ApplicationLAF;
-import com.budgetview.desktop.plaf.PicsouMacLookAndFeel;
 import com.budgetview.desktop.printing.PrinterService;
 import com.budgetview.desktop.printing.utils.DefaultPrinterService;
 import com.budgetview.desktop.startup.AppPaths;
@@ -95,7 +94,7 @@ public class Application {
     BasicConfigurator.configure(new NullAppender());
     Logger.getRootLogger().setLevel(Level.FATAL);
     AwtExceptionHandler.registerHandler();
-    PicsouMacLookAndFeel.initApplicationName();
+    MacOSXHooks.initApplicationName();
     Gui.init();
   }
 
