@@ -19,7 +19,7 @@ VERSION=0.8.13
 CLI=$HOME/.m2/repository/org/jacoco/org.jacoco.cli/$VERSION/org.jacoco.cli-$VERSION-nodeps.jar
 [ -f "$CLI" ] || mvn -q dependency:get -Dartifact=org.jacoco:org.jacoco.cli:$VERSION:jar:nodeps
 mkdir -p "$OUT"
-for m in budgetview/bv_desktop budgetview/bv_shared globs saxstack prevayler; do
+for m in budgetview/bv_desktop budgetview/bv_shared globs prevayler; do
   name=$(basename $m)
   java -jar "$CLI" report "$EXEC" --name "$name" \
     --classfiles $m/target/classes --sourcefiles $m/src/main/java \

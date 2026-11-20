@@ -96,10 +96,12 @@ n'utilise sans doute qu'une partie de leurs API.
   Inventaire fait le 2026-11-19 (script [audit/globs.py](audit/globs.py)), voir [2a, inventaire](#2a-inventaire) plus bas.
   Lots A à E faits du 2026-11-19 au 2026-11-20 : `sqlstreams` déplacé dans `bv_server`, 46 classes et ~3 300 lignes de code
   supprimées, tests de `globs` 873 → 787.
-- [ ] **2b. `saxstack`** : ce qu'il apporte par rapport au SAX ou au StAX du JDK. Peut-il être
+- [x] **2b. `saxstack`** : ce qu'il apporte par rapport au SAX ou au StAX du JDK. Peut-il être
   remplacé, ou au moins réduit ?
   Inventaire fait le 2026-11-20 (rapport ProGuard de `usage.sh`), voir [2b, inventaire](#2b-inventaire) plus bas :
-  le remplacer n'apporterait rien, le réduire de moitié, oui. Quatre lots proposés, décision attendue sur le lot D.
+  le remplacer n'apporterait rien, le réduire de moitié, oui.
+  Lots A à D faits le 2026-11-20 : 7 classes supprimées, 13 passées dans les tests de `globs`, Xerces retiré, et ce qui
+  restait (17 classes, 608 lignes) **fondu dans `globs`** : le module `saxstack` n'existe plus.
 - [ ] **2c. `prevayler`** : quelles parties du fork servent ? Ne rien changer au format sur
   disque.
 - [ ] **2d. `splits`** : balises et composants jamais utilisés dans les `.splits`.
@@ -703,6 +705,12 @@ perte, la licence étant la même. Recommandation : le fondre.
 - Lot C (2026-11-20) : `XmlTestUtils` prend son lecteur par `XmlUtils.getXmlReader()` (JDK, avec espaces de noms, comme
   le `SAXParser` de Xerces par défaut) ; `xercesImpl` sort du `pom` de `globs`, et `xercesImpl`, `xml-apis` de la liste
   d'exclusions de `bv_desktop`, que plus rien ne lui amène (`dependency:tree`). Xerces ne reste qu'à `siteweaver`.
+- Lot D (2026-11-20) : les 17 classes restantes passent dans `globs/src/main` et les 2 classes de test dans
+  `globs/src/test`, sous `org.saxstack` (aucun import changé). Le module disparaît : `pom.xml`, `LICENSE.txt` (Apache 2.0,
+  comme `globs`), `www/` et `src/site/` (pages java.net de 2008). Dépendance retirée des `pom` racine, `globs`,
+  `bv_desktop` et `splits` (hors build) ; `coverage.sh` et `usage.sh` n'ont plus de module `saxstack` à lire, ses classes
+  étant dans le jar de `globs`. Les tests venus de `saxstack` tournent désormais avec ceux de `globs`, ce qui règle le
+  constat « jamais lancés ». L'ancien `org/saxstack/2.0` reste dans `~/.m2`, sans plus aucun client (`dependency:tree`).
 
 ## Journal
 
@@ -731,3 +739,4 @@ perte, la licence étant la même. Recommandation : le fondre.
 | 2026-11-20 | 2b, lot A (code mort) | `saxstack` : −7 classes, −450 lignes de code, −919 de tests ; `saxstack-2.0.jar` 41 Ko (−10 Ko). Tests de `saxstack` 26 verts (−18), `globs` 787 verts, `bv_desktop` 1 026 verts, 11 min |
 | 2026-11-20 | 2b, lot B (outils de test) | 13 classes (~810 lignes) et 2 classes de test sorties de `saxstack` vers `globs/src/test` ; `saxstack` 17 classes, 608 lignes ; `saxstack-2.0.jar` 17 Ko (−24 Ko). Tests de `saxstack` 5, `globs` 808 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` déjà connue comme instable (verte relancée seule, deux fois), 13 min |
 | 2026-11-20 | 2b, lot C (Xerces) | `xercesImpl` 2.11 et `xml-apis` retirés des dépendances de `globs` et de `bv_desktop` ; `target/dist` inchangé (11 Mo, 18 jars : ils en étaient déjà exclus). Tests de `globs` 808 verts, `bv_desktop` 1 026 verts, 14 min |
+| 2026-11-20 | 2b, lot D (fusion dans `globs`) | Module `saxstack` supprimé : 17 classes (608 lignes) et 2 classes de test passées dans `globs`, 13 fichiers de site et de `pom` retirés. `globs-1.0.jar` 967 Ko (+15 Ko), `target/dist` 11 Mo, 17 jars (−1). Tests de `globs` 813 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable, verte relancée seule, deux fois), 13 min ; `bv_server` compile. **2b terminé** |

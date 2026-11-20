@@ -21,9 +21,8 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 
 | Module | Rôle | Dans le build ? |
 |---|---|---|
-| `globs/` | GlobsFramework, **version privée et ancienne** du framework de MarcGuiot : modèle de données réactif (`GlobType`, champs statiques annotés `@Key`, `@Target`…), repository, changesets | oui |
+| `globs/` | GlobsFramework, **version privée et ancienne** du framework de MarcGuiot : modèle de données réactif (`GlobType`, champs statiques annotés `@Key`, `@Target`…), repository, changesets. Contient depuis le 2026-11-20 l'ancien module `saxstack` (parseur SAX à pile, écriture XML, paquets `org.saxstack`) | oui |
 | `splits/` | Moteur de mise en page Swing déclaratif (fichiers `.splits` en XML) — son code est dans `globs` | via globs |
-| `saxstack/` | Parsing XML SAX | oui |
 | `prevayler/` | Prevayler (persistance par journal de transactions + snapshots), forké | oui |
 | `siteweaver/` | Générateur du site web statique | oui |
 | `budgetview/bv_shared` | Code commun client/serveur | oui |
@@ -232,7 +231,7 @@ Adaptations des tests faites pour la 6.00 :
   et vérifier la ligne `Tests run:` finale.
 
 Tests de `globs` : `mvn -o clean test -pl globs` (~1 min ; le `pom` fixe JVM par classe, limite de temps et `--add-opens`),
-787 verts au 2026-11-20 (détail dans [docs/etat-des-tests.md](docs/etat-des-tests.md)). `clean` après un changement de signature (le vieux
+813 verts au 2026-11-20, `saxstack` compris (détail dans [docs/etat-des-tests.md](docs/etat-des-tests.md)). `clean` après un changement de signature (le vieux
 compilateur ne recompile pas les tests non touchés) ; `mvn -o install -pl globs -DskipTests` avant de tester bv_desktop,
 qui prend globs dans `~/.m2`.
 

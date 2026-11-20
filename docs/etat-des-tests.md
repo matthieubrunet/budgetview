@@ -107,6 +107,8 @@ pour une éventuelle reprise :
 Instable mais actif : `SignpostSequenceTest.testSwitchingToTheDemoAccountAndBackPreservesSignposts` a échoué
 une fois sur la suite complète (2026-11-16, sous JaCoCo) : `homeCardToggle` introuvable alors qu'il figure dans
 la liste des composants disponibles, juste après le passage au compte de démo. La classe seule passe 3 fois sur 3.
+Le 2026-11-20, même erreur sur 2 des 4 suites complètes de l'audit 2b (sans JaCoCo), au hasard des lots ; la classe
+seule passe 4 fois sur 4. L'échec devient fréquent : à regarder au chantier 5 (attente sur la fenêtre après la bascule).
 
 ## Questions ouvertes (arbitrage métier)
 
@@ -151,6 +153,7 @@ ne recompile que les sources modifiées, et une classe de test non touchée rest
 | Premier tri, sans correction | 874 + 1 classe bloquée | 42 |
 | Après corrections | 873 | **0** |
 | Après l'audit 2a (2026-11-20), tests partis avec le code supprimé ou déplacé dans `bv_server` | 787 | **0** |
+| Après l'audit 2b (2026-11-20) : `saxstack` fondu dans `globs`, avec les 26 tests qui lui restaient après le lot A | 813 | **0** |
 
 bv_desktop relancé en entier avec ces corrections (jar globs installé) : 1 029 tests, une seule erreur, due à l'essai
 sur `GlobTableView` (voir plus bas), abandonné depuis ; la classe en cause repasse.

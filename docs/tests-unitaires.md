@@ -47,7 +47,7 @@ Limites à garder en tête avant d'en tirer une conclusion générale :
   lecture ont été essayés.
 - **Non regardés** : les triggers (56 classes, 5 tests unitaires — budgets, soldes, opérations
   prévues), le reste de l'import (OFX, JSON, `ImportSession`, `TransactionFilter` pour les doublons,
-  analyseurs de libellés), la persistance, l'IHM, et les modules `globs`, `saxstack`, `prevayler`.
+  analyseurs de libellés), la persistance, l'IHM, et les modules `globs` (où `saxstack` a été fondu), `prevayler`.
 
 Chiffres de cadrage : une quarantaine de classes de tests unitaires (hors `functests`), environ
 5 400 lignes ; `bv_shared` n'a pas de dossier de tests.

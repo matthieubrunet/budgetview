@@ -25,7 +25,7 @@ CP=$(find "$M2/com/guardsquare/proguard-base/$PG" "$M2/com/guardsquare/proguard-
   echo "-injars $DIST/budgetview.jar(!META-INF/**)"
   for l in "$DIST"/lib/*.jar; do
     case $(basename "$l") in
-      bv_shared-*|globs-*|saxstack-*|prevayler-*) echo "-injars $l(!META-INF/**)" ;;
+      bv_shared-*|globs-*|prevayler-*) echo "-injars $l(!META-INF/**)" ;;
       *) echo "-libraryjars $l" ;;
     esac
   done

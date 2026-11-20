@@ -27,7 +27,7 @@ redistribuer l'application ni ajouter de licence de sa propre initiative.
   SARL) », section README). Elle part de la branche `licence-apache-2.0` du fork, créée sur
   `upstream/master` (remote `upstream`) pour ne contenir que ces trois fichiers.
 
-Pourquoi Apache 2.0 : c'est déjà la licence de `globs`, `splits`, `saxstack` et de
+Pourquoi Apache 2.0 : c'est déjà la licence de `globs` (qui contient l'ancien `saxstack`), `splits` et de
 [globsframework](https://github.com/globsframework/globsframework). Elle est permissive, compatible
 avec les dépendances, et protège les auteurs (copyright conservé, aucune garantie).
 
@@ -35,7 +35,7 @@ avec les dépendances, et protège les auteurs (copyright conservé, aucune gara
 
 | Dossier | Licence |
 |---|---|
-| `globs/`, `splits/`, `saxstack/` | Apache 2.0 |
+| `globs/` (dont `org.saxstack`, fondu le 2026-11-20 depuis le module `saxstack/`, sous la même licence), `splits/` | Apache 2.0 |
 | `prevayler/` | BSD (Klaus Wuestefeld) ; `contrib/transactionsFacade` BSD (Jay Sachs) |
 | `uispec4j/` | Common Public License 1.0, tests seulement |
 | bibliothèques embarquées | liste dans `bv_desktop/src/main/resources/docs/licenses.html` |

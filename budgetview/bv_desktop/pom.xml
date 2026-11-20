@@ -135,11 +135,6 @@
       <version>1.4.1</version>
     </dependency>
     <dependency>
-      <groupId>org</groupId>
-      <artifactId>saxstack</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.globsframework</groupId>
       <artifactId>globs</artifactId>
       <version>1.0</version>
@@ -197,7 +192,7 @@
     </profile>
     <!-- Couverture de la suite (audit 1c, docs/audit-code.md) : mvn -Pcoverage test -pl budgetview/bv_desktop
          → target/jacoco.exec, que docs/audit/coverage.sh transforme en rapport. Les classes de bv_shared,
-         globs, saxstack et prevayler sont mesurées aussi. -->
+         globs (dont saxstack) et prevayler sont mesurées aussi. -->
     <profile>
       <id>coverage</id>
       <build>

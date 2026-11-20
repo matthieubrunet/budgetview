@@ -9,7 +9,6 @@
     <module>globs</module>
     <module>budgetview</module>
 <!--    <module>uispec4j</module>-->
-    <module>saxstack</module>
     <module>prevayler</module>
     <module>siteweaver</module>
   </modules>
