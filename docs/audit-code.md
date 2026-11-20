@@ -109,6 +109,8 @@ n'utilise sans doute qu'une partie de leurs API.
   restait (17 classes, 608 lignes) **fondu dans `globs`** : le module `saxstack` n'existe plus.
 - [ ] **2c. `prevayler`** : quelles parties du fork servent ? Ne rien changer au format sur
   disque.
+  Inventaire fait le 2026-11-20 (ProGuard, JaCoCo, lecture de la configuration), voir [2c, inventaire](#2c-inventaire)
+  plus bas : environ la moitié du code est morte, dont une bonne part par configuration, que ProGuard ne voit pas.
 - [ ] **2d. `splits`** : balises et composants jamais utilisés dans les `.splits`.
 
 ## Étape 3 : ce que Java fait maintenant tout seul
@@ -717,6 +719,93 @@ perte, la licence étant la même. Recommandation : le fondre.
   étant dans le jar de `globs`. Les tests venus de `saxstack` tournent désormais avec ceux de `globs`, ce qui règle le
   constat « jamais lancés ». L'ancien `org/saxstack/2.0` reste dans `~/.m2`, sans plus aucun client (`dependency:tree`).
 
+## 2c, inventaire
+
+Fait le 2026-11-20, sans rien modifier.
+
+**Méthode.** Le rapport ProGuard de `docs/audit/usage.sh`, la couverture JaCoCo de la suite `bv_desktop` (1 026 tests
+verts, 12 min), puis la lecture de `PrevaylerFactory` avec les réglages que fait l'application : ProGuard ne voit pas le
+code qui n'est atteint que par un réglage jamais fait.
+
+`prevayler` compte 103 fichiers dans `src/main` (5 671 lignes, 3 579 hors commentaires et lignes vides) et 44 dans
+`src/test` (3 905 lignes). `prevayler-1.0.jar` : 204 Ko, 144 entrées. Sur 447 fichiers suivis par git, les 300 autres
+sont des annexes (plus bas). Licence BSD (Klaus Wuestefeld), texte dans `root/docs/License.txt`.
+
+**Ce que l'application en utilise.** Seul `bv_desktop` s'en sert (16 fichiers ; ni `bv_shared`, ni `bv_server`, ni
+`globs`), à deux niveaux :
+- le moteur complet pour la liste des utilisateurs, `<data>/users`, par `PRootDataManager` : `PrevaylerFactory` avec
+  son propre sérialiseur (`DefaultSerializer`), filtrage des transactions coupé, ni réplication ni moniteur réglés ;
+- pour les données de chaque utilisateur, rien que le nommage des fichiers (`PrevaylerDirectory` : `N.snapshot`,
+  `N.journal`). Lecture et écriture sont faites par `bv_desktop` (`DirectAccountDataManager`, son propre
+  `DurableOutputStream`).
+
+**Format sur disque.** Le journal de `users/` est une suite de blocs `Chunking` (en-têtes texte `systemVersion`,
+`executionTime`, `withQuery`) dont le contenu est produit par `DefaultSerializer`. Les classes de Prevayler n'y sont pas
+sérialisées (`Capsule.toChunk` n'écrit que ses octets) : les retirer ne change pas le format. À ne pas toucher :
+`Chunk`, `Chunking`, `DurableInputStream`/`DurableOutputStream`, `PersistentJournal`, `GenericSnapshotManager`,
+`TransactionTimestamp`, les capsules, `PrevaylerDirectory`.
+
+**Morts selon ProGuard** (32 classes entières) : tout `foundation/network` sauf ce que tient la réplication (20 classes),
+`foundation/gzip` (4), `Log4jMonitor`, `NullMonitor`, `FileLocker`, `AlreadyLockedException`, `SkaringaException`,
+`TransactionNotDeserializableError`, `SureTransactionWithQuery`, et une cinquantaine de membres : les fabriques
+statiques `createPrevayler`, `createTransientPrevayler`, `createCheckpointPrevayler`, les `configure*` jamais appelés
+(moniteur, horloge, réplication, seuils du journal, réseau, sérialiseurs Java), les constructeurs `(Throwable)` des
+exceptions, `Cool.sleep`, `DeepCopier.deepCopy`.
+
+**Morts par configuration**, confirmés à 0 % par JaCoCo :
+
+| Partie | Pourquoi elle ne sert pas | Classes | Lignes |
+|---|---|---|---|
+| Réplication : `ClientPublisher`, `ServerConnection`, `ServerListener`, `POBox`, et ce qui reste de `network` (`OldNetwork`, `OldNetworkImpl`, `ObjectSocket`, `ObjectSocketImpl`, `ObjectServerSocket`, `ObjectServerSocketImpl`) | aucun `configureReplicationClient` ni `configureReplicationServer` | 10 | ~330 |
+| Censeur strict : `StrictTransactionCensor`, `FoodTasterException`, `DeepCopier`, `DeepCopyFailedException`, `PrevalentSystemGuard.deepCopy` et `DeepCopyAction` | `configureTransactionFiltering(false)` ; la copie profonde ne sert qu'au censeur | 4 + membres | ~180 |
+| Verrou `RWLock` et ses branches (`PrevalentSystemGuard`, `Capsule.Execute`, trois `Action`) | activé par la propriété `USE_RWLOCK`, que seul l'ancien `build.xml` (Ant) pose | 1 + 4 internes | ~200 |
+| Journal en mémoire : `TransientJournal`, `configureTransientMode` | en mode mémoire, `SessionDirectory` prend `InMemoryRootDataManager` : `PRootDataManager` reçoit toujours `inMemory = false` | 1 | ~50 |
+
+Au total, environ 1 700 des 3 579 lignes de code sont mortes. JaCoCo compte 65 classes sur 99 à 0 % (940 lignes) ; les
+exceptions de la partie vivante (`PrevaylerIOException`, `ChunkHeaderCorruptedException`…) y figurent parce que la
+suite ne provoque pas d'erreur d'écriture : elles restent.
+
+**Tests du module.** Ils n'avaient **jamais tourné** : surefire 3.6 refuse JUnit 3.8.1 (« not supported anymore »).
+Lancés à la main (`JUnitCore` de JUnit 4.12, classes compilées par `mvn test-compile`) : 63 tests, 2,5 s, un échec,
+`MultiMemberGZIPTest` (depuis Java 16, le JDK écrit 255 au lieu de 0 dans l'octet « système » de l'en-tête gzip ; les
+classes gzip sont mortes). `MainTest` et `FileIOTest` n'ont aucun test, `NetworkSuite` regroupe des tests déjà comptés.
+Beaucoup de tests passent par `createTransientPrevayler` et le journal en mémoire : à lire avant de retirer celui-ci.
+
+**Annexes** (~300 fichiers, ~2,7 Mo), dont rien n'est construit par Maven : builds Ant et Maven 1 (`build.xml`,
+`maven.xml`, `project.xml`, `project.properties`, `*.incl`, `ant2html.xsl`, `continuous-integration.sh`, `sample.*`,
+`log4j.xml`), notes de 2005 (`TODO`, `changelog-2.1.txt`, `ReleaseFileDescription.txt`), restes CVS et d'éditeur
+(`.cvsignore`, `.init`, `.swp`), `contrib/` (121 fichiers : cluster, socketServer, facade…), `src/demo` (58),
+`src/tutorial` (8), `xdocs/`, `dependencies/` (javadoc et `ant-contrib`), `root/lib` (14 jars et leurs licences, dont
+`junit-3.8.1`, `log4j-1.2.13`, `xstream`). À garder : `root/docs/License.txt`, à remonter en `prevayler/LICENSE.txt`.
+
+**Constats en marge.**
+- `log4j` n'est dépendance de `prevayler` que pour `Log4jMonitor`, mort ; le jar reste dans `target/dist`, `globs`
+  l'amène aussi et `bv_desktop`, `bv_shared` s'en servent.
+- Le `pom` garde un bloc `<scm>` vide et l'adresse du site de 2005.
+- `bv_desktop` a recopié `DurableOutputStream` dans `persistence/direct` : deux classes de même nom, l'une de
+  Prevayler (pour `users/`), l'autre pour les données des comptes.
+- `Stack`, `Vector`, `StringBuffer`, `Date` dans le code vivant : pour 3e et 3f.
+
+**Lots proposés.**
+
+| Lot | Contenu | Classes, lignes | Tests |
+|---|---|---|---|
+| 0. Faire tourner les tests | JUnit 3.8.1 → 4.12 dans le `pom` (comme `globs`) ; `MultiMemberGZIPTest` renommé `disabled_…` en attendant le lot B ; `log4j` reste jusqu'au lot B | — | `mvn test -pl prevayler` vert |
+| A. Annexes | Les ~300 fichiers ci-dessus ; `License.txt` → `LICENSE.txt` | ~300 fichiers, ~2,7 Mo | aucun |
+| B. Mort selon ProGuard | Les 32 classes et les membres morts ; la dépendance `log4j` sort du `pom` | 32 + membres, ~1 000 | tests de `network` (14 fichiers), `MultiMemberGZIPTest`, à lire |
+| C. Mort par configuration | Réplication, censeur strict, `RWLock` ; l'appel `configureTransactionFiltering(false)` de `PRootDataManager` disparaît avec le réglage, le censeur libéral devenant le seul | 15 + membres, ~700 | `ReplicationTest`, `ConfusedFoodTasterStressTest`, `DeadKingDeepCopyTest`, `DeepCopierTest`, `RollbackTest`, à lire |
+| D. Journal en mémoire (à décider) | `TransientJournal` et `configureTransientMode` : morts pour l'application, mais support de nombreux tests du module | 1, ~50 | tests en mode mémoire à basculer sur un dossier temporaire |
+
+Chaque lot se vérifie aussi sur une copie d'un vrai dossier de données (`users/` de la 5.01) : connexion, création et
+suppression d'un utilisateur, relance.
+
+**Décisions à prendre.**
+- **Lot D** : le garder coûte 50 lignes ; le retirer oblige à réécrire les tests du module sur disque. Recommandation :
+  le garder.
+- **Fondre `prevayler` dans `bv_desktop`**, comme `saxstack` dans `globs` ? Après B et C, il resterait ~40 classes et
+  ~1 900 lignes, dont un seul client. Mais la licence est la BSD, pas l'Apache 2.0 de `globs` et (si la PR #2 est
+  acceptée) de l'application : la fusion mélangerait deux licences dans un module. Recommandation : garder le module.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -745,3 +834,4 @@ perte, la licence étant la même. Recommandation : le fondre.
 | 2026-11-20 | 2b, lot B (outils de test) | 13 classes (~810 lignes) et 2 classes de test sorties de `saxstack` vers `globs/src/test` ; `saxstack` 17 classes, 608 lignes ; `saxstack-2.0.jar` 17 Ko (−24 Ko). Tests de `saxstack` 5, `globs` 808 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` déjà connue comme instable (verte relancée seule, deux fois), 13 min |
 | 2026-11-20 | 2b, lot C (Xerces) | `xercesImpl` 2.11 et `xml-apis` retirés des dépendances de `globs` et de `bv_desktop` ; `target/dist` inchangé (11 Mo, 18 jars : ils en étaient déjà exclus). Tests de `globs` 808 verts, `bv_desktop` 1 026 verts, 14 min |
 | 2026-11-20 | 2b, lot D (fusion dans `globs`) | Module `saxstack` supprimé : 17 classes (608 lignes) et 2 classes de test passées dans `globs`, 13 fichiers de site et de `pom` retirés. `globs-1.0.jar` 967 Ko (+15 Ko), `target/dist` 11 Mo, 17 jars (−1). Tests de `globs` 813 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable, verte relancée seule, deux fois), 13 min ; `bv_server` compile. **2b terminé** |
+| 2026-11-20 | 2c, inventaire | Rien de modifié. `prevayler` : 103 classes, 3 579 lignes de code, `prevayler-1.0.jar` 204 Ko ; ~1 700 lignes mortes, dont 32 classes selon ProGuard et ~15 par configuration (réplication, censeur strict, `RWLock`), confirmées à 0 % par JaCoCo (65 classes sur 99) ; ~300 fichiers annexes (~2,7 Mo). Tests du module jamais lancés (JUnit 3.8.1 refusé par surefire) : 63 à la main, 1 échec (gzip, mort). Format sur disque non concerné. `bv_desktop` sous JaCoCo : 1 026 verts, 12 min. Cinq lots proposés (0, A à D) |
