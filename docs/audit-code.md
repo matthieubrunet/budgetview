@@ -120,6 +120,8 @@ n'utilise sans doute qu'une partie de leurs API.
   Lots 0 à C faits le 2026-11-20 : tests du module remis en marche, 299 fichiers annexes et 47 classes supprimés ;
   `prevayler` 56 classes, 1 686 lignes de code, jar 121 → 60 Ko. Lot D (journal en mémoire) gardé, fusion écartée.
 - [ ] **2d. `splits`** : balises et composants jamais utilisés dans les `.splits`.
+  Inventaire fait le 2026-11-20, voir [2d, inventaire](#2d-inventaire) plus bas : peu de chose à retirer (~350 lignes
+  sur 7 800), le gros du tri ayant été fait par 2a ; s'y ajoutent la coquille du dossier `splits/` et 9 démos.
 
 ## Étape 3 : ce que Java fait maintenant tout seul
 
@@ -845,6 +847,68 @@ suppression d'un utilisateur, relance.
   5.01 relues, `users/` inchangé.
 - Restent en suspens : le lot D (journal en mémoire, gardé) et la fusion dans `bv_desktop` (écartée pour la licence).
 
+## 2d, inventaire
+
+Fait le 2026-11-20, sans rien modifier.
+
+**Méthode.** ProGuard ne voit pas ce que `splits` interprète par nom : balises (`DefaultSplitterFactory`), attributs lus
+explicitement (`getExcludedParameters`, `DEFAULT_EXCLUDES`, `properties.get…("…")`), formes des bordures
+(`BorderParser`) et des icônes (`IconParser`). Chaque nom est cherché dans les 122 fichiers `.splits` (121 de
+`bv_desktop`, 1 de `bv_analytics`), dans les fichiers de thème (`themes/*.properties`, d'où viennent les valeurs `${…}`)
+et dans les chaînes Java de l'application. Le reste de l'API, appelé depuis Java, a été trié en 2a ; le rapport
+ProGuard du jour n'y montre que les restes déjà examinés alors (accesseurs servant aux tests).
+
+Le moteur est dans `globs`, sous `org.globsframework.gui.splits` : 138 classes, 7 790 lignes de code, 41 fichiers de
+test. Tests de `globs` : 813 verts, 49 s.
+
+**Le dossier `splits/`** n'est plus qu'une coquille : `pom.xml` (hors réacteur, et dépendant de `saxstack`, supprimé en
+2b), `build.xml` (Ant), `LICENSE.txt` (Apache 2.0, comme `globs`) et deux pages de site (`www/`). Rien ne s'y construit.
+
+**Balises jamais écrites** (34 balises connues, 29 utilisées) :
+
+| Balise | Classe | Lignes | Tests qui s'en servent |
+|---|---|---|---|
+| `borderLayout` | `BorderLayoutComponent` | 58 | `SplitsComponentsTest` (3), `SplitsBuilderTest` (1, comme conteneur) |
+| `footer` | `Footer`, et sa branche dans `RepeatSplitter` | 45 | `SplitsRepeatTest` (3) |
+| `frame` | `FrameComponent` | 26 | `SplitsComponentsTest` (2), et comme racine dans `SplitsBuilderTest` (2, dont `testSizes`) et `SplitsLayoutTest` (1) ; démos |
+| `editorPane` | (`JEditorPane` générique) | 3 | `SplitsComponentsTest` (1) |
+| `progressBar` | (`JProgressBar` générique) | 3 | `SplitsComponentsTest` (1) |
+
+`header`, sa jumelle, sert une fois : elle reste.
+
+**Formes et attributs jamais écrits** :
+- bordures `bevel(lowered)` et `bevel(raised)` (`BorderParserTest`, 1 test) ;
+- icônes `circledArrow(…)`, `rect(…)`, `roundedRect(…)`, avec `CircledArrowIcon`, `RectIcon`, `RoundedRectIcon`
+  (132 lignes), que seuls `IconParser`, `IconParserTest` (5 tests) et une démo citent ;
+- attributs `horizontalUnitIncrement` (`ScrollPaneComponent`) et `useImageLocator` (`HtmlEditorPane`) : 2 sur 36
+  attributs explicites. Les 120 autres attributs des `.splits` vont aux accesseurs Swing par réflexion
+  (`PropertySetter`) : rien à retirer côté code.
+
+**Démos** rangées dans `globs/src/test`, jamais lancées par la suite (des `main`) : `SplitsDemo`, `SplitsRepeatDemo`,
+`ColorServiceEditorDemo`, `FontDemo`, `RoundedRectIconDemo`, `JStyledPanelDemo`, `ArrowButtonIconDemo`,
+`ArrowIconDemo`, `DownloadIconDemo` (297 lignes), et `resources/demo/` (`login.xml`, `editor.xml`, lus par `SplitsDemo`).
+1d avait déjà supprimé une démo de ce genre (`JRoundedPanelTest`).
+
+**Lots proposés.**
+
+| Lot | Contenu | Taille | Tests |
+|---|---|---|---|
+| A. Fichiers morts | Le dossier `splits/` (5 fichiers ; sa ligne disparaît de `CLAUDE.md` et de [licence.md](licence.md)) et les 9 démos avec `resources/demo/` | 5 fichiers, 9 classes, ~330 lignes | aucun |
+| B. Balises | `borderLayout`, `footer`, `frame`, `editorPane`, `progressBar` sortent de `DefaultSplitterFactory`, avec leurs 3 classes et la branche `Footer` de `RepeatSplitter` | 3 classes, ~140 lignes | les tests de ces balises partent ; ceux qui prennent `frame` ou `borderLayout` comme simple conteneur passent sur `panel` |
+| C. Formes et attributs | Les deux `bevel`, les trois icônes et leurs classes, les deux attributs | 3 classes, ~170 lignes | 6 tests de `IconParserTest` et `BorderParserTest` partent |
+
+Chaque lot se vérifie par les tests de `globs` et la suite `bv_desktop` ; une balise ou une forme absente de tous les
+`.splits` et des thèmes ne peut pas casser le chargement d'un écran, mais un coup d'œil à l'appli (`./run-dev.sh`)
+reste de règle pour B et C.
+
+**Décision à prendre : `frame`.** Elle ne sert pas à l'application, qui construit ses fenêtres en Java, mais trois tests
+de `globs` l'utilisent comme racine (dont `testSizes`, qui vérifie les attributs de taille). Recommandation : la retirer
+avec les autres et réécrire ces tests sur `panel`, qui a les mêmes attributs de taille.
+
+**Décision de Matthieu (2026-11-20)** : faire les lots A à C, `frame` compris.
+
+**Réalisation**, un commit par lot :
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -878,3 +942,4 @@ suppression d'un utilisateur, relance.
 | 2026-11-20 | 2c, lot A (annexes) | 299 fichiers hors build supprimés (2,9 Mo : builds Ant et Maven 1, `contrib/`, démos, jars et javadoc embarqués) ; licence BSD gardée en `LICENSE.txt`. `prevayler-1.0.jar` inchangé (121 Ko), tests de `prevayler` 62 verts |
 | 2026-11-20 | 2c, lot B (mort selon ProGuard) | `prevayler` : −32 classes, ~50 membres, −1 761 lignes de code, −1 926 de tests ; 71 classes, 2 508 lignes de code ; `prevayler-1.0.jar` 90 Ko (−31 Ko), `target/dist` 11 Mo ; `log4j` retiré du `pom`. Tests de `prevayler` 34 verts (−28, partis avec leur code), `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues |
 | 2026-11-20 | 2c, lot C (mort par configuration) | `prevayler` : −15 classes (réplication, censeur strict, `RWLock`), −1 223 lignes de code, −662 de tests ; 56 classes, 1 686 lignes de code ; `prevayler-1.0.jar` 60 Ko (−30 Ko), `target/dist` 11 Mo. Tests de `prevayler` 26 verts (−8), `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues. **2c terminé** (lot D gardé) |
+| 2026-11-20 | 2d, inventaire | Rien de modifié. `splits` (dans `globs`) : 138 classes, 7 790 lignes de code ; 5 balises sur 34 jamais écrites, 2 bordures, 3 icônes et 2 attributs explicites sur 36 jamais utilisés (~310 lignes, 6 classes) ; dossier `splits/` réduit à une coquille (5 fichiers) ; 9 démos (297 lignes) dans les tests de `globs`. Tests de `globs` 813 verts, 49 s. Trois lots proposés (A à C), décision attendue sur `frame` |
