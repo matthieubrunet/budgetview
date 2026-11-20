@@ -33,7 +33,6 @@ public class PRootDataManager implements RootDataManager {
 
     pathToPrevaylerDirectory = getPathToPrevayler(path);
     prevaylerFactory.configurePrevalenceDirectory(pathToPrevaylerDirectory);
-    prevaylerFactory.configureTransactionFiltering(false);
     Serializer serializer = new DefaultSerializer(initSerializerPolicy());
     prevaylerFactory.configureJournalSerializer("journal", serializer);
     prevaylerFactory.configureSnapshotSerializer("snapshot", serializer);

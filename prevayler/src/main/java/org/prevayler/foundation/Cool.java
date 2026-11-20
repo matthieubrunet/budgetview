@@ -13,13 +13,6 @@ public class Cool {
 		}
 	}
 
-	public static void sleep(long milliseconds) {
-		try {
-			Thread.sleep(milliseconds);
-		} catch (InterruptedException e) {
-			unexpected(e);
-		}
-	}
 
     public static void unexpected(Exception e) {
         throw new UnexpectedException("Unexpected Exception was thrown.", e);

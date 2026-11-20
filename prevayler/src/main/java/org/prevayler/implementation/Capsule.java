@@ -1,6 +1,5 @@
 package org.prevayler.implementation;
 
-import org.prevayler.RWLock;
 import org.prevayler.foundation.Chunk;
 import org.prevayler.foundation.serialization.Serializer;
 
@@ -8,7 +7,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.Date;
-//import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class Capsule implements Serializable {
 
@@ -60,39 +58,6 @@ public abstract class Capsule implements Serializable {
   }
 
   /**
-   * Execute a freshly deserialized copy of the transaction. This method will synchronize on the prevalentSystem
-   * while running the transaction but after deserializing it.
-   */
-  public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer, RWLock rwLock) {
-    Object transaction = deserialize(journalSerializer);
-
-    try {
-      rwLock.excecuteWrite(new Execute(this, transaction, prevalentSystem, executionTime));
-    } catch (RuntimeException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new TransactionNotSerializableError("Unexpected Exception thrown.", e);
-    }
-  }
-
-//  public void executeOn(Object prevalentSystem, Date executionTime, Serializer journalSerializer,
-//                        ReentrantReadWriteLock reentrantReadWriteLock) {
-//    Object transaction = deserialize(journalSerializer);
-//
-//    try {
-//      reentrantReadWriteLock.writeLock().lock();
-//      justExecute(transaction, prevalentSystem, executionTime);
-//    } catch (RuntimeException e) {
-//      throw e;
-//    } catch (Exception e) {
-//      throw new RuntimeException("Unexpected Exception thrown.", e);
-//    } finally {
-//      reentrantReadWriteLock.writeLock().unlock();
-//    }
-//  }
-
-
-  /**
    * Actually execute the Transaction or TransactionWithQuery. The caller
    * is responsible for synchronizing on the prevalentSystem.
    */
@@ -115,25 +80,6 @@ public abstract class Capsule implements Serializable {
       return new TransactionWithQueryCapsule(chunk.getBytes());
     } else {
       return new TransactionCapsule(chunk.getBytes());
-    }
-  }
-
-  static private final class Execute implements RWLock.Action {
-    private Capsule _capsule;
-    private Object _transaction;
-    private Object _prevalentSystem;
-    private Date _executionTime;
-
-    public Execute(Capsule capsule, Object transaction, Object prevalentSystem, Date executionTime) {
-      _capsule = capsule;
-      _transaction = transaction;
-      _prevalentSystem = prevalentSystem;
-      _executionTime = executionTime;
-    }
-
-    final public Object run() throws Exception {
-      _capsule.justExecute(_transaction, _prevalentSystem, _executionTime);
-      return null;
     }
   }
 }

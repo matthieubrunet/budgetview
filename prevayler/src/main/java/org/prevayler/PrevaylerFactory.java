@@ -6,8 +6,6 @@
 package org.prevayler;
 
 import org.prevayler.foundation.monitor.SimpleMonitor;
-import org.prevayler.foundation.network.OldNetwork;
-import org.prevayler.foundation.network.OldNetworkImpl;
 import org.prevayler.foundation.serialization.JavaSerializer;
 import org.prevayler.foundation.serialization.Serializer;
 //import org.prevayler.foundation.serialization.SkaringaSerializer;
@@ -21,10 +19,6 @@ import org.prevayler.implementation.journal.TransientJournal;
 import org.prevayler.implementation.publishing.CentralPublisher;
 import org.prevayler.implementation.publishing.TransactionPublisher;
 import org.prevayler.implementation.publishing.censorship.LiberalTransactionCensor;
-import org.prevayler.implementation.publishing.censorship.StrictTransactionCensor;
-import org.prevayler.implementation.publishing.censorship.TransactionCensor;
-import org.prevayler.implementation.replication.ClientPublisher;
-import org.prevayler.implementation.replication.ServerListener;
 import org.prevayler.implementation.snapshot.GenericSnapshotManager;
 
 import java.io.IOException;
@@ -35,7 +29,6 @@ import java.util.Map;
 
 /** Provides easy access to all Prevayler configurations and implementations available in this distribution.
  * <br>By default, the Prevayler instances created by this class will write their Transactions to .journal files before executing them. The FileDescriptor.sync() method is called to make sure the Java file write-buffers have been written to the operating system. Many operating systems, including most recent versions of Linux and Windows, allow the hard-drive's write-cache to be disabled. This guarantees no executed Transaction will be lost in the event of a power shortage, for example.
- * <br>Also by default, the Prevayler instances created by this class will filter out all Transactions that would throw a RuntimeException or Error if executed on the Prevalent System. This requires enough RAM to hold another copy of the prevalent system. 
  * @see Prevayler 
  */
 public class PrevaylerFactory {
@@ -43,16 +36,8 @@ public class PrevaylerFactory {
 	private Object _prevalentSystem;
 	private Clock _clock;
 
-	private boolean _transactionFiltering = true;
-
 	private boolean _transientMode;
 	private String _prevalenceDirectory;
-
-	private OldNetwork _network;
-	private int _serverPort = -1;
-	private String _remoteServerIpAddress;
-	private int _remoteServerPort;
-	public static final int DEFAULT_REPLICATION_PORT = 8756;
 
 	private Serializer _journalSerializer;
 	private String _journalSuffix;
@@ -66,7 +51,8 @@ public class PrevaylerFactory {
 	}
 
 
-	/** Configures the Clock that will be used by the created Prevayler. The Clock interface can be implemented by the application if it requires Prevayler to use a special time source other than the machine clock (default).
+	/** Configures the Clock that will be used by the created Prevayler (default: the machine clock). Used by tests
+	 * that need fixed execution times.
 	 */
 	public void configureClock(Clock clock) {
 		_clock = clock;
@@ -90,28 +76,6 @@ public class PrevaylerFactory {
 	}
 
 
-	/** Reserved for future implementation.
-	 */
-	public void configureReplicationClient(String remoteServerIpAddress, int remoteServerPort) {
-		_remoteServerIpAddress = remoteServerIpAddress;
-		_remoteServerPort = remoteServerPort;
-	}
-
-
-	/** Reserved for future implementation.
-	 */
-	public void configureReplicationServer(int port) {
-		_serverPort = port;
-	}
-
-
-	/** Determines whether the Prevayler created by this factory should filter out all Transactions that would throw a RuntimeException or Error if executed on the Prevalent System (default is true). This requires enough RAM to hold another copy of the prevalent system.
-	 */
-	public void configureTransactionFiltering(boolean transactionFiltering) {
-		_transactionFiltering = transactionFiltering;
-	}
-
-
 	/**
 	 * Configures the transaction journal Serializer to be used by the Prevayler created by this factory. Only one Serializer is supported at a time. If you want to change the Serializer of a system in production, you will have to take a snapshot first because the journal files written by the previous Serializer will not be read. 
 	 */
@@ -127,15 +91,11 @@ public class PrevaylerFactory {
 	}
 
 
-	public void configureNetwork(OldNetwork network) {
-		_network = network;
-	}
-
 	/**
 	 * Configure a serialization strategy for snapshots. This may be called any number of times with
 	 * different suffixes to configure different strategies for reading existing snapshots. The first
 	 * call to this method establishes the <i>primary</i> strategy, which will be used for writing
-	 * snapshots as well as for deep-copying the prevalent system whenever necessary.
+	 * snapshots.
 	 */
 	public void configureSnapshotSerializer(String suffix, Serializer serializer) {
 		PrevaylerDirectory.checkValidSnapshotSuffix(suffix);
@@ -152,8 +112,7 @@ public class PrevaylerFactory {
 	 */
 	public Prevayler create() throws IOException, ClassNotFoundException {
 		GenericSnapshotManager snapshotManager = snapshotManager();
-		TransactionPublisher publisher = publisher(snapshotManager);
-		if (_serverPort != -1) new ServerListener(publisher, network(), _serverPort);
+		TransactionPublisher publisher = publisher();
 		return new PrevaylerImpl(snapshotManager, publisher, journalSerializer());
 	}
 
@@ -169,16 +128,8 @@ public class PrevaylerFactory {
 	}
 
 
-	private TransactionPublisher publisher(GenericSnapshotManager snapshotManager) throws IOException {
-		if (_remoteServerIpAddress != null) return new ClientPublisher(network(), _remoteServerIpAddress, _remoteServerPort);
-		return new CentralPublisher(_clock != null ? _clock : new MachineClock(), censor(snapshotManager), journal()); 
-	}
-
-
-	private TransactionCensor censor(GenericSnapshotManager snapshotManager) {
-		return _transactionFiltering
-			? (TransactionCensor) new StrictTransactionCensor(snapshotManager)
-			: new LiberalTransactionCensor(); 
+	private TransactionPublisher publisher() throws IOException {
+		return new CentralPublisher(_clock != null ? _clock : new MachineClock(), new LiberalTransactionCensor(), journal());
 	}
 
 
@@ -199,10 +150,6 @@ public class PrevaylerFactory {
 
 	private String journalSuffix() {
 		return _journalSuffix != null ? _journalSuffix : "journal";
-	}
-
-	private OldNetwork network() {
-		return _network != null ? _network : new OldNetworkImpl();
 	}
 
 	private GenericSnapshotManager snapshotManager() throws ClassNotFoundException, IOException {

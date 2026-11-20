@@ -107,10 +107,12 @@ n'utilise sans doute qu'une partie de leurs API.
   le remplacer n'apporterait rien, le réduire de moitié, oui.
   Lots A à D faits le 2026-11-20 : 7 classes supprimées, 13 passées dans les tests de `globs`, Xerces retiré, et ce qui
   restait (17 classes, 608 lignes) **fondu dans `globs`** : le module `saxstack` n'existe plus.
-- [ ] **2c. `prevayler`** : quelles parties du fork servent ? Ne rien changer au format sur
+- [x] **2c. `prevayler`** : quelles parties du fork servent ? Ne rien changer au format sur
   disque.
   Inventaire fait le 2026-11-20 (ProGuard, JaCoCo, lecture de la configuration), voir [2c, inventaire](#2c-inventaire)
   plus bas : environ la moitié du code est morte, dont une bonne part par configuration, que ProGuard ne voit pas.
+  Lots 0 à C faits le 2026-11-20 : tests du module remis en marche, 299 fichiers annexes et 47 classes supprimés ;
+  `prevayler` 56 classes, 1 686 lignes de code, jar 121 → 60 Ko. Lot D (journal en mémoire) gardé, fusion écartée.
 - [ ] **2d. `splits`** : balises et composants jamais utilisés dans les `.splits`.
 
 ## Étape 3 : ce que Java fait maintenant tout seul
@@ -826,6 +828,16 @@ suppression d'un utilisateur, relance.
   `JournalFileRollingTest` (découpage du journal par taille, jamais réglé) et le refus de snapshot du mode transitoire.
   Tests de `prevayler` 62 → 34. Copie de la sauvegarde 5.01 ouverte par `Dump` (`PRootDataManager`) : utilisateur relu,
   `users/` inchangé.
+- Lot C (2026-11-20) : réplication (`replication/`, `POBox`, les 6 dernières classes de `network`), censeur strict
+  (`StrictTransactionCensor`, `FoodTasterException`, `DeepCopier`, `DeepCopyFailedException`, `PrevalentSystemGuard.deepCopy`)
+  et `RWLock` (avec ses branches dans `PrevalentSystemGuard` et `Capsule`) supprimés : 15 classes, −1 223 lignes. Le
+  censeur libéral est désormais le seul ; l'appel `configureTransactionFiltering(false)` de `PRootDataManager` disparaît
+  avec le réglage, sans changer le comportement de l'application. `Cool.sleep` part avec ses derniers clients (tests).
+  Tests partis avec leur code : `ReplicationTest`, `ConfusedFoodTasterStressTest`, `DeadKingDeepCopyTest`,
+  `DeepCopierTest`, `RollbackTest` (le retour arrière d'une transaction en échec est l'œuvre du censeur strict), et les
+  bouchons réseau. Reste **56 classes, 1 686 lignes de code** (3 579 au départ). Tests de `prevayler` 34 → 26. Données
+  5.01 relues, `users/` inchangé.
+- Restent en suspens : le lot D (journal en mémoire, gardé) et la fusion dans `bv_desktop` (écartée pour la licence).
 
 ## Journal
 
@@ -859,3 +871,4 @@ suppression d'un utilisateur, relance.
 | 2026-11-20 | 2c, lot 0 (tests du module) | JUnit 4.12, surefire 3.0.0 : tests de `prevayler` lancés par Maven pour la première fois, 62 verts (1 désactivé, gzip), 5 s. Rien de changé hors des tests |
 | 2026-11-20 | 2c, lot A (annexes) | 299 fichiers hors build supprimés (2,9 Mo : builds Ant et Maven 1, `contrib/`, démos, jars et javadoc embarqués) ; licence BSD gardée en `LICENSE.txt`. `prevayler-1.0.jar` inchangé (121 Ko), tests de `prevayler` 62 verts |
 | 2026-11-20 | 2c, lot B (mort selon ProGuard) | `prevayler` : −32 classes, ~50 membres, −1 761 lignes de code, −1 926 de tests ; 71 classes, 2 508 lignes de code ; `prevayler-1.0.jar` 90 Ko (−31 Ko), `target/dist` 11 Mo ; `log4j` retiré du `pom`. Tests de `prevayler` 34 verts (−28, partis avec leur code), `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues |
+| 2026-11-20 | 2c, lot C (mort par configuration) | `prevayler` : −15 classes (réplication, censeur strict, `RWLock`), −1 223 lignes de code, −662 de tests ; 56 classes, 1 686 lignes de code ; `prevayler-1.0.jar` 60 Ko (−30 Ko), `target/dist` 11 Mo. Tests de `prevayler` 26 verts (−8), `bv_desktop` 1 026 verts, 9 min ; données 5.01 relues. **2c terminé** (lot D gardé) |

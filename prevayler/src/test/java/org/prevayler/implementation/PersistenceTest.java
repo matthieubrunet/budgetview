@@ -138,7 +138,6 @@ public class PersistenceTest extends FileIOTest {
 		PrevaylerFactory factory = new PrevaylerFactory();
 		factory.configurePrevalentSystem(new AppendingSystem());
 		factory.configurePrevalenceDirectory(prevalenceBase());
-		factory.configureTransactionFiltering(false);
 		_prevayler = factory.create();
 	}
 
