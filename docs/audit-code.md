@@ -40,6 +40,12 @@ Il faut mesurer (étapes 1 et 2), puis interroger l'historique git (étape 4).
   peuvent n'avoir jamais tourné (cas de `saxstack` en 2b, dont il manquait jusqu'au fournisseur JUnit 3 de surefire).
 - **Un membre que ProGuard dit inutilisé peut avoir été inliné** dans son appelant (`XmlUtils.addInCDataValue` en 2b) :
   la compilation tranche, pas le seul rapport.
+- **ProGuard ne voit pas le code mort par configuration** : ce qui n'est atteint que par un réglage que l'application
+  ne fait jamais (réplication, censeur strict et `RWLock` de `prevayler` en 2c). Le trouver en lisant les fabriques avec
+  les réglages réels de l'application, puis le confirmer à 0 % par JaCoCo.
+- **Le commit d'un lot est ce qui a été testé** : ne pas préparer le lot suivant dans l'arbre de travail pendant que la
+  suite du lot en cours tourne (en 2c, il a fallu mettre le lot C de côté et reconstruire l'état du lot B avant de le
+  commiter). Attendre, ou préparer dans une copie hors de l'arbre.
 
 ## Étape 1 : le code mort, mesuré
 

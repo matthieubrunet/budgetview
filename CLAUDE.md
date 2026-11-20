@@ -162,6 +162,10 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
     (ex. `accountPositionError` après un import dont le solde diffère). Le décodeur de journal de `Dump`
     (`dumpJournal`, code mort) ne correspond pas au format de ces fichiers.
   - Pour voir des valeurs : capture de la fenêtre (ci-dessus), ou demander le mot de passe du compte de test.
+  - Non-régression du format après un changement de la persistance (`prevayler`, `persistence/`) : copier
+    `~/BudgetView-sauvegardes/5.01-avant-6.00-2026-11-16/dropbox-BudgetView` (retirer `data/app.lock`), lancer `Dump`
+    dessus (il ouvre `users/` par `PRootDataManager`, donc relit snapshot et journal par Prevayler), vérifier qu'il
+    retrouve l'utilisateur, puis `diff -rq` entre le `users/` d'origine et celui de la copie (fait en audit 2c).
   - Le jar de la 5.01 (`/Applications/BudgetView.app/Contents/Resources/app/budgetview_bundle.jar`) est
     obfusqué, avec des noms qui ne diffèrent que par la casse : ne pas l'extraire sur le disque du Mac,
     qui ignore la casse. Le lire avec `zipfile` (Python).
