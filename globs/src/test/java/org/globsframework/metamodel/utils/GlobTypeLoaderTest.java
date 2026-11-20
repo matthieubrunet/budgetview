@@ -65,7 +65,7 @@ public class GlobTypeLoaderTest extends TestCase {
     assertEquals(Boolean.FALSE, AnObject.glob.get(AnObject.BOOLEAN));
     assertFalse(AnObject.glob.isTrue(AnObject.BOOLEAN));
     assertEquals(Dates.parse("2006/12/25"), AnObject.glob.get(AnObject.DATE));
-    assertEquals(new Long(15), AnObject.glob.get(AnObject.LONG));
+    assertEquals(Long.valueOf(15), AnObject.glob.get(AnObject.LONG));
     assertEquals(TestUtils.SAMPLE_BYTE_ARRAY, AnObject.glob.get(AnObject.BLOB));
 
     assertEquals(0, AnObject.ID.getIndex());

@@ -77,7 +77,7 @@ public class ArrayUtils {
     for (int i = 0; i < result.length; i++) {
       result[i] = new Boolean[source[i].length];
       for (int j = 0; j < result[i].length; j++) {
-        result[i][j] = new Boolean(source[i][j]);
+        result[i][j] = Boolean.valueOf(source[i][j]);
       }
     }
     return result;

@@ -104,11 +104,6 @@ public abstract class TextFilterPanel {
 
   protected abstract GlobMatcher createMatcher(String searchFilter);
 
-  protected void finalize() throws Throwable {
-    super.finalize();
-    colorService.removeListener(listener);
-  }
-
   public boolean isActive() {
     return Strings.isNotEmpty(textField.getText());
   }

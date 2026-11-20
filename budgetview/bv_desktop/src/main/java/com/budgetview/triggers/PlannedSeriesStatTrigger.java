@@ -87,7 +87,7 @@ public class PlannedSeriesStatTrigger implements ChangeSetListener {
 
   // Do not allow autoboxing - amount can be null
   private Double getActiveAmount(FieldValues seriesBudget, Boolean active) {
-    return active ? seriesBudget.get(SeriesBudget.PLANNED_AMOUNT) : new Double(0.00);
+    return active ? seriesBudget.get(SeriesBudget.PLANNED_AMOUNT) : Double.valueOf(0.00);
   }
 
   public void globsReset(GlobRepository repository, Set<GlobType> changedTypes) {

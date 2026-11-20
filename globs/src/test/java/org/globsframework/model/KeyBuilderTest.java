@@ -161,7 +161,7 @@ public class KeyBuilderTest extends TestCase {
     assertTrue(key instanceof SingleFieldKey);
     assertTrue(key.contains(DummyObject.ID));
     assertFalse(key.contains(DummyObject.NAME));
-    assertEquals(new Integer(2), key.get(DummyObject.ID));
+    assertEquals(Integer.valueOf(2), key.get(DummyObject.ID));
     try {
       key.get(DummyObject.NAME);
     }

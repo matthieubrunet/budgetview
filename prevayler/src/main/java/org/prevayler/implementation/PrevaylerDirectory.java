@@ -123,7 +123,7 @@ public class PrevaylerDirectory {
       public int compare(Object o1, Object o2) {
         File f1 = (File)o1;
         File f2 = (File)o2;
-        return new Long(journalVersion(f1)).compareTo(new Long(journalVersion(f2)));
+        return Long.compare(journalVersion(f1), journalVersion(f2));
       }
     });
 
@@ -204,8 +204,7 @@ public class PrevaylerDirectory {
       public int compare(Object o1, Object o2) {
         File f1 = (File)o1;
         File f2 = (File)o2;
-        return new Long(version(f1, pattern))
-          .compareTo(new Long(version(f2, pattern)));
+        return Long.compare(version(f1, pattern), version(f2, pattern));
       }
     });
     return files;

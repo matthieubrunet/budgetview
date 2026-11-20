@@ -25,9 +25,4 @@ public class FillPainter implements Painter, ColorChangeListener {
     g.setColor(fillColor);
     g.fillRect(0, 0, width, height);
   }
-
-  protected void finalize() throws Throwable {
-    super.finalize();
-    colorService.removeListener(this);
-  }
 }

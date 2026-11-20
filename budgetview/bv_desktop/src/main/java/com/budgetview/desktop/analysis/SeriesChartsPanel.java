@@ -615,7 +615,7 @@ public class SeriesChartsPanel implements GlobSelectionListener {
     double totalForSeries = 0;
     for (Integer monthId : selectedMonthIds) {
       Glob stat = repository.find(seriesOrGroup.createSeriesStatKey(monthId));
-      Double amount = (stat != null ? stat.get(SeriesStat.ACTUAL_AMOUNT) : new Double(0.00));
+      Double amount = (stat != null ? stat.get(SeriesStat.ACTUAL_AMOUNT) : Double.valueOf(0.00));
       if (amount != null) {
         totalForSeries += amount;
       }

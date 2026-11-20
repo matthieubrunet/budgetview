@@ -41,9 +41,4 @@ public abstract class HyperlinkTableColumn extends ButtonTableColumn implements 
   protected JButton createButton(Action action) {
     return createHyperlinkButton(action);
   }
-
-  protected void finalize() throws Throwable {
-    super.finalize();
-    colorService.removeListener(this);
-  }
 }

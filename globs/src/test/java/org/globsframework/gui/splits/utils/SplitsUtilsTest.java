@@ -46,9 +46,9 @@ public class SplitsUtilsTest extends UISpecTestCase {
 
 
   public void testIntParsing() throws Exception {
-    assertEquals(new Integer(25), SplitsUtils.parseInt("25"));
-    assertEquals(new Integer(JLabel.BOTTOM), SplitsUtils.parseInt("JLabel.BOTTOM"));
-    assertEquals(new Integer(JLabel.BOTTOM), SplitsUtils.parseInt("javax.swing.JLabel.BOTTOM"));
+    assertEquals(Integer.valueOf(25), SplitsUtils.parseInt("25"));
+    assertEquals(Integer.valueOf(JLabel.BOTTOM), SplitsUtils.parseInt("JLabel.BOTTOM"));
+    assertEquals(Integer.valueOf(JLabel.BOTTOM), SplitsUtils.parseInt("javax.swing.JLabel.BOTTOM"));
     assertEquals(DUMMY_FIELD, SplitsUtils.parseInt(getClass().getName() + ".DUMMY_FIELD"));
   }
 

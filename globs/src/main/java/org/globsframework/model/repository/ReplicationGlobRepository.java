@@ -46,13 +46,6 @@ public class ReplicationGlobRepository extends DefaultGlobRepository implements 
     super.completeChangeSetWithoutTriggers();
   }
 
-
-
-  protected void finalize() throws Throwable {
-    super.finalize();
-    originalRepository.removeChangeListener(forwardChangeSetListener);
-  }
-
   public Glob find(Key key) {
     if (key == null) {
       return null;

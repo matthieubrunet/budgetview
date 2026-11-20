@@ -28,7 +28,7 @@ public class QueryExecutionTest extends FileIOTest {
 	private static Query query() {
 		return new Query() {
 			public Object query(Object prevalentSystem, Date ignored) throws Exception {
-				return new Integer(((List)prevalentSystem).size());
+				return Integer.valueOf(((List)prevalentSystem).size());
 			}
 		};
 	}

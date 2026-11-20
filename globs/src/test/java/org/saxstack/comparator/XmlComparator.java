@@ -210,7 +210,7 @@ public class XmlComparator {
           val = ((Integer)occurence).intValue() + 1;
         }
       }
-      childrenOccurences.put(child, IntegerPool.get(val));
+      childrenOccurences.put(child, Integer.valueOf(val));
       children.add(child);
     }
 
@@ -275,27 +275,6 @@ public class XmlComparator {
     protected boolean comparator(Object o) {
       final XmlComparableNode comparableXml = (XmlComparableNode)o;
       return children != null ? children.equals(comparableXml.children) : (comparableXml.children == null);
-    }
-  }
-
-  static class IntegerPool {
-    static Integer pool[] = new Integer[0];
-
-    private static Integer[] alloc(int val) {
-      if (pool.length < val) {
-        Integer tmp[] = pool;
-        pool = new Integer[val + 10];
-        System.arraycopy(tmp, 0, pool, 0, tmp.length);
-        for (int i = tmp.length; i < pool.length; i++) {
-          pool[i] = new Integer(i);
-        }
-      }
-      return pool;
-    }
-
-    public static Object get(int val) {
-      alloc(val);
-      return pool[val];
     }
   }
 

@@ -38,9 +38,4 @@ public class GradientPainter implements Painter, ColorChangeListener {
     g2.drawLine(0, 0, width, 0);
     g2.drawLine(0, height - 1, width, height - 1);
   }
-
-  protected void finalize() throws Throwable {
-    super.finalize();
-    colorService.removeListener(this);
-  }
 }
