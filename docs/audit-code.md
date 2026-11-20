@@ -50,6 +50,10 @@ Il faut mesurer (étapes 1 et 2), puis interroger l'historique git (étape 4).
   alors une `NullPointerException` si elle vaut `null` (vu en 3a, lot A, sur `new Double(0.00)`). En remplaçant un
   constructeur `Integer`, `Long`, `Double`… dans un ternaire, garder un objet : `Double.valueOf(0.00)`. Vaut pour tout
   remplacement de l'étape 3 (OpenRewrite compris) : relire chaque ternaire qui mélange les deux.
+- **Une recette automatique ne voit pas les méthodes maison homonymes du JDK** : `GlobList` (une `ArrayList`) a ses
+  propres `getFirst()`/`getLast()`, qui rendent `null` sur liste vide ; OpenRewrite les a traitées comme celles de Java 21
+  et a rendu `getFirst()` récursive (3b). Une recette se juge en appliquant son patch dans une copie et en y lançant les
+  suites de tests, pas sur la seule relecture du diff.
 
 ## Étape 1 : le code mort, mesuré
 
