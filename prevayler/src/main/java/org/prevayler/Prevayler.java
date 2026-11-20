@@ -11,6 +11,7 @@ import java.io.IOException;
  * See the demo applications in org.prevayler.demos for examples.
  * @see PrevaylerFactory
  */
+@SuppressWarnings("overloads") // execute(Transaction), execute(Query), execute(TransactionWithQuery) : API d'origine
 public interface Prevayler {
 
 	/** Returns the Object which holds direct or indirect references to all other Business Objects in the system. 

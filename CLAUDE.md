@@ -99,6 +99,8 @@ mvn -f uispec4j/pom.xml install -DskipTests
 #    « Failed to delete …/target » : une fenêtre du Finder ouverte dessus y recrée des .DS_Store ;
 #    la fermer, ou rm -rf target puis relancer sans clean.
 mvn clean install -DskipTests
+#    Doit rester sans aucun [WARNING] : les pom affichent les alertes javac utiles (removal, static, varargs…,
+#    choisies en audit 3a). Une alerte qui apparaît se corrige, ou se justifie par un @SuppressWarnings commenté.
 
 # 3. Une fois (et après tout changement du modèle) : générer les comptes de démo
 #    src/main/resources/demo/demo-{fr,en}.snapshot. Fichiers non versionnés ; sans eux le

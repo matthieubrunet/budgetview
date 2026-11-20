@@ -73,6 +73,7 @@ public class SeriesWrapperStringifier extends AbstractGlobStringifier {
         if (id.equals(SeriesWrapper.SAVINGS_POSITION_SUMMARY_ID)) {
           return Lang.get("seriesWrapper.savingsSummary");
         }
+        throw new InvalidParameter("Unexpected case: " + wrapper);
 
       default:
         throw new InvalidParameter("Unexpected case: " + wrapper);

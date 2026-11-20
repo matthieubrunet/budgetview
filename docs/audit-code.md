@@ -129,10 +129,12 @@ n'utilise sans doute qu'une partie de leurs API.
 
 Des remplacements mécaniques et relisibles, pas une réécriture.
 
-- [ ] **3a. Alertes du compilateur** : compiler avec `-Xlint:all` et classer ce qui ressort
+- [x] **3a. Alertes du compilateur** : compiler avec `-Xlint:all` et classer ce qui ressort
   (dépréciations, types bruts, `finalize`…).
   Inventaire fait le 2026-11-20, voir [3a, inventaire](#3a-inventaire) plus bas : ~2 000 alertes, dont ~1 900 de
-  bruit ou hors sujet ; ~70 corrections mécaniques en deux lots, décision attendue sur les lots C et D.
+  bruit ou hors sujet. Lots A à C faits le 2026-11-20 : ~70 corrections mécaniques, et le build affiche désormais les
+  catégories utiles, à 0 alerte. Lot D (`junit.framework.Assert`) renvoyé à l'étape 5 ; `Runtime.exec` à 3c, masques
+  `InputEvent` à 4a.
 - [ ] **3b. OpenRewrite** : passer les recettes de migration Java 8 → 21 en mode `dryRun`,
   relire le diff et n'appliquer que par familles.
 - [ ] **3c. Intégration macOS** : `com.apple.eawt` (2 fichiers) → `java.awt.Desktop` (Java 9 et +).
@@ -1031,6 +1033,15 @@ Recommandation : A, B et C ; D attend l'étape 5.
   `new URL` → `URI.toURL`. Alertes : 0 `cast`, `static`, `dep-ann`, varargs ; restent 1 `fallthrough` et 1
   `overloads`, voulus. Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts (29 min, machine chargée par
   une appli de dev ouverte) ; `siteweaver` à la main inchangé.
+- Lot C (2026-11-20) : les 5 `pom` du réacteur passent `<showWarnings>true</showWarnings>` et
+  `-Xlint:cast,dep-ann,divzero,empty,fallthrough,finally,overloads,overrides,removal,static,varargs` (les quatre
+  catégories hors inventaire étaient déjà à 0). Les deux alertes voulues sont rendues explicites : `throw` écrit dans le
+  `case SUMMARY` de `SeriesWrapperStringifier` (même comportement), `@SuppressWarnings("overloads")` sur l'interface
+  `Prevayler` (javac n'y signalait qu'une des deux paires ambiguës à la fois). `siteweaver` reçoit `<proc>none</proc>` :
+  `jetty-maven-plugin`, curieusement en dépendance de compilation, amène par `sisu-inject-bean` un processeur
+  d'annotations inutile qui se plaignait de `-source 21`. `mvn clean install` : **0 `[WARNING]`**. Tests de `globs` 796,
+  `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable ; 4 passages verts seul, avec
+  et sans le lot), 9 min.
 
 ## Journal
 
@@ -1071,4 +1082,5 @@ Recommandation : A, B et C ; D attend l'étape 5.
 | 2026-11-20 | 2d, lot C (formes et attributs) | 2 bordures, 3 icônes (3 classes), 2 attributs supprimés (−348 lignes de code, −101 de tests) ; `splits` 132 classes, 7 361 lignes ; `globs-1.0.jar` 952 Ko (−10 Ko), `target/dist` 11 Mo. Tests de `globs` 796 verts (−9) ; `bv_desktop` 1 026 verts, 9 min. **2d terminé, étape 2 terminée** |
 | 2026-11-20 | 3a, inventaire | Rien de modifié. `-Xlint:all` sur les 5 modules du réacteur : ~2 000 alertes (sources principales 1 369, tests 623), dont `serial` 648, types bruts et `unchecked` 721, dépréciations 361 (268 pour `junit.framework.Assert`), `this-escape` 198, `removal` 24 (5 `finalize` inopérants). ~70 corrections mécaniques ; `Runtime.exec` renvoyé à 3c, masques `InputEvent` à 4a. Quatre lots proposés (A à D) |
 | 2026-11-20 | 3a, lot A (`removal`) | 5 `finalize` et 1 classe de test supprimés, 14 constructeurs enveloppes remplacés (−37 lignes) ; 0 alerte `removal` (24 avant). Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 12 min ; données 5.01 relues |
-| 2026-11-20 | 3a, lot B (petites alertes) | ~40 corrections dans 33 fichiers, sans changement de comportement ; 0 alerte `cast`, `static`, `dep-ann`, varargs (38 avant). Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 29 min (appli de dev ouverte en parallèle) |
+| 2026-11-20 | 3a, lot B (petites alertes) | ~40 corrections dans 36 fichiers, sans changement de comportement ; 0 alerte `cast`, `static`, `dep-ann`, varargs (38 avant). Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 29 min (appli de dev ouverte en parallèle) |
+| 2026-11-20 | 3a, lot C (garde-fou) | 5 `pom` : alertes utiles affichées au build ; 2 alertes voulues rendues explicites, processeur d'annotations coupé dans `siteweaver`. `mvn clean install` sans aucun `[WARNING]` ; `target/dist` 11 Mo, 17 jars. Tests de `globs` 796, `prevayler` 26 verts ; `bv_desktop` 1 026, 1 erreur de `SignpostSequenceTest` (instable), 9 min. **3a terminé** |

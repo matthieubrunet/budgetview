@@ -109,6 +109,8 @@ une fois sur la suite complète (2026-11-16, sous JaCoCo) : `homeCardToggle` int
 la liste des composants disponibles, juste après le passage au compte de démo. La classe seule passe 3 fois sur 3.
 Le 2026-11-20, même erreur sur 2 des 4 suites complètes de l'audit 2b (sans JaCoCo), au hasard des lots ; la classe
 seule passe 4 fois sur 4. L'échec devient fréquent : à regarder au chantier 5 (attente sur la fenêtre après la bascule).
+Audit 3a (2026-11-20) : 1 échec sur 3 suites complètes (`budgetCardToggle`, même cas), et 1 sur 10 passages de la
+classe seule, sans lien avec le lot testé (4 sur 4 verts avec et sans lui) : l'échec n'exige donc pas la suite complète.
 
 ## Questions ouvertes (arbitrage métier)
 

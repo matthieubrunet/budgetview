@@ -22,6 +22,12 @@
         <version>3.13.0</version>
         <configuration>
           <release>21</release>
+          <!-- Alertes affichées au build : celles qui signalent un vrai défaut (audit 3a). serial, this-escape, rawtypes,
+               unchecked et deprecation restent muettes : voir docs/audit-code.md, 3a. -->
+          <showWarnings>true</showWarnings>
+          <compilerArgs>
+            <arg>-Xlint:cast,dep-ann,divzero,empty,fallthrough,finally,overloads,overrides,removal,static,varargs</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
       <plugin>
