@@ -29,16 +29,16 @@ public class MessageDialog {
   }
 
   public static void show(String titleKey, MessageType type, Window owner, Directory directory, String contentKey, String... args) {
-    MessageDialog dialog = new MessageDialog(titleKey, type, "close", owner, directory, Lang.get(contentKey, args));
+    MessageDialog dialog = new MessageDialog(titleKey, type, "close", owner, directory, Lang.get(contentKey, (Object[]) args));
     dialog.show();
   }
 
   public static MessageDialog create(String titleKey, MessageType type, Window owner, Directory directory, String contentKey, String... args) {
-    return new MessageDialog(titleKey, type, "close", owner, directory, Lang.get(contentKey, args));
+    return new MessageDialog(titleKey, type, "close", owner, directory, Lang.get(contentKey, (Object[]) args));
   }
 
   public static void show(String titleKey, MessageType type, Directory directory, String contentKey, String... args) {
-    MessageDialog dialog = new MessageDialog(titleKey, type, "close", directory.get(JFrame.class), directory, Lang.get(contentKey, args));
+    MessageDialog dialog = new MessageDialog(titleKey, type, "close", directory.get(JFrame.class), directory, Lang.get(contentKey, (Object[]) args));
     dialog.show();
   }
 

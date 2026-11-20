@@ -158,6 +158,7 @@ public class Series {
   /**
    * @deprecated
    */
+  @Deprecated
   public static final Integer OCCASIONAL_SERIES_ID = 0;
   public static final Integer UNCATEGORIZED_SERIES_ID = 1;
   public static final Integer ACCOUNT_SERIES_ID = -1;

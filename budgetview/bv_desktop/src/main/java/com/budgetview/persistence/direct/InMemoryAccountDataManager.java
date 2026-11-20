@@ -30,8 +30,7 @@ public class InMemoryAccountDataManager implements AccountDataManager {
   }
 
   public void updateUserData(SerializedInput input, Integer userId) {
-    SerializableDeltaGlobSerializer serializableDeltaGlobSerializer = new SerializableDeltaGlobSerializer();
-    MultiMap<String, SerializedDelta> data = serializableDeltaGlobSerializer.deserialize(input);
+    MultiMap<String, SerializedDelta> data = SerializableDeltaGlobSerializer.deserialize(input);
     ReadOnlyAccountDataManager.apply(globs, data);
   }
 

@@ -251,7 +251,7 @@ public class ImportCloudBankConnectionPanel extends AbstractImportStepPanel {
   }
 
   public void showErrorMessage(String key, String... args) {
-    String text = Lang.get(key, args).replace("<html>", "").replace("</html>", "");
+    String text = Lang.get(key, (Object[]) args).replace("<html>", "").replace("</html>", "");
     errorMessage.setText("<html><font color=red>" + text + "</font></html>");
     errorMessage.setVisible(true);
   }

@@ -35,7 +35,7 @@ public class HistoDatasetBuilder {
   }
 
   protected void updateLabel(JLabel label, String messageKey, String... args) {
-    label.setText(Lang.get(messageKey, args));
+    label.setText(Lang.get(messageKey, (Object[]) args));
   }
 
   protected void updateLegend() {

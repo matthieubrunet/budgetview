@@ -256,7 +256,7 @@ public class TableAnalysisChecker extends ExpandableTableChecker<TableAnalysisCh
     }
 
     public SeriesTableChecker add(String label, String... monthValues) {
-      super.add(Utils.join(new String[]{"", label}, monthValues));
+      super.add((Object[]) Utils.join(new String[]{"", label}, monthValues));
       return this;
     }
 

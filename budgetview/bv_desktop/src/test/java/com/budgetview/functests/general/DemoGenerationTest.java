@@ -26,7 +26,7 @@ public class DemoGenerationTest extends LoggedInFunctionalTestCase {
   private int secondMonth;
   private int firstMonth;
 
-  private static Locale DEFAULT_LOCALE = new Locale("__", "", "");
+  private static Locale DEFAULT_LOCALE = Locale.of("__", "", "");
 
   public static void main(String[] args) throws Exception {
 
@@ -498,7 +498,7 @@ public class DemoGenerationTest extends LoggedInFunctionalTestCase {
   }
 
   private String transaction(String keySuffix, String... args) {
-    return Lang.get("demo.transactions." + keySuffix, args);
+    return Lang.get("demo.transactions." + keySuffix, (Object[]) args);
   }
 
   private String series(String keySuffix) {

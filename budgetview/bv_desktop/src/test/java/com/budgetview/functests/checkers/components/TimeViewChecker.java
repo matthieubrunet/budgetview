@@ -72,6 +72,7 @@ public class TimeViewChecker extends GuiChecker {
   /**
    * @deprecated
    */
+  @Deprecated
   public void selectCell(int index) {
     getTimeViewPanel().selectMonthByIndex(index);
   }

@@ -14,7 +14,7 @@ public class ClassUtils {
     }
     Class<?> aClass = Class.forName(className);
     try {
-      return (T)aClass.newInstance();
+      return (T)aClass.getDeclaredConstructor().newInstance();
     }
     catch (Exception e) {
       throw new InvalidParameter("Class '" + className + "' should have a " +

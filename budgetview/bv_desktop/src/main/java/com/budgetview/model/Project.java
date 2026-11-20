@@ -50,6 +50,7 @@ public class Project {
   /**
    * @deprecated
    */
+  @Deprecated
   @Target(Series.class)
   public static LinkField SERIES;
 

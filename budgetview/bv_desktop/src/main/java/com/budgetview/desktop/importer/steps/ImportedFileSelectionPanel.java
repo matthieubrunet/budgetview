@@ -198,7 +198,7 @@ public class ImportedFileSelectionPanel extends AbstractImportStepPanel implemen
   }
 
   private void displayErrorMessage(String key, String... args) {
-    this.showFileErrorMessage("<html><font color=red>" + Lang.get(key, args) + "</font></html>");
+    this.showFileErrorMessage("<html><font color=red>" + Lang.get(key, (Object[]) args) + "</font></html>");
   }
 
   private class ShowManualEntryAction extends AbstractAction {

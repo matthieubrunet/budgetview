@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashSet;
@@ -52,7 +53,7 @@ public class UrlTest extends TestCase {
 
   private void checkUrl(String file, String url) {
     try {
-      final URLConnection connection = new URL(url).openConnection();
+      final URLConnection connection = URI.create(url).toURL().openConnection();
       connection.connect();
       connection.getContent();
     }

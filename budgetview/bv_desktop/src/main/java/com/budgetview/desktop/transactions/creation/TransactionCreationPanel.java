@@ -369,7 +369,7 @@ public class TransactionCreationPanel extends View implements GlobSelectionListe
     }
 
     private void showErrorMessage(String messageKey, String... args) {
-      errorMessageLabel.setText(Lang.get(messageKey, args));
+      errorMessageLabel.setText(Lang.get(messageKey, (Object[]) args));
       errorMessageLabel.setVisible(true);
     }
   }

@@ -14,7 +14,7 @@ public class CategorizationTableChecker extends TableChecker {
   }
 
   public CategorizationTableChecker add(String date, String series, String label, double amount) {
-    add(new String[]{date, series, label.toUpperCase(), Formatting.toString(amount)});
+    add((Object[]) new String[]{date, series, label.toUpperCase(), Formatting.toString(amount)});
     return this;
   }
 

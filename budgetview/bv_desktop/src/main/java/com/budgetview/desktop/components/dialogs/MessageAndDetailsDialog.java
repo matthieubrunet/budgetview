@@ -23,7 +23,7 @@ public class MessageAndDetailsDialog {
       .setSource(getClass(), "/layout/utils/messageAndDetailsDialog.splits");
 
     builder.add("title", new JLabel(Lang.get(titleKey)));
-    builder.add("message", new JEditorPane("text/html", Lang.get(messageKey, messageArgs)));
+    builder.add("message", new JEditorPane("text/html", Lang.get(messageKey, (Object[]) messageArgs)));
     builder.add("details", GuiUtils.createReadOnlyTextArea(details));
     builder.add("copy", new JButton(new AbstractAction(Lang.get("exception.copy")) {
       public void actionPerformed(ActionEvent e) {

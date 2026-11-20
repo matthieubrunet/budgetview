@@ -69,7 +69,7 @@ public class PageHandler extends AbstractHandler {
 
 
   public void handle(String target, Request request, HttpServletRequest httpServletRequest, HttpServletResponse response) throws IOException, ServletException {
-    Request baseRequest = (request instanceof Request) ? (Request)request : HttpConnection.getCurrentConnection().getHttpChannel().getRequest();
+    Request baseRequest = (request instanceof Request) ? request : HttpConnection.getCurrentConnection().getHttpChannel().getRequest();
 
     if (configFile.lastModified() > lastConfigFileUpdate) {
       try {

@@ -68,6 +68,7 @@ public class ProjectItem {
   /**
    * @deprecated *
    */
+  @Deprecated
   @Target(SubSeries.class)
   public static LinkField SUB_SERIES;
 

@@ -5,6 +5,6 @@ import com.budgetview.utils.Lang;
 
 public class LangGaugeTextSource implements GaugeTextSource {
   public String getText(String key, String... args) {
-    return Lang.get(key, args);
+    return Lang.get(key, (Object[]) args);
   }
 }

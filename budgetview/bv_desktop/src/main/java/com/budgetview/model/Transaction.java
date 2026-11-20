@@ -125,6 +125,7 @@ public class Transaction {
   /**
    * @deprecated
    **/
+  @Deprecated
   @DefaultBoolean(false)
   public static BooleanField CREATED_BY_SERIES;
 

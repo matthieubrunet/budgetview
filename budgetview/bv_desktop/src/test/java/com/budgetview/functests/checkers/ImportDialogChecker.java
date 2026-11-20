@@ -132,12 +132,12 @@ public class ImportDialogChecker extends GuiChecker {
   }
 
   public ImportDialogChecker checkErrorMessage(String message, String... arg) {
-    assertTrue(dialog.getTextBox("errorMessage").textEquals(Lang.get(message, arg)));
+    assertTrue(dialog.getTextBox("errorMessage").textEquals(Lang.get(message, (Object[]) arg)));
     return this;
   }
 
   public ImportDialogChecker checkHtmlErrorMessage(String message, String... arg) {
-    assertTrue(dialog.getTextBox("errorMessage").htmlEquals(Lang.get(message, arg)));
+    assertTrue(dialog.getTextBox("errorMessage").htmlEquals(Lang.get(message, (Object[]) arg)));
     return this;
   }
 

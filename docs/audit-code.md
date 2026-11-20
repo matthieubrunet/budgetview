@@ -1022,6 +1022,15 @@ Recommandation : A, B et C ; D attend l'étape 5.
   `prevayler` 26, `bv_desktop` 1 026 verts (12 min) ; données 5.01 relues. Tests de `siteweaver` lancés à la main
   (JUnitCore : JUnit 3.8.1, refusé par surefire, ils n'ont jamais tourné sous Maven) : 72, dont 10 échecs identiques
   avant et après (7 de `SiteUploaderTest`, 3 classes sans test).
+- Lot B (2026-11-20) : 21 appels varargs reçoivent `(Object[])` (le même tableau qu'avant, sans l'alerte) ; 4 appels
+  statiques faits sur une instance passent par la classe (les instances de `SerializableDeltaGlobSerializer`, classe
+  sans état, disparaissent) ; 1 transtypage redondant retiré (`PageHandler`, qui garde son `instanceof`, vrai aussi
+  contre `null`) ; `@Deprecated` ajouté aux 11 éléments marqués en javadoc (sans effet sur `GlobTypeLoader` : les
+  annotations de classe ne sont pas lues, celles des champs sont cherchées par type) ; `Class.newInstance()` →
+  `getDeclaredConstructor().newInstance()` (les 2 appelants attrapent `Exception`), `new Locale` → `Locale.of`,
+  `new URL` → `URI.toURL`. Alertes : 0 `cast`, `static`, `dep-ann`, varargs ; restent 1 `fallthrough` et 1
+  `overloads`, voulus. Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts (29 min, machine chargée par
+  une appli de dev ouverte) ; `siteweaver` à la main inchangé.
 
 ## Journal
 
@@ -1062,3 +1071,4 @@ Recommandation : A, B et C ; D attend l'étape 5.
 | 2026-11-20 | 2d, lot C (formes et attributs) | 2 bordures, 3 icônes (3 classes), 2 attributs supprimés (−348 lignes de code, −101 de tests) ; `splits` 132 classes, 7 361 lignes ; `globs-1.0.jar` 952 Ko (−10 Ko), `target/dist` 11 Mo. Tests de `globs` 796 verts (−9) ; `bv_desktop` 1 026 verts, 9 min. **2d terminé, étape 2 terminée** |
 | 2026-11-20 | 3a, inventaire | Rien de modifié. `-Xlint:all` sur les 5 modules du réacteur : ~2 000 alertes (sources principales 1 369, tests 623), dont `serial` 648, types bruts et `unchecked` 721, dépréciations 361 (268 pour `junit.framework.Assert`), `this-escape` 198, `removal` 24 (5 `finalize` inopérants). ~70 corrections mécaniques ; `Runtime.exec` renvoyé à 3c, masques `InputEvent` à 4a. Quatre lots proposés (A à D) |
 | 2026-11-20 | 3a, lot A (`removal`) | 5 `finalize` et 1 classe de test supprimés, 14 constructeurs enveloppes remplacés (−37 lignes) ; 0 alerte `removal` (24 avant). Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 12 min ; données 5.01 relues |
+| 2026-11-20 | 3a, lot B (petites alertes) | ~40 corrections dans 33 fichiers, sans changement de comportement ; 0 alerte `cast`, `static`, `dep-ann`, varargs (38 avant). Tests de `globs` 796, `prevayler` 26, `bv_desktop` 1 026 verts, 29 min (appli de dev ouverte en parallèle) |

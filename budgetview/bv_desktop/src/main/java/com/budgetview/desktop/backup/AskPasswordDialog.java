@@ -30,7 +30,7 @@ public class AskPasswordDialog {
     builder.setSource(getClass(), "/layout/general/askPasswordDialog.splits");
     builder.add("title", new JLabel(Lang.get(title)));
     builder.add("passwordLabel", new JLabel(Lang.get(label)));
-    builder.add("message", Gui.createHtmlEditor(Lang.get(message, argsForMessage)));
+    builder.add("message", Gui.createHtmlEditor(Lang.get(message, (Object[]) argsForMessage)));
     final JPasswordField passwordField =
       builder.add("password", new JPasswordField())        
         .getComponent();

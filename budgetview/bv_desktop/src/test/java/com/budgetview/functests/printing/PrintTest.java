@@ -10,7 +10,7 @@ import org.junit.Test;
 public class PrintTest extends LoggedInFunctionalTestCase {
 
   protected void setUp() throws Exception {
-    this.mainWindow = null;
+    LoggedInFunctionalTestCase.mainWindow = null;
     setCurrentMonth("2012/05");
     super.setUp();
   }

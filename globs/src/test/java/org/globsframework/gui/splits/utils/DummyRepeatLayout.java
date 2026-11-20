@@ -16,7 +16,7 @@ public class DummyRepeatLayout implements RepeatLayout {
   public static DummyRepeatLayout lastLayout = null;
 
   public DummyRepeatLayout() {
-    this.lastLayout= this;
+    DummyRepeatLayout.lastLayout= this;
   }
 
   public static void reset() {

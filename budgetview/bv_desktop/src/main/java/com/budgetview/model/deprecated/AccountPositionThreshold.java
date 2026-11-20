@@ -17,6 +17,7 @@ import org.globsframework.utils.serialization.SerializedInputOutputFactory;
 import org.globsframework.utils.serialization.SerializedOutput;
 
 /** @deprecated */
+@Deprecated
 public class AccountPositionThreshold {
   public static final Integer SINGLETON_ID = 0;
   public static org.globsframework.model.Key KEY;

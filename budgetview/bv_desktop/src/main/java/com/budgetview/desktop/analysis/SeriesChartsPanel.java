@@ -666,7 +666,7 @@ public class SeriesChartsPanel implements GlobSelectionListener {
   }
 
   private void updateLabel(JLabel label, String messageKey, String... args) {
-    label.setText(Lang.get("seriesAnalysis." + messageKey, args));
+    label.setText(Lang.get("seriesAnalysis." + messageKey, (Object[]) args));
   }
 
   private class StackSelectionListener extends StackChartAdapter {

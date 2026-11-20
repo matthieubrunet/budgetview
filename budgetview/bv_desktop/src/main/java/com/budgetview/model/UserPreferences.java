@@ -112,6 +112,7 @@ public class UserPreferences {
   /**
    * @deprecated
    */
+  @Deprecated
   @Target(AnalysisViewType.class)
   @DefaultInteger(0)
   public static LinkField ANALYSIS_VIEW_TYPE;

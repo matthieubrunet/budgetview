@@ -66,11 +66,11 @@ public class SeriesTablePageChecker {
     boolean first = true;
     for (String[] row : rows) {
       if (first) {
-        printer.setHeader(row);
+        printer.setHeader((Object[]) row);
         first = false;
       }
       else {
-        printer.addRow(row);
+        printer.addRow((Object[]) row);
       }
     }
     return printer.toString();

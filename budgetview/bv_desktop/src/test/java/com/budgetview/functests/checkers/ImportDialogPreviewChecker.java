@@ -470,12 +470,12 @@ public class ImportDialogPreviewChecker extends DialogChecker {
   }
 
   public ImportDialogPreviewChecker checkErrorMessage(String message, String... arg) {
-    assertTrue(dialog.getTextBox("errorMessage").textEquals(Lang.get(message, arg)));
+    assertTrue(dialog.getTextBox("errorMessage").textEquals(Lang.get(message, (Object[]) arg)));
     return this;
   }
 
   public ImportDialogPreviewChecker checkHtmlErrorMessage(String message, String... arg) {
-    assertTrue(dialog.getTextBox("errorMessage").htmlEquals(Lang.get(message, arg)));
+    assertTrue(dialog.getTextBox("errorMessage").htmlEquals(Lang.get(message, (Object[]) arg)));
     return this;
   }
 

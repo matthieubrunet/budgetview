@@ -23,6 +23,7 @@ import org.globsframework.utils.serialization.SerializedOutput;
 /**
  * @deprecated
  */
+@Deprecated
 public class Category {
 
   public static GlobType TYPE;

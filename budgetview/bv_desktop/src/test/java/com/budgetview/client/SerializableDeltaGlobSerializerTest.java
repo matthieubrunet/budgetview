@@ -12,7 +12,6 @@ import java.util.List;
 public class SerializableDeltaGlobSerializerTest extends TestCase {
 
   public void test() throws Exception {
-    SerializableDeltaGlobSerializer deltaGlobSerializer = new SerializableDeltaGlobSerializer();
     SerializedByteArrayOutput output = new SerializedByteArrayOutput();
     MultiMap<String, SerializedDelta> map = new MultiMap<String, SerializedDelta>();
 
@@ -20,8 +19,8 @@ public class SerializableDeltaGlobSerializerTest extends TestCase {
     map.put("Toto", createDelta(2, SerializedDeltaState.CREATED));
     map.put("Titi", createDelta(1, SerializedDeltaState.DELETED));
     map.put("Titi", createDelta(2, SerializedDeltaState.UPDATED));
-    deltaGlobSerializer.serialize(output.getOutput(), map);
-    MultiMap<String, SerializedDelta> result = deltaGlobSerializer.deserialize(output.getInput());
+    SerializableDeltaGlobSerializer.serialize(output.getOutput(), map);
+    MultiMap<String, SerializedDelta> result = SerializableDeltaGlobSerializer.deserialize(output.getInput());
     assertEquals(4, result.size());
     List<SerializedDelta> totoGlobs = result.get("Toto");
     assertEquals(2, totoGlobs.size());

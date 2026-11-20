@@ -18,6 +18,7 @@ import org.globsframework.utils.serialization.SerializedInputOutputFactory;
 import org.globsframework.utils.serialization.SerializedOutput;
 
 /** @deprecated */
+@Deprecated
 public class SeriesToCategory {
   public static GlobType TYPE;
 

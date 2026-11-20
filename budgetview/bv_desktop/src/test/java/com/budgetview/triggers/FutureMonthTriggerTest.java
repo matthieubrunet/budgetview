@@ -19,7 +19,7 @@ public class FutureMonthTriggerTest extends PicsouTestCase {
     TimeService service = new TimeService(Dates.parse("2008/07/09"));
     directory.add(service);
     repository.create(CurrentMonth.KEY, FieldValue.value(CurrentMonth.CURRENT_MONTH, service.getCurrentMonthId()),
-                      FieldValue.value(CurrentMonth.CURRENT_DAY, service.getCurrentDay()));
+                      FieldValue.value(CurrentMonth.CURRENT_DAY, TimeService.getCurrentDay()));
   }
 
   public void testMoreMonthUserPreferences() throws Exception {

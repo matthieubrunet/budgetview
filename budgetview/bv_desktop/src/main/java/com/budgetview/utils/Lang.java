@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 public class Lang {
   private static ResourceBundle bundle;
 
-  public static final Locale ROOT = new Locale("");
+  public static final Locale ROOT = Locale.of("");
   public static final Locale EN = Locale.ENGLISH;
   public static final Locale FR = Locale.FRENCH;
   private static Locale LOCALE = ROOT;

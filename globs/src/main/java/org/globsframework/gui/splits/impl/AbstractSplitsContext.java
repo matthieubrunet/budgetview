@@ -69,7 +69,7 @@ public abstract class AbstractSplitsContext implements SplitsContext {
     }
 
     try {
-      T newComponent = componentClass.newInstance();
+      T newComponent = componentClass.getDeclaredConstructor().newInstance();
       DefaultSplitsNode<T> defaultNode = new DefaultSplitsNode<T>(newComponent, this);
       createdComponents.add(newComponent);
       if (name != null) {
