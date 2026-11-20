@@ -3,11 +3,7 @@ package org.saxstack.parser;
 import junit.framework.TestCase;
 import org.saxstack.utils.XmlUtils;
 import org.xml.sax.Attributes;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,34 +86,6 @@ public class SaxStackParserTest extends TestCase {
                            "    <other/>" +
                            "  </item>" +
                            "</root>"));
-    DummyXmlNode childNode = node.get(0);
-    childNode = childNode.get(0);
-    assertEquals("other", childNode.name);
-  }
-
-  public void testWithExternalDTD() throws Exception {
-    DummyXmlNode node = new DummyXmlNode();
-    final InputStream inputStream =
-      new ByteArrayInputStream(new StringBuffer()
-        .append("<?xml version='1.0' encoding='UTF-8'?>")
-        .append("<!ELEMENT root (root*,item*)>")
-        .append("<!ATTLIST root name CDATA #IMPLIED>")
-        .append("<!ATTLIST root otherName CDATA #IMPLIED>")
-        .toString().getBytes());
-    SaxStackParser.parse(XmlUtils.getXmlReader(), node,
-                         new StringReader(
-                           "<?xml version='1.0' encoding='UTF-8'?>" +
-                           "<!DOCTYPE test SYSTEM 'file:test.dtd' >" +
-                           "<root name='zzz'>" +
-                           "  <item q='a'>" +
-                           "    <other/>" +
-                           "  </item>" +
-                           "</root>"),
-                         new EntityResolver() {
-                           public InputSource resolveEntity(String publicId, String systemId) {
-                             return new InputSource(inputStream);
-                           }
-                         });
     DummyXmlNode childNode = node.get(0);
     childNode = childNode.get(0);
     assertEquals("other", childNode.name);

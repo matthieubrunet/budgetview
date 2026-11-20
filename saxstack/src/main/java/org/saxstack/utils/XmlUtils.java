@@ -60,21 +60,6 @@ public class XmlUtils {
     return val;
   }
 
-  public static boolean getBooleanAttrValue(String xmlAttrName, Attributes xmlAttributes, boolean defaultValue) {
-    String attrValue = getAttrValue(xmlAttrName, xmlAttributes, Boolean.toString(defaultValue));
-    return Boolean.valueOf(attrValue).booleanValue();
-  }
-
-  public static int getIntAttrValue(String xmlAttrName, Attributes xmlAttributes, int defaultValue) throws NumberFormatException {
-    String attrValue = getAttrValue(xmlAttrName, xmlAttributes, Integer.toString(defaultValue));
-    return Integer.valueOf(attrValue).intValue();
-  }
-
-  public static double getDoubleAttrValue(String xmlAttrName, Attributes xmlAttributes, double defaultValue) throws NumberFormatException {
-    String attrValue = getAttrValue(xmlAttrName, xmlAttributes, Double.toString(defaultValue));
-    return Double.valueOf(attrValue).doubleValue();
-  }
-
   public static String convertEntities(String text) {
     if ("".equals(text.trim())) {
       return "";
@@ -106,14 +91,6 @@ public class XmlUtils {
     SaxStackParser.parse(parser,
                          new XmlNodeToBuilder(new PrettyPrintRootXmlTag(output, attributeCountOnLine), null),
                          new StringReader(input));
-    return output.toString();
-  }
-
-  public static String format(String input, XMLReader parser, int attributeCountOnLine, Filter filter) throws IOException {
-    Writer output = new StringWriter();
-    BootstrapDomXmlNode rootNode = new BootstrapDomXmlNode();
-    SaxStackParser.parse(parser, rootNode, new StringReader(input));
-    XmlPrettyPrinter.write(output, rootNode.getChild().getBuilder(), filter, attributeCountOnLine);
     return output.toString();
   }
 

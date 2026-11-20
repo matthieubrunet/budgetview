@@ -686,6 +686,17 @@ perte, la licence étant la même. Recommandation : le fondre.
 
 **Décision de Matthieu (2026-11-20)** : faire les lots A à D, donc fondre `saxstack` dans `globs`.
 
+**Suppression**, un commit par lot :
+- Lot A (2026-11-20) : 7 classes sans client (`PathFilter`, `XmlPrettyPrinter`, `FixedXmlNodeBuilder`,
+  `IteratorBasedXmlNodeBuilder`, `NullAttributes`, `AttributeOrderProvider`, `UnexpectedTagException`) et les membres
+  morts listés plus haut (−450 lignes), avec 7 fichiers de test et `testWithExternalDTD`, qui ne servait que l'appel à
+  `EntityResolver` (−919 lignes). Tests de `saxstack` : 44 → 26. Deux corrections de l'inventaire à la lecture :
+  - `NullXmlTag`, `XmlUtils.build` et `write` servent à `SaxStackWriter`, donc à l'outil de test `XmlComparator` :
+    ils passent au lot B. Les tests d'écriture (`SaxStackWriter*Test`) sont partis avec les constructeurs d'arbre
+    (`FixedXmlNodeBuilder`, `IteratorBasedXmlNodeBuilder`) et le `PathFilter` qu'ils utilisaient ; `SaxStackWriter`
+    reste exercé par `XmlComparatorTest`.
+  - `XmlUtils.addInCDataValue` est appelé par `addCDataValue` : ProGuard le signalait parce qu'il l'avait inliné. Gardé.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -710,3 +721,4 @@ perte, la licence étant la même. Recommandation : le fondre.
 | 2026-11-20 | 2a, lot D (`sqlstreams`) | Rien de supprimé : 111 classes (5 426 lignes) et 11 fichiers de test (681 lignes) sortis de `globs`, 110 vers `bv_server`, 1 vers `bv_analytics` ; `hsqldb` et `mysql-connector-java` retirés du `pom` de `globs`. `globs-1.0.jar` 982 Ko (−160 Ko), `target/dist` 11 Mo. Tests de `globs` 794 verts (−27, partis avec leur code ; 18 relancés à part dans `bv_server`, verts) ; `bv_desktop` 1 026 verts, 9 min |
 | 2026-11-20 | 2a, lot E (membres) | `globs` : 50 membres morts, la sérialisation des changesets et 7 utilitaires de test supprimés (−804 lignes de code, −68 de tests) ; 3 classes passées dans les tests. `globs` 446 fichiers, 33 800 lignes ; `globs-1.0.jar` 952 Ko (−30 Ko), `target/dist` 11 Mo. Tests de `globs` 787 verts (−7) ; `bv_desktop` 1 026 verts après E1 et après E3, 9 min. **2a terminé** |
 | 2026-11-20 | 2b, inventaire | Rien de modifié. `saxstack` : 37 classes, 2 047 lignes de code, 44 tests (jamais lancés jusque-là, verts) ; `saxstack-2.0.jar` 87 Ko. Vivantes 16 classes (735 lignes) ; mortes 21 (1 203 lignes), dont 12 tenues par les outils de test de `globs` (`XmlComparator`) et 8 sans client. `xercesImpl` en dépendance de compilation de `globs` pour un seul outil de test. Remplacement par le JDK écarté ; quatre lots proposés (A à D), décision attendue sur la fusion dans `globs` |
+| 2026-11-20 | 2b, lot A (code mort) | `saxstack` : −7 classes, −450 lignes de code, −919 de tests ; `saxstack-2.0.jar` 41 Ko (−10 Ko). Tests de `saxstack` 26 verts (−18), `globs` 787 verts, `bv_desktop` 1 026 verts, 11 min |

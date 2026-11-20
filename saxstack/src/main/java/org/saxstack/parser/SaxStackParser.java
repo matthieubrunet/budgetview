@@ -19,43 +19,16 @@ public class SaxStackParser extends DefaultHandler {
     charBuffer = new StringBuffer();
   }
 
-  public static void parse(XMLReader parser, XmlNode rootNode, File xmlFile) throws ExceptionHolder, IOException {
-    Reader reader;
-    try {
-      reader = new BufferedReader(new FileReader(xmlFile));
-    }
-    catch (IOException e) {
-      throw e;
-    }
-    try {
-      parse(parser, rootNode, reader);
-    }
-    finally {
-      reader.close();
-    }
-  }
-
   public static void parse(XMLReader parser, XmlNode rootNode, Reader reader) throws ExceptionHolder {
     SaxStackParser saxStackParser = new SaxStackParser(parser);
-    saxStackParser.parseXml(rootNode, reader, null);
+    saxStackParser.parseXml(rootNode, reader);
   }
 
-  public static void parse(XMLReader parser, XmlNode rootNode, Reader reader, EntityResolver entityResolver) throws ExceptionHolder {
-    SaxStackParser saxStackParser = new SaxStackParser(parser);
-    saxStackParser.parseXml(rootNode, reader, entityResolver);
-  }
-
-  private void parseXml(XmlNode rootNode, Reader reader, EntityResolver entityResolver) throws ExceptionHolder {
+  private void parseXml(XmlNode rootNode, Reader reader) throws ExceptionHolder {
     nodesStack.clear();
     nodesStack.push(rootNode);
     try {
-      if (entityResolver != null) {
-        parser.setEntityResolver(entityResolver);
-      }
       parser.parse(new InputSource(reader));
-    }
-    catch (SAXExceptionHolder e) {
-      throw e.getExceptionHolder();
     }
     catch (SAXException e) {
       throw new ExceptionHolder(e);
@@ -81,20 +54,6 @@ public class SaxStackParser extends DefaultHandler {
     }
     charBuffer.setLength(0);
     node.complete();
-  }
-
-  public static class SAXExceptionHolder extends SAXException {
-    private ExceptionHolder exceptionHolder;
-
-    public SAXExceptionHolder(ExceptionHolder e) {
-      super(e.getInner());
-      this.exceptionHolder = e;
-    }
-
-    public ExceptionHolder getExceptionHolder() {
-      return exceptionHolder;
-    }
-
   }
 
 }

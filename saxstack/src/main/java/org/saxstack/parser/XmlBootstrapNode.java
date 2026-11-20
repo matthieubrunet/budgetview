@@ -11,10 +11,6 @@ public class XmlBootstrapNode implements XmlNode {
     this.rootNodeName = rootNodeName;
   }
 
-  public String getCurrentTagName() {
-    return null;
-  }
-
   public XmlNode getSubNode(String childName, Attributes xmlAttrs) {
     if (childName.equals(rootNodeName)) {
       return rootNode;
