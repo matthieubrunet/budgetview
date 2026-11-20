@@ -90,9 +90,12 @@ Faire l'inventaire sans rien modifier, puis supprimer.
 `globs`, `splits`, `saxstack` et `prevayler` sont des versions privées et figées. BudgetView
 n'utilise sans doute qu'une partie de leurs API.
 
-- [ ] **2a. API de `globs` réellement appelées** par `bv_desktop` et `bv_shared` (`jdeps`, ou
+- [x] **2a. API de `globs` réellement appelées** par `bv_desktop` et `bv_shared` (`jdeps`, ou
   analyse des imports et des appels). Le reste est candidat à la suppression, avec ses tests
   (873 aujourd'hui).
+  Inventaire fait le 2026-11-19 (script [audit/globs.py](audit/globs.py)), voir [2a, inventaire](#2a-inventaire) plus bas.
+  Lots A à E faits du 2026-11-19 au 2026-11-20 : `sqlstreams` déplacé dans `bv_server`, 46 classes et ~3 300 lignes de code
+  supprimées, tests de `globs` 873 → 787.
 - [ ] **2b. `saxstack`** : ce qu'il apporte par rapport au SAX ou au StAX du JDK. Peut-il être
   remplacé, ou au moins réduit ?
 - [ ] **2c. `prevayler`** : quelles parties du fork servent ? Ne rien changer au format sur
@@ -590,6 +593,28 @@ et des tests du bureau sans perdre le code).
   Vérifié : `bv_server` compile en `main` (ses tests ne compilaient déjà plus : `functests` de licence) ; les tests
   déplacés compilés à part et lancés par `JUnitCore` : 18 verts, MySQL compris (traduction de codes d'erreur).
   Tests de `globs` : 821 → 794.
+- Lot E (2026-11-20), sur un inventaire relancé après le lot D (631 membres isolés : 50 sans autre occurrence, 40 cités
+  par les seuls tests, 12 par le seul serveur), trois commits :
+  - E1 : les 50 membres sans autre occurrence (−445 lignes). Les noms cités ailleurs (`getRenderedComponent`, `toList`,
+    `setDateFormat`, `average`) ne le sont que par des homonymes d'uispec4j, de siteweaver ou des commentaires.
+  - E2 : `readChangeSet` et `writeChangeSet` de la sérialisation binaire, que seul `SerializationTest` appelait, avec la
+    partie `ChangeSetVisitor` de `DefaultSerializationOutput` (−302 lignes). Les trois classes reportées du lot C ne
+    servent plus qu'à l'outil de test `XmlChangeSetParser` : elles passent dans `globs/src/test`. `LinkBuilder` reste.
+  - E3 : sept utilitaires que seul leur propre test exerçait (`Dates.getStandardDate`, `extractDateDDMMYYYY`,
+    `Strings.removeSpaces`, `trimLines`, `Utils.minInt`, `Encoder.stringToByte`, `GlobTypeUtils.getNamingField`), avec
+    leurs 6 tests. Tests de `globs` : 794 → 787.
+  Gardés parmi les membres servis par les seuls tests :
+  - **`GlobTypeDependencies`** : ses quatre accesseurs ne servent qu'aux tests, mais sa construction (par
+    `DefaultGlobModel`, à chaque démarrage) refuse les cycles de liens obligatoires. C'est un contrôle du modèle ;
+  - les outils des tests de `bv_desktop` (`GuiUtils.pressKey`, `Files.copyResourceToTmpFile`, `loadPropertyKeys`,
+    `Log.enableDebug`, `TablePrinter.addRow`, `Utils.randomInt`, `box`) ;
+  - les points d'observation des tests du parsing des `.splits` (accesseurs des icônes, des UI, du `ColorService`) ;
+  - des options des vues et du parseur (`setIconifier`, `setAutoDisableIfEmpty`, `parseIgnoreError`,
+    `ChangeSetMatchers.changesForType`) et les `add*Field` de `GlobTypeBuilder` : les retirer voudrait réécrire des
+    classes de test de base partagées (`GlobTextViewTestCase`…) pour quelques lignes.
+  Les 12 membres que seul le serveur cite (`Dates`, `Strings`, `GlobMatchers`…) restent : ce sont des méthodes de
+  classes vivantes, qu'on ne déplace pas seules.
+  Les 527 homonymes ne sont pas lus : rien n'y a été repéré d'aussi gros que les lots précédents.
 - Piège : les tests d'IHM de `globs` (38 classes) échouent sous Java 21 sans les `--add-opens` du profil `jdk17` de
   `bv_desktop`, que le `pom` de `globs` n'avait pas. Ajoutés à son surefire avec une JVM par classe et une limite de
   temps : `mvn -o clean test -pl globs` suffit ([etat-des-tests.md](etat-des-tests.md)).
@@ -620,3 +645,4 @@ ProGuard est le code lancé à part (`Dump`, génération de la démo), que seul
 | 2026-11-19 | 2a, lot B (`remote`) | `globs` : −7 classes, −667 lignes avec le test ; `globs-1.0.jar` 1 187 Ko (−22 Ko). Tests de `globs` 832 verts (−1) ; `bv_desktop` 1 026 verts, 14 min |
 | 2026-11-20 | 2a, lot C (divers) | `globs` : −23 classes, −1 048 lignes de code (dont 4 méthodes), −467 de tests ; 2 outils XML (270 lignes) passés dans les tests ; `globs-1.0.jar` 1 142 Ko (−45 Ko). Tests de `globs` 821 verts (−11) ; `bv_desktop` 1 026 verts, 10 min |
 | 2026-11-20 | 2a, lot D (`sqlstreams`) | Rien de supprimé : 111 classes (5 426 lignes) et 11 fichiers de test (681 lignes) sortis de `globs`, 110 vers `bv_server`, 1 vers `bv_analytics` ; `hsqldb` et `mysql-connector-java` retirés du `pom` de `globs`. `globs-1.0.jar` 982 Ko (−160 Ko), `target/dist` 11 Mo. Tests de `globs` 794 verts (−27, partis avec leur code ; 18 relancés à part dans `bv_server`, verts) ; `bv_desktop` 1 026 verts, 9 min |
+| 2026-11-20 | 2a, lot E (membres) | `globs` : 50 membres morts, la sérialisation des changesets et 7 utilitaires de test supprimés (−804 lignes de code, −68 de tests) ; 3 classes passées dans les tests. `globs` 446 fichiers, 33 800 lignes ; `globs-1.0.jar` 952 Ko (−30 Ko), `target/dist` 11 Mo. Tests de `globs` 787 verts (−7) ; `bv_desktop` 1 026 verts après E1 et après E3, 9 min. **2a terminé** |

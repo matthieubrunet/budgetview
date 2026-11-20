@@ -150,6 +150,7 @@ ne recompile que les sources modifiées, et une classe de test non touchée rest
 |---|---|---|
 | Premier tri, sans correction | 874 + 1 classe bloquée | 42 |
 | Après corrections | 873 | **0** |
+| Après l'audit 2a (2026-11-20), tests partis avec le code supprimé ou déplacé dans `bv_server` | 787 | **0** |
 
 bv_desktop relancé en entier avec ces corrections (jar globs installé) : 1 029 tests, une seule erreur, due à l'essai
 sur `GlobTableView` (voir plus bas), abandonné depuis ; la classe en cause repasse.

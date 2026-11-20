@@ -232,7 +232,7 @@ Adaptations des tests faites pour la 6.00 :
   et vérifier la ligne `Tests run:` finale.
 
 Tests de `globs` : `mvn -o clean test -pl globs` (~1 min ; le `pom` fixe JVM par classe, limite de temps et `--add-opens`),
-794 verts au 2026-11-20 (détail dans [docs/etat-des-tests.md](docs/etat-des-tests.md)). `clean` après un changement de signature (le vieux
+787 verts au 2026-11-20 (détail dans [docs/etat-des-tests.md](docs/etat-des-tests.md)). `clean` après un changement de signature (le vieux
 compilateur ne recompile pas les tests non touchés) ; `mvn -o install -pl globs -DskipTests` avant de tester bv_desktop,
 qui prend globs dans `~/.m2`.
 
