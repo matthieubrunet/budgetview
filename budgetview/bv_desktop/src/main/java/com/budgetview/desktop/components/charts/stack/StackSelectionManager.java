@@ -1,10 +1,10 @@
 package com.budgetview.desktop.components.charts.stack;
 
 import org.globsframework.model.Key;
-import org.globsframework.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class StackSelectionManager {
 
@@ -32,7 +32,7 @@ public class StackSelectionManager {
     boolean rolloverChanged = false;
     boolean doExpandSelection = false;
 
-    if (!Utils.equal(key, currentRollover)) {
+    if (!Objects.equals(key, currentRollover)) {
       this.currentRollover = key;
       rolloverChanged = true;
       doExpandSelection = forceExpandSelection;

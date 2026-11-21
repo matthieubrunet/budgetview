@@ -8,12 +8,12 @@ import com.budgetview.model.Day;
 import com.budgetview.shared.utils.Amounts;
 import junit.framework.Assert;
 import org.globsframework.model.Key;
-import org.globsframework.utils.Utils;
 import org.uispec4j.Mouse;
 import org.uispec4j.Panel;
 
 import java.awt.*;
 import java.util.Collections;
+import java.util.Objects;
 
 public class HistoDailyChecker extends AbstractHistoChecker<HistoDailyChecker> {
 
@@ -27,7 +27,7 @@ public class HistoDailyChecker extends AbstractHistoChecker<HistoDailyChecker> {
 
   public HistoDailyChecker checkEndOfMonthValue(Double value) {
     Double actual = getDataset().getLastValue(0);
-    if (!Utils.equal(value, actual)) {
+    if (!Objects.equals(value, actual)) {
       Assert.fail("expected: " + value + " but was: " + actual + "\nActual content:\n" + getDataset().toString(0));
     }
     return this;

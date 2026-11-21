@@ -5,7 +5,6 @@ import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.Link;
 import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.utils.*;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.UnexpectedApplicationState;
 
 import java.util.*;
@@ -282,7 +281,7 @@ public class GlobList extends ArrayList<Glob> {
 
   public boolean containsValue(BooleanField field, Boolean value) {
     for (Glob glob : this) {
-      if (Utils.equal(glob.get(field), value)) {
+      if (Objects.equals(glob.get(field), value)) {
         return true;
       }
     }
@@ -291,7 +290,7 @@ public class GlobList extends ArrayList<Glob> {
 
   public boolean containsValue(IntegerField field, Integer value) {
     for (Glob glob : this) {
-      if (Utils.equal(glob.get(field), value)) {
+      if (Objects.equals(glob.get(field), value)) {
         return true;
       }
     }

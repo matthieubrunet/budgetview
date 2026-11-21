@@ -14,13 +14,13 @@ import org.globsframework.metamodel.index.NotUniqueIndex;
 import org.globsframework.model.*;
 import org.globsframework.model.format.GlobDump;
 import org.globsframework.model.utils.GlobMatcher;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.serialization.SerializedByteArrayOutput;
 import org.globsframework.utils.serialization.SerializedInput;
 import org.globsframework.utils.serialization.SerializedInputOutputFactory;
 import org.globsframework.utils.serialization.SerializedOutput;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 
@@ -269,11 +269,11 @@ public class Transaction {
   }
 
   public static boolean isUncategorized(Glob transaction) {
-    return (transaction != null) && Utils.equal(Series.UNCATEGORIZED_SERIES_ID, transaction.get(SERIES));
+    return (transaction != null) && Objects.equals(Series.UNCATEGORIZED_SERIES_ID, transaction.get(SERIES));
   }
 
   public static boolean isCategorized(Glob transaction) {
-    return (transaction != null) && !Utils.equal(Series.UNCATEGORIZED_SERIES_ID, transaction.get(SERIES));
+    return (transaction != null) && !Objects.equals(Series.UNCATEGORIZED_SERIES_ID, transaction.get(SERIES));
   }
 
   public static boolean isToReconcile(Glob transaction) {

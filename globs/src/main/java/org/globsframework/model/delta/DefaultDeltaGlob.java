@@ -5,9 +5,9 @@ import org.globsframework.metamodel.GlobType;
 import org.globsframework.model.*;
 import org.globsframework.model.impl.AbstractFieldValuesWithPrevious;
 import org.globsframework.utils.Unset;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.ItemNotFound;
 import org.globsframework.utils.exceptions.UnexpectedApplicationState;
+import java.util.Objects;
 
 class DefaultDeltaGlob extends AbstractFieldValuesWithPrevious implements DeltaGlob {
 
@@ -66,7 +66,7 @@ class DefaultDeltaGlob extends AbstractFieldValuesWithPrevious implements DeltaG
 
   public void setValueForUpdate(Field updatedField, Object value) {
     checkFieldType(updatedField);
-    if (Utils.equal(value, previousValues[updatedField.getIndex()])) {
+    if (Objects.equals(value, previousValues[updatedField.getIndex()])) {
       previousValues[updatedField.getIndex()] = Unset.VALUE;
       values[updatedField.getIndex()] = Unset.VALUE;
       for (Field field : key.getGlobType().getFields()) {
@@ -87,7 +87,7 @@ class DefaultDeltaGlob extends AbstractFieldValuesWithPrevious implements DeltaG
       if (field.isKeyField()) {
         continue;
       }
-      if (Utils.equal(values[field.getIndex()], previousValues[field.getIndex()])) {
+      if (Objects.equals(values[field.getIndex()], previousValues[field.getIndex()])) {
         previousValues[field.getIndex()] = Unset.VALUE;
         values[field.getIndex()] = Unset.VALUE;
       }

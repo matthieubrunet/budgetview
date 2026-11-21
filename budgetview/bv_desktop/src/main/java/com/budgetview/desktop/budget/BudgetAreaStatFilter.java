@@ -10,10 +10,10 @@ import com.budgetview.shared.model.BudgetArea;
 import org.globsframework.model.*;
 import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.model.utils.GlobMatchers;
-import org.globsframework.utils.Utils;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.Objects;
 
 public class BudgetAreaStatFilter implements GlobMatcher {
 
@@ -56,7 +56,7 @@ public class BudgetAreaStatFilter implements GlobMatcher {
       if (!monthFilteringEnabled) {
         return budgetArea.getId().equals(budgetAreaId);
       }
-      return Utils.equal(budgetAreaId, budgetArea.getId())
+      return Objects.equals(budgetAreaId, budgetArea.getId())
                        && periodSeriesStat.get(PeriodSeriesStat.ACTIVE);
     }
 

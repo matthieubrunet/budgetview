@@ -19,7 +19,6 @@ import org.globsframework.model.Glob;
 import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.utils.GlobMatcher;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.DefaultDirectory;
 import org.globsframework.utils.directory.Directory;
 
@@ -28,6 +27,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 
@@ -146,12 +146,12 @@ public class SeriesDeletionDialog {
     }
 
     private void updateTargetAccount(GlobList transactions) {
-      if (Utils.equal(targetSeries.get(Series.TARGET_ACCOUNT), Account.MAIN_SUMMARY_ACCOUNT_ID)) {
+      if (Objects.equals(targetSeries.get(Series.TARGET_ACCOUNT), Account.MAIN_SUMMARY_ACCOUNT_ID)) {
         return;
       }
       Set<Integer> accountIds = transactions.getValueSet(Transaction.ACCOUNT);
       if ((accountIds.size() > 1) ||
-          (accountIds.size() == 1 && !Utils.equal(accountIds.iterator().next(), targetSeries.get(Series.TARGET_ACCOUNT)))) {
+          (accountIds.size() == 1 && !Objects.equals(accountIds.iterator().next(), targetSeries.get(Series.TARGET_ACCOUNT)))) {
         repository.update(targetSeries, Series.TARGET_ACCOUNT, Account.MAIN_SUMMARY_ACCOUNT_ID);
       }
     }
@@ -214,10 +214,10 @@ public class SeriesDeletionDialog {
       }
 
       Integer otherTargetAccount = otherSeries.get(Series.TARGET_ACCOUNT);
-      if (Utils.equal(otherTargetAccount, referenceAccount)) {
+      if (Objects.equals(otherTargetAccount, referenceAccount)) {
         return true;
       }
-      if (referenceIsMain && Utils.equal(otherTargetAccount, Account.MAIN_SUMMARY_ACCOUNT_ID)) {
+      if (referenceIsMain && Objects.equals(otherTargetAccount, Account.MAIN_SUMMARY_ACCOUNT_ID)) {
         return true;
       }
       Glob otherAccount = repository.find(org.globsframework.model.Key.create(Account.TYPE, otherTargetAccount));

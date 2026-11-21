@@ -7,11 +7,11 @@ import com.budgetview.shared.model.AccountType;
 import org.globsframework.metamodel.fields.LinkField;
 import org.globsframework.model.Glob;
 import org.globsframework.model.GlobRepository;
-import org.globsframework.utils.Utils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public abstract class AccountTypeCombo {
   protected JComboBox accountTypeCombo;
@@ -88,7 +88,7 @@ public abstract class AccountTypeCombo {
 
         public boolean isApplied(Glob account) {
           return isMain(account) &&
-                 Utils.equal(account.get(cardType), AccountCardType.CREDIT.getId());
+                 Objects.equals(account.get(cardType), AccountCardType.CREDIT.getId());
         }
       },
       new AccountTypeSelector("accountCardType.deferred") {
@@ -99,7 +99,7 @@ public abstract class AccountTypeCombo {
 
         public boolean isApplied(Glob account) {
           return isMain(account) &&
-                 Utils.equal(account.get(cardType), AccountCardType.DEFERRED.getId());
+                 Objects.equals(account.get(cardType), AccountCardType.DEFERRED.getId());
         }
       }
       ,

@@ -10,8 +10,8 @@ import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.Glob;
 import org.globsframework.model.impl.ReadOnlyGlob;
 import org.globsframework.model.utils.GlobConstantContainer;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.ItemNotFound;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 
@@ -68,6 +68,6 @@ public enum AccountUpdateMode implements GlobConstantContainer {
   }
 
   public static boolean isAutomatic(Glob account) {
-    return Utils.equal(AUTOMATIC.id, account.get(Account.UPDATE_MODE));
+    return Objects.equals(AUTOMATIC.id, account.get(Account.UPDATE_MODE));
   }
 }

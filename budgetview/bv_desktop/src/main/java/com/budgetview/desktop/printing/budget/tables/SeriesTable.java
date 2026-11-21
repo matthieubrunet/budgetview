@@ -19,6 +19,7 @@ import org.globsframework.utils.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static com.budgetview.desktop.model.SeriesStat.isSummaryForBudgetArea;
 import static org.globsframework.model.utils.GlobMatchers.*;
@@ -87,7 +88,7 @@ public class SeriesTable {
   }
 
   public boolean isColumnSelected(int column) {
-    return column > 2 && Utils.equal(currentMonth, months.get(column - 2));
+    return column > 2 && Objects.equals(currentMonth, months.get(column - 2));
   }
 
   public List<SeriesRow> rows() {

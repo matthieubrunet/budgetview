@@ -6,9 +6,9 @@ import com.budgetview.desktop.printing.utils.BlockMultiColumnsPage;
 import com.budgetview.desktop.printing.utils.EmptyBlock;
 import com.budgetview.desktop.printing.utils.PageBlock;
 import junit.framework.Assert;
-import org.globsframework.utils.Utils;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BudgetGaugePageChecker {
   private BlockMultiColumnsPage page;
@@ -30,14 +30,14 @@ public class BudgetGaugePageChecker {
       Assert.fail("Unexpected block type " + block.getClass().getSimpleName() + " at index " + index + " - actual content:\n" + getContent());
     }
     BudgetAreaGaugeBlock budgetBlock = (BudgetAreaGaugeBlock) block;
-    if (!Utils.equal(label, budgetBlock.getLabel())) {
+    if (!Objects.equals(label, budgetBlock.getLabel())) {
       Assert.fail("Unexpected label at index " + index + ": expected " + label + " but was " + budgetBlock.getLabel() + " - actual content:\n" + getContent());
     }
-    if (!Utils.equal(actualAmount, budgetBlock.getActualAmount())) {
+    if (!Objects.equals(actualAmount, budgetBlock.getActualAmount())) {
       Assert.fail("Unexpected actual amount at index " + index + ": expected " + actualAmount +
                   " but was " + budgetBlock.getActualAmount() + " - actual content:\n" + getContent());
     }
-    if (!Utils.equal(plannedAmount, budgetBlock.getPlannedAmount())) {
+    if (!Objects.equals(plannedAmount, budgetBlock.getPlannedAmount())) {
       Assert.fail("Unexpected planned amount at index " + index + ": expected " + plannedAmount +
                   " but was " + budgetBlock.getPlannedAmount() + " - actual content:\n" + getContent());
     }
@@ -50,14 +50,14 @@ public class BudgetGaugePageChecker {
       Assert.fail("Unexpected block type " + block.getClass().getSimpleName() + " at index " + index + " - actual content:\n" + getContent());
     }
     SeriesGaugeBlock seriesBlock = (SeriesGaugeBlock) blocks.get(index);
-    if (!Utils.equal(label, seriesBlock.getLabel())) {
+    if (!Objects.equals(label, seriesBlock.getLabel())) {
       Assert.fail("Unexpected label at index " + index + ": expected " + label + " but was " + seriesBlock.getLabel() + " - actual content:\n" + getContent());
     }
-    if (!Utils.equal(actualAmount, seriesBlock.getActualAmount())) {
+    if (!Objects.equals(actualAmount, seriesBlock.getActualAmount())) {
       Assert.fail("Unexpected actual amount at index " + index + ": expected " + actualAmount +
                   " but was " + seriesBlock.getActualAmount() + " - actual content:\n" + getContent());
     }
-    if (!Utils.equal(plannedAmount, seriesBlock.getPlannedAmount())) {
+    if (!Objects.equals(plannedAmount, seriesBlock.getPlannedAmount())) {
       Assert.fail("Unexpected planned amount at index " + index + ": expected " + plannedAmount +
                   " but was " + seriesBlock.getPlannedAmount() + " - actual content:\n" + getContent());
     }

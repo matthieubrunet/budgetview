@@ -5,13 +5,13 @@ import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.FieldValue;
 import org.globsframework.model.Key;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.InvalidParameter;
 import org.globsframework.utils.exceptions.ItemNotFound;
 import org.globsframework.utils.exceptions.MissingInfo;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 
 public class TwoFieldKey extends Key {
   private Field keyField1;
@@ -219,8 +219,8 @@ public class TwoFieldKey extends Key {
     if (o.getClass().equals(TwoFieldKey.class)) {
       TwoFieldKey twoFieldKey = (TwoFieldKey)o;
       return keyField1.getGlobType().equals(twoFieldKey.getGlobType()) &&
-             Utils.equal(twoFieldKey.value1, value1) &&
-             Utils.equal(twoFieldKey.value2, value2);
+             Objects.equals(twoFieldKey.value1, value1) &&
+             Objects.equals(twoFieldKey.value2, value2);
     }
 
     if (!Key.class.isAssignableFrom(o.getClass())) {
@@ -228,9 +228,9 @@ public class TwoFieldKey extends Key {
     }
     Key otherKey = (Key)o;
     return keyField1.getGlobType().equals(otherKey.getGlobType())
-           && Utils.equal(value1, otherKey.getValue(keyField1)) &&
+           && Objects.equals(value1, otherKey.getValue(keyField1)) &&
            keyField2.getGlobType().equals(otherKey.getGlobType())
-           && Utils.equal(value2, otherKey.getValue(keyField2));
+           && Objects.equals(value2, otherKey.getValue(keyField2));
   }
 
   // optimized - do not use generated code

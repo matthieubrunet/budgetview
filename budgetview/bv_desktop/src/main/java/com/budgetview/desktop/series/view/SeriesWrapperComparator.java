@@ -7,6 +7,7 @@ import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.UnexpectedValue;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 public class SeriesWrapperComparator implements Comparator<Glob> {
   private static final Integer ALL_CATEGORY_ID = SeriesWrapper.ALL_ID;
@@ -24,7 +25,7 @@ public class SeriesWrapperComparator implements Comparator<Glob> {
 
   public int compare(Glob wrapper1, Glob wrapper2) {
 
-    if (Utils.equal(wrapper1, wrapper2)) {
+    if (Objects.equals(wrapper1, wrapper2)) {
       return 0;
     }
 
@@ -36,14 +37,14 @@ public class SeriesWrapperComparator implements Comparator<Glob> {
 
     if (level1 < level2) {
       Glob parent2 = SeriesWrapper.getParent(wrapper2, localRepository);
-      if (Utils.equal(wrapper1, parent2)) {
+      if (Objects.equals(wrapper1, parent2)) {
         return -1;
       }
       return compare(wrapper1, parent2);
     }
     else if (level1 > level2) {
       Glob parent1 = SeriesWrapper.getParent(wrapper1, localRepository);
-      if (Utils.equal(wrapper2, parent1)) {
+      if (Objects.equals(wrapper2, parent1)) {
         return 1;
       }
       return compare(parent1, wrapper2);
@@ -51,7 +52,7 @@ public class SeriesWrapperComparator implements Comparator<Glob> {
     else  {
       Glob parent1 = SeriesWrapper.getParent(wrapper1, localRepository);
       Glob parent2 = SeriesWrapper.getParent(wrapper2, localRepository);
-      if (Utils.equal(parent1, parent2)) {
+      if (Objects.equals(parent1, parent2)) {
         return Utils.compare(getName(wrapper1), getName(wrapper2));
       }
       else {
@@ -95,16 +96,16 @@ public class SeriesWrapperComparator implements Comparator<Glob> {
       return Integer.signum(wrapper2.get(SeriesWrapper.ID) - wrapper1.get(SeriesWrapper.ID));
     }
 
-    if (Utils.equal(wrapper1.get(SeriesWrapper.ID), ALL_CATEGORY_ID)) {
+    if (Objects.equals(wrapper1.get(SeriesWrapper.ID), ALL_CATEGORY_ID)) {
       return -1;
     }
-    if (Utils.equal(wrapper2.get(SeriesWrapper.ID), ALL_CATEGORY_ID)) {
+    if (Objects.equals(wrapper2.get(SeriesWrapper.ID), ALL_CATEGORY_ID)) {
       return 1;
     }
-    if (Utils.equal(wrapper1.get(SeriesWrapper.ID), UNCATEGORIZED_ID)) {
+    if (Objects.equals(wrapper1.get(SeriesWrapper.ID), UNCATEGORIZED_ID)) {
       return -1;
     }
-    if (Utils.equal(wrapper2.get(SeriesWrapper.ID), UNCATEGORIZED_ID)) {
+    if (Objects.equals(wrapper2.get(SeriesWrapper.ID), UNCATEGORIZED_ID)) {
       return 1;
     }
 

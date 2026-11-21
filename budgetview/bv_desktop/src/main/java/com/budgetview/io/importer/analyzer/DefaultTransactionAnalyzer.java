@@ -8,11 +8,11 @@ import org.globsframework.model.Glob;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.Key;
 import org.globsframework.utils.Strings;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.collections.MultiMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.budgetview.model.TransactionType.PRELEVEMENT;
 import static com.budgetview.model.TransactionType.VIREMENT;
@@ -53,7 +53,7 @@ public class DefaultTransactionAnalyzer implements TransactionAnalyzer {
         if (name == null && checkNum != null) {
           name = checkNum;
         }
-        if (Utils.equal(name, memo)) {
+        if (Objects.equals(name, memo)) {
           content = name;
         }
         else if (name != null && memo != null && name.contains(memo)) {

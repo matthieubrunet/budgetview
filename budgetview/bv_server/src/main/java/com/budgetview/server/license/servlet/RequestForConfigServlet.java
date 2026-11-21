@@ -17,7 +17,6 @@ import org.globsframework.streams.accessors.utils.ValueDateAccessor;
 import org.globsframework.streams.accessors.utils.ValueIntegerAccessor;
 import org.globsframework.streams.accessors.utils.ValueLongAccessor;
 import org.globsframework.streams.accessors.utils.ValueStringAccessor;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.servlet.ServletException;
@@ -26,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
 
 public class RequestForConfigServlet extends HttpServlet {
   static Logger logger = Logger.getLogger("RequestForConfigServlet");
@@ -304,7 +304,7 @@ public class RequestForConfigServlet extends HttpServlet {
         if (license.get(License.REPO_ID) != null && license.get(License.REPO_ID).equals(repoId)) {
           if (count < license.get(License.ACCESS_COUNT)) {
 //            resp.setHeader(HttpBudgetViewConstants.HEADER_IS_VALIDE, "false");
-            if (Utils.equal(activationCode, license.get(License.LAST_ACTIVATION_CODE))) {
+            if (Objects.equals(activationCode, license.get(License.LAST_ACTIVATION_CODE))) {
 //              String code = LicenseGenerator.generateActivationCode();
 //              updateNewActivationCodeRequest.execute(mail, code);
 //              db.commit();
@@ -318,7 +318,7 @@ public class RequestForConfigServlet extends HttpServlet {
             return null;
           }
           else {
-            if (Utils.equal(activationCode, license.get(License.LAST_ACTIVATION_CODE))) {
+            if (Objects.equals(activationCode, license.get(License.LAST_ACTIVATION_CODE))) {
               updateLastAccessRequest.execute(license.get(License.ID), count, new Date(), info);
               connection.commit();
               logInfo("ok_for mail = " + mail + " count = " + count);

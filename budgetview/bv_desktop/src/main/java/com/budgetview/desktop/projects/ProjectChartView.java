@@ -33,13 +33,13 @@ import org.globsframework.model.Glob;
 import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.Key;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.collections.Range;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Set;
+import java.util.Objects;
 
 public class ProjectChartView extends View implements HistoChartAdjustableRange {
   private static final float BUTTON_FONT_SIZE = 12.0f;
@@ -156,7 +156,7 @@ public class ProjectChartView extends View implements HistoChartAdjustableRange 
     java.util.List<Integer> monthIds = range.getMonthIds(currentMonthId);
     HistoButtonDatasetBuilder dataset = new HistoButtonDatasetBuilder(histoChart, new JLabel(), repository, HistoLabelUpdater.get(histoChart, monthIds.size()));
     for (Integer monthId : monthIds) {
-      dataset.addColumn(monthId, Utils.equal(monthId, currentMonthId));
+      dataset.addColumn(monthId, Objects.equals(monthId, currentMonthId));
     }
     GlobList selectedProjects = selectionService.getSelection(Project.TYPE);
     for (Glob project : repository.getAll(Project.TYPE)) {

@@ -1,7 +1,6 @@
 package org.globsframework.gui.splits.utils;
 
 import org.globsframework.utils.Strings;
-import org.globsframework.utils.Utils;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -12,6 +11,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 public class GuiUtils {
 
@@ -164,7 +164,7 @@ public class GuiUtils {
   public static <T> T getEnclosingComponent(Component component, final Class<T> containerClass, final String name) {
     return (T)getEnclosingComponent(component, new ComponentMatcher() {
       public boolean matches(Component component) {
-        return containerClass.isInstance(component) && Utils.equal(name, component.getName());
+        return containerClass.isInstance(component) && Objects.equals(name, component.getName());
       }
     });
   }

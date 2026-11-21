@@ -81,7 +81,7 @@ public class TestUtils {
       }
       T value = values[i];
       T nextValue = iterator.next();
-      if (!Utils.equal(nextValue, value)) {
+      if (!Objects.equals(nextValue, value)) {
         Assert.fail("Error at index " + i + ": expected: " + value + " but was: " + nextValue);
       }
     }
@@ -116,7 +116,7 @@ public class TestUtils {
     Iterator actualIterator = actual.iterator();
     int index = 0;
     for (T anExpected : expected) {
-      if (!Utils.equal(actualIterator.next(), anExpected)) {
+      if (!Objects.equals(actualIterator.next(), anExpected)) {
         showFailures("Error at item " + index, actual, expected);
       }
       index++;

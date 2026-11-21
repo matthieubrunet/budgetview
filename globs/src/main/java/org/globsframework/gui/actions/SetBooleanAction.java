@@ -4,11 +4,11 @@ import org.globsframework.gui.splits.utils.Disposable;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.fields.BooleanField;
 import org.globsframework.model.*;
-import org.globsframework.utils.Utils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.Set;
+import java.util.Objects;
 
 public class SetBooleanAction extends AbstractAction implements ChangeSetListener, Disposable {
 
@@ -29,7 +29,7 @@ public class SetBooleanAction extends AbstractAction implements ChangeSetListene
   }
 
   public void setKey(Key newKey) {
-    if (!Utils.equal(this.key, newKey)) {
+    if (!Objects.equals(this.key, newKey)) {
       this.key = newKey;
       doUpdate();
     }

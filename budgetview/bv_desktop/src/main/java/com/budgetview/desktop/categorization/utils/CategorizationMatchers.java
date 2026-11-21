@@ -10,9 +10,9 @@ import com.budgetview.shared.model.BudgetArea;
 import org.globsframework.model.Glob;
 import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
-import org.globsframework.utils.Utils;
 
 import java.util.Set;
+import java.util.Objects;
 
 public class CategorizationMatchers {
 
@@ -53,7 +53,7 @@ public class CategorizationMatchers {
       }
 
       if ((series.get(Series.BUDGET_AREA).equals(BudgetArea.OTHER.getId()) && series.get(Series.FROM_ACCOUNT) != null) ||
-          Utils.equal(Account.MAIN_SUMMARY_ACCOUNT_ID, series.get(Series.TARGET_ACCOUNT))) {
+          Objects.equals(Account.MAIN_SUMMARY_ACCOUNT_ID, series.get(Series.TARGET_ACCOUNT))) {
         return transactionsAreAllInMainAccounts(transactions, repository);
       }
 

@@ -7,7 +7,7 @@ import com.budgetview.model.util.ClosedMonthRange;
 import org.globsframework.model.Glob;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.utils.GlobMatcher;
-import org.globsframework.utils.Utils;
+import java.util.Objects;
 
 public class ReferenceTransactionFilter implements GlobMatcher {
 
@@ -25,7 +25,7 @@ public class ReferenceTransactionFilter implements GlobMatcher {
            !transaction.isTrue(Transaction.MIRROR) && 
            !Transaction.isToReconcile(transaction) &&
            range.contains(transaction.get(Transaction.POSITION_MONTH)) &&
-           Utils.equal(accountId, transaction.get(Transaction.ACCOUNT)) &&
+           Objects.equals(accountId, transaction.get(Transaction.ACCOUNT)) &&
            (transaction.get(Transaction.TRANSACTION_TYPE) != TransactionType.OPEN_ACCOUNT_EVENT.getId()) &&
            (transaction.get(Transaction.TRANSACTION_TYPE) != TransactionType.CLOSE_ACCOUNT_EVENT.getId());
   }

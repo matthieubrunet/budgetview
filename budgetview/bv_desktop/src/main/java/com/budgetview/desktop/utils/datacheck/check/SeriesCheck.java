@@ -9,11 +9,11 @@ import org.globsframework.model.Glob;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.Key;
 import org.globsframework.model.ReadOnlyGlobRepository;
-import org.globsframework.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
 
 import static org.globsframework.model.utils.GlobMatchers.fieldEquals;
 
@@ -47,10 +47,10 @@ public class SeriesCheck {
   }
 
   private static Integer getMirrorAccount(Glob series) {
-    if (Utils.equal(series.get(Series.TARGET_ACCOUNT), series.get(Series.TO_ACCOUNT))) {
+    if (Objects.equals(series.get(Series.TARGET_ACCOUNT), series.get(Series.TO_ACCOUNT))) {
       return series.get(Series.FROM_ACCOUNT);
     }
-    if (Utils.equal(series.get(Series.TARGET_ACCOUNT), series.get(Series.FROM_ACCOUNT))) {
+    if (Objects.equals(series.get(Series.TARGET_ACCOUNT), series.get(Series.FROM_ACCOUNT))) {
       return series.get(Series.TO_ACCOUNT);
     }
     return null;

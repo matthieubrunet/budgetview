@@ -16,7 +16,6 @@ import org.globsframework.model.Key;
 import org.globsframework.model.repository.GlobIdGenerator;
 import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.utils.Strings;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.collections.MultiMap;
 import org.globsframework.utils.exceptions.TruncatedFile;
 
@@ -363,7 +362,7 @@ public class OfxImporter implements AccountFileImporter {
       }
 
       public boolean matches(Glob account, GlobRepository repository) {
-        if (!Utils.equal(bankId, account.get(RealAccount.BANK))) {
+        if (!Objects.equals(bankId, account.get(RealAccount.BANK))) {
           return false;
         }
         if (!Strings.isNotEmpty(accountNumber) || !accountNumber.equalsIgnoreCase(account.get(RealAccount.NUMBER))) {

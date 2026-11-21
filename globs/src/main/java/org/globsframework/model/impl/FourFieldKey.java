@@ -5,12 +5,12 @@ import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.FieldValue;
 import org.globsframework.model.Key;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.InvalidParameter;
 import org.globsframework.utils.exceptions.MissingInfo;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 
 public class FourFieldKey extends Key {
   private Field keyField1;
@@ -265,10 +265,10 @@ public class FourFieldKey extends Key {
       FourFieldKey otherSingleFieldKey = (FourFieldKey)o;
       return
         otherSingleFieldKey.keyField1.getGlobType().equals(keyField1.getGlobType()) &&
-        Utils.equal(otherSingleFieldKey.value1, value1) &&
-        Utils.equal(otherSingleFieldKey.value2, value2) &&
-        Utils.equal(otherSingleFieldKey.value3, value3) &&
-        Utils.equal(otherSingleFieldKey.value4, value4);
+        Objects.equals(otherSingleFieldKey.value1, value1) &&
+        Objects.equals(otherSingleFieldKey.value2, value2) &&
+        Objects.equals(otherSingleFieldKey.value3, value3) &&
+        Objects.equals(otherSingleFieldKey.value4, value4);
     }
 
     if (!Key.class.isAssignableFrom(o.getClass())) {

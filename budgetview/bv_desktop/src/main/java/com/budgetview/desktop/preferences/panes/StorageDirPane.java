@@ -11,13 +11,13 @@ import org.globsframework.gui.GlobsPanelBuilder;
 import org.globsframework.gui.splits.utils.GuiUtils;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.utils.Ref;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.Objects;
 
 public class StorageDirPane implements PreferencesPane {
   private final Window dialog;
@@ -67,7 +67,7 @@ public class StorageDirPane implements PreferencesPane {
     String newStorageDir = storageDir.getText();
     revertToDefaultDirAction.setEnabled(!AppPaths.isDefaultDataPath(newStorageDir));
     boolean messageShown = updateMessage.isVisible();
-    boolean dirChanged = !Utils.equal(newStorageDir, currentDataDir);
+    boolean dirChanged = !Objects.equals(newStorageDir, currentDataDir);
     storageDirMessage.setText(Lang.get(dirChanged ? "data.path.prefs.nextPath" : "data.path.prefs.currentPath"));
     updateMessage.setVisible(dirChanged);
     if (messageShown != dirChanged) {

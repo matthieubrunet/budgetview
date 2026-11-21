@@ -18,6 +18,7 @@ import org.globsframework.utils.serialization.SerializedByteArrayOutput;
 import org.globsframework.utils.serialization.SerializedInput;
 import org.globsframework.utils.serialization.SerializedInputOutputFactory;
 import org.globsframework.utils.serialization.SerializedOutput;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 import static org.globsframework.model.utils.GlobMatchers.and;
@@ -119,23 +120,23 @@ public class RealAccount {
            realAccount1.get(BANK) != null &&
            Utils.equalIgnoreCase(realAccount1.get(NAME), realAccount2.get(NAME)) &&
            Utils.equalIgnoreCase(realAccount1.get(NUMBER), realAccount2.get(NUMBER)) &&
-           Utils.equal(realAccount1.get(BANK), realAccount2.get(BANK)) &&
-           Utils.equal(realAccount1.get(BANK_ENTITY), realAccount2.get(BANK_ENTITY)) &&
-           Utils.equal(realAccount1.get(CARD_TYPE), realAccount2.get(CARD_TYPE)) &&
-           !Utils.equal(realAccount1.get(ID), realAccount2.get(ID));
+           Objects.equals(realAccount1.get(BANK), realAccount2.get(BANK)) &&
+           Objects.equals(realAccount1.get(BANK_ENTITY), realAccount2.get(BANK_ENTITY)) &&
+           Objects.equals(realAccount1.get(CARD_TYPE), realAccount2.get(CARD_TYPE)) &&
+           !Objects.equals(realAccount1.get(ID), realAccount2.get(ID));
   }
 
   public static boolean areEquivalent(Glob realAccount1, Glob realAccount2) {
     return (Strings.isNotEmpty(realAccount1.get(NAME)) || Strings.isNotEmpty(realAccount1.get(NUMBER))) &&
            Utils.equalIgnoreCase(realAccount1.get(NAME), realAccount2.get(NAME)) &&
            Utils.equalIgnoreCase(realAccount1.get(NUMBER), realAccount2.get(NUMBER)) &&
-           !Utils.equal(realAccount1.get(ID), realAccount2.get(ID));
+           !Objects.equals(realAccount1.get(ID), realAccount2.get(ID));
   }
 
   public static boolean areNearEquivalent(Glob realAccount1, Glob realAccount2) {
     return Utils.equalIgnoreCase(realAccount1.get(NAME), realAccount2.get(NAME)) &&
            Utils.equalIgnoreCase(realAccount1.get(NUMBER), realAccount2.get(NUMBER)) &&
-           !Utils.equal(realAccount1.get(ID), realAccount2.get(ID));
+           !Objects.equals(realAccount1.get(ID), realAccount2.get(ID));
   }
 
   public static Glob createAccountFromImported(Glob realAccount, GlobRepository repository, boolean isImported) {

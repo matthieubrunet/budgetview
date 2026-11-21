@@ -50,13 +50,13 @@ public class HistoSelectionManager implements Disposable {
     boolean rolloverChanged = false;
     boolean expandSelection = false;
 
-    if (!Utils.equal(columnIndex, rollover.columnIndex)) {
+    if (!Objects.equals(columnIndex, rollover.columnIndex)) {
       this.rollover.columnIndex = columnIndex;
       rolloverChanged = true;
       expandSelection = dragging;
     }
 
-    if (!Utils.equal(objectKeys, rollover.objectKeys)) {
+    if (!Objects.equals(objectKeys, rollover.objectKeys)) {
       this.rollover.setObjectKeys(objectKeys);
       rolloverChanged = true;
     }
@@ -151,7 +151,7 @@ public class HistoSelectionManager implements Disposable {
     private Set<Key> objectKeys = new HashSet<Key>();
 
     public boolean isOnColumn(int columnIndex) {
-      return Utils.equal(this.columnIndex, columnIndex);
+      return Objects.equals(this.columnIndex, columnIndex);
     }
 
     public boolean isOnObject(Key key) {

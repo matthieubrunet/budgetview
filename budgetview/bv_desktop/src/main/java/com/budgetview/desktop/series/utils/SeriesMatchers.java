@@ -11,11 +11,11 @@ import org.globsframework.model.Glob;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.model.utils.GlobMatchers;
-import org.globsframework.utils.Utils;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
 
 import static org.globsframework.model.utils.GlobMatchers.*;
 
@@ -77,16 +77,16 @@ public class SeriesMatchers {
         }
         if (Series.isTransfer(series)) {
           // Select only one of the two mirrors
-          if (Utils.equal(Account.EXTERNAL_ACCOUNT_ID, series.get(Series.FROM_ACCOUNT))) {
-            return Utils.equal(series.get(Series.TARGET_ACCOUNT), series.get(Series.TO_ACCOUNT));
+          if (Objects.equals(Account.EXTERNAL_ACCOUNT_ID, series.get(Series.FROM_ACCOUNT))) {
+            return Objects.equals(series.get(Series.TARGET_ACCOUNT), series.get(Series.TO_ACCOUNT));
           }
-          if (Utils.equal(Account.EXTERNAL_ACCOUNT_ID, series.get(Series.TO_ACCOUNT))) {
-            return Utils.equal(series.get(Series.TARGET_ACCOUNT), series.get(Series.FROM_ACCOUNT));
+          if (Objects.equals(Account.EXTERNAL_ACCOUNT_ID, series.get(Series.TO_ACCOUNT))) {
+            return Objects.equals(series.get(Series.TARGET_ACCOUNT), series.get(Series.FROM_ACCOUNT));
           }
           if (Account.isMain(series.get(Series.FROM_ACCOUNT), repository)) {
-            return Utils.equal(series.get(Series.TARGET_ACCOUNT), series.get(Series.FROM_ACCOUNT));
+            return Objects.equals(series.get(Series.TARGET_ACCOUNT), series.get(Series.FROM_ACCOUNT));
           }
-          return Utils.equal(series.get(Series.TARGET_ACCOUNT), series.get(Series.TO_ACCOUNT));
+          return Objects.equals(series.get(Series.TARGET_ACCOUNT), series.get(Series.TO_ACCOUNT));
         }
         return true;
       }

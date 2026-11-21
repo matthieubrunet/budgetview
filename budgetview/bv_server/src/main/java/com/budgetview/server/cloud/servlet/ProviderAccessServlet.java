@@ -14,13 +14,13 @@ import org.globsframework.model.Glob;
 import org.globsframework.sqlstreams.SqlConnection;
 import org.globsframework.sqlstreams.constraints.Where;
 import org.globsframework.sqlstreams.exceptions.GlobsSqlException;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 
 import static com.budgetview.shared.json.Json.json;
 
@@ -41,7 +41,7 @@ public class ProviderAccessServlet extends HttpCloudServlet {
 
         int providerId = getIntHeader(CloudConstants.PROVIDER_ID);
 
-        boolean sameProvider = Utils.equal(user.get(CloudUser.PROVIDER), providerId);
+        boolean sameProvider = Objects.equals(user.get(CloudUser.PROVIDER), providerId);
 
         writer.object();
         writer.key("status").value(sameProvider ? "ok" : "not_recognized");

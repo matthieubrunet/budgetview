@@ -9,9 +9,9 @@ import com.budgetview.triggers.DeleteUnusedSeriesGroupTrigger;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.model.*;
 import org.globsframework.model.utils.DefaultChangeSetVisitor;
-import org.globsframework.utils.Utils;
 
 import java.util.Set;
+import java.util.Objects;
 
 import static com.budgetview.model.ProjectItemType.isExpenses;
 import static org.globsframework.model.FieldValue.value;
@@ -79,7 +79,7 @@ public class ProjectToSeriesGroupTrigger extends AbstractChangeSetListener {
       Glob series = repository.findLinkTarget(item, ProjectItem.SERIES);
       if (series != null && ProjectItem.usesExtrasSeries(item)) {
         Integer previousGroupId = series.get(Series.GROUP);
-        if (!Utils.equal(newGroupId, previousGroupId)) {
+        if (!Objects.equals(newGroupId, previousGroupId)) {
           repository.update(series.getKey(), Series.GROUP, group.get(SeriesGroup.ID));
           DeleteUnusedSeriesGroupTrigger.deleteGroupIfNeeded(previousGroupId, repository);
         }

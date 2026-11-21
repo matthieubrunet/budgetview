@@ -22,7 +22,6 @@ import org.globsframework.model.utils.*;
 import org.globsframework.utils.Files;
 import org.globsframework.utils.Ref;
 import org.globsframework.utils.Strings;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.collections.MultiMap;
 import org.globsframework.utils.directory.Directory;
 import org.globsframework.utils.exceptions.InvalidData;
@@ -498,10 +497,10 @@ public class ImportSession {
     }
 
     public void visitCreation(Key key, FieldValues values) throws Exception {
-      if (key.getGlobType() == ImportedTransaction.TYPE && Utils.equal(currentAccountId, values.get(ImportedTransaction.ACCOUNT))) {
+      if (key.getGlobType() == ImportedTransaction.TYPE && Objects.equals(currentAccountId, values.get(ImportedTransaction.ACCOUNT))) {
         localRepository.create(key, values.toArray());
       }
-      else if (key.getGlobType() == RealAccount.TYPE && Utils.equal(currentAccountId, key.get(RealAccount.ID))) {
+      else if (key.getGlobType() == RealAccount.TYPE && Objects.equals(currentAccountId, key.get(RealAccount.ID))) {
         localRepository.create(key, values.toArray());
       }
       else if (key.getGlobType() == ImportedSeries.TYPE) {
@@ -533,10 +532,10 @@ public class ImportSession {
   private void addProviderTransactionToDelete(final Integer provider, final Integer providerConnectionId, final Integer providerAccountId, final Integer providerTransactionId) {
     providerTransactionsToDeleteMatchers.add(new GlobMatcher() {
       public boolean matches(Glob transaction, GlobRepository repository) {
-        return Utils.equal(provider, transaction.get(Transaction.PROVIDER)) &&
-               Utils.equal(providerConnectionId, transaction.get(Transaction.PROVIDER_CONNECTION_ID)) &&
-               Utils.equal(providerAccountId, transaction.get(Transaction.PROVIDER_ACCOUNT_ID)) &&
-               Utils.equal(providerTransactionId, transaction.get(Transaction.PROVIDER_TRANSACTION_ID));
+        return Objects.equals(provider, transaction.get(Transaction.PROVIDER)) &&
+               Objects.equals(providerConnectionId, transaction.get(Transaction.PROVIDER_CONNECTION_ID)) &&
+               Objects.equals(providerAccountId, transaction.get(Transaction.PROVIDER_ACCOUNT_ID)) &&
+               Objects.equals(providerTransactionId, transaction.get(Transaction.PROVIDER_TRANSACTION_ID));
       }
     });
   }

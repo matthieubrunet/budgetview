@@ -6,13 +6,13 @@ import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.FieldValue;
 import org.globsframework.model.FieldValues;
 import org.globsframework.model.Key;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.InvalidParameter;
 import org.globsframework.utils.exceptions.ItemNotFound;
 import org.globsframework.utils.exceptions.MissingInfo;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 
 public class SingleFieldKey extends Key {
 
@@ -136,7 +136,7 @@ public class SingleFieldKey extends Key {
     if (o.getClass().equals(SingleFieldKey.class)) {
       SingleFieldKey otherSingleFieldKey = (SingleFieldKey)o;
       return otherSingleFieldKey.keyField.equals(keyField) &&
-             Utils.equal(otherSingleFieldKey.value, value);
+             Objects.equals(otherSingleFieldKey.value, value);
     }
 
     if (!Key.class.isAssignableFrom(o.getClass())) {
@@ -144,7 +144,7 @@ public class SingleFieldKey extends Key {
     }
     Key otherKey = (Key)o;
     return keyField.getGlobType().equals(otherKey.getGlobType())
-           && Utils.equal(value, otherKey.getValue(keyField));
+           && Objects.equals(value, otherKey.getValue(keyField));
   }
 
   // optimized - do not use generated code

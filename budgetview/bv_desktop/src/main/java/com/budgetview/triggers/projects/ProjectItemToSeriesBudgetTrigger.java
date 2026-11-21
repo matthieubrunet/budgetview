@@ -4,12 +4,12 @@ import com.budgetview.model.*;
 import com.budgetview.model.util.ClosedMonthRange;
 import com.budgetview.shared.utils.Amounts;
 import org.globsframework.model.*;
-import org.globsframework.utils.Utils;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 import static org.globsframework.model.utils.GlobMatchers.isFalse;
@@ -102,7 +102,7 @@ public class ProjectItemToSeriesBudgetTrigger extends AbstractChangeSetListener 
     Integer firstItemMonth = item.get(ProjectItem.FIRST_MONTH);
     months.add(firstItemMonth);
     Integer lastItemMonth = ProjectItem.getLastMonth(item);
-    if (!Utils.equal(firstItemMonth, lastItemMonth)) {
+    if (!Objects.equals(firstItemMonth, lastItemMonth)) {
       months.add(lastItemMonth);
     }
     months.addAll(transactions.getValueSet(Transaction.BUDGET_MONTH));
@@ -161,7 +161,7 @@ public class ProjectItemToSeriesBudgetTrigger extends AbstractChangeSetListener 
         return 0.00;
       }
       Double amount = ProjectItem.getAmount(item, monthId, repository);
-      if (Utils.equal(series.get(Series.TARGET_ACCOUNT), series.get(Series.FROM_ACCOUNT))) {
+      if (Objects.equals(series.get(Series.TARGET_ACCOUNT), series.get(Series.FROM_ACCOUNT))) {
         return -Math.abs(amount);
       }
       return Math.abs(amount);

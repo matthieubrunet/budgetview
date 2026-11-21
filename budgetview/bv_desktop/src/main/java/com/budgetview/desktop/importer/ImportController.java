@@ -25,7 +25,6 @@ import org.globsframework.model.utils.GlobMatchers;
 import org.globsframework.utils.Log;
 import org.globsframework.utils.Ref;
 import org.globsframework.utils.Strings;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 import org.globsframework.utils.exceptions.OperationCancelled;
 
@@ -359,7 +358,7 @@ public class ImportController implements Disposable {
     String fileContent = realAccount.get(RealAccount.FILE_CONTENT);
     for (AccountWithFile accountWithFile : realAccountWithImport) {
       // on est en ofx => on prendra le compte dans le fichier.
-      if (Strings.isNotEmpty(fileContent) && Utils.equal(fileContent, accountWithFile.fileContent)) {
+      if (Strings.isNotEmpty(fileContent) && Objects.equals(fileContent, accountWithFile.fileContent)) {
         accountWithFile.realAccount = null;
         return;
       }

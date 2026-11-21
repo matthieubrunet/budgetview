@@ -5,6 +5,7 @@ import org.globsframework.model.Glob;
 import org.globsframework.utils.Utils;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 public class BankComparator implements Comparator<Glob> {
 
@@ -15,10 +16,10 @@ public class BankComparator implements Comparator<Glob> {
     if (bank2 == null) {
       return 1;
     }
-    if (Utils.equal(bank2.get(Bank.ID), Bank.GENERIC_BANK_ID)) {
+    if (Objects.equals(bank2.get(Bank.ID), Bank.GENERIC_BANK_ID)) {
       return -1;
     }
-    if (Utils.equal(bank1.get(Bank.ID), Bank.GENERIC_BANK_ID)) {
+    if (Objects.equals(bank1.get(Bank.ID), Bank.GENERIC_BANK_ID)) {
       return 1;
     }
     return Utils.compareIgnoreCase(bank1.get(Bank.NAME), bank2.get(Bank.NAME));

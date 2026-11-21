@@ -21,16 +21,15 @@ import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.model.utils.GlobMatchers;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.InvalidParameter;
 import org.globsframework.utils.exceptions.ItemNotFound;
 import org.globsframework.utils.exceptions.UnexpectedValue;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
 
 import static org.globsframework.model.utils.GlobMatchers.*;
-import static org.globsframework.utils.Utils.equal;
 
 public class SeriesStat {
   public static GlobType TYPE;
@@ -164,7 +163,7 @@ public class SeriesStat {
   public static GlobMatcher isSeriesForAccount(final int accountId) {
     return new GlobMatcher() {
       public boolean matches(Glob seriesStat, GlobRepository repository) {
-        return seriesStat != null && equal(accountId, seriesStat.get(SeriesStat.ACCOUNT)) && isForSeries(seriesStat);
+        return seriesStat != null && Objects.equals(accountId, seriesStat.get(SeriesStat.ACCOUNT)) && isForSeries(seriesStat);
       }
     };
   }
@@ -192,7 +191,7 @@ public class SeriesStat {
           return false;
         }
         Glob series = repository.find(org.globsframework.model.Key.create(Series.TYPE, seriesStat.get(SeriesStat.TARGET)));
-        return series != null && Utils.equal(groupId, series.get(Series.GROUP));
+        return series != null && Objects.equals(groupId, series.get(Series.GROUP));
       }
     };
   }
@@ -213,7 +212,7 @@ public class SeriesStat {
   }
 
   public static boolean isSummary(FieldValues seriesStat) {
-    return equal(Account.ALL_SUMMARY_ACCOUNT_ID, seriesStat.get(SeriesStat.ACCOUNT));
+    return Objects.equals(Account.ALL_SUMMARY_ACCOUNT_ID, seriesStat.get(SeriesStat.ACCOUNT));
   }
 
   public static GlobList getAllSummarySeriesForMonth(Integer monthId, GlobRepository repository) {
@@ -227,8 +226,8 @@ public class SeriesStat {
     return new GlobMatcher() {
       public boolean matches(Glob seriesStat, GlobRepository repository) {
         return (seriesStat != null) &&
-               equal(seriesStat.get(SeriesStat.TARGET_TYPE), SeriesType.SERIES.getId()) &&
-               equal(seriesStat.get(SeriesStat.TARGET), seriesKey.get(Series.ID));
+               Objects.equals(seriesStat.get(SeriesStat.TARGET_TYPE), SeriesType.SERIES.getId()) &&
+               Objects.equals(seriesStat.get(SeriesStat.TARGET), seriesKey.get(Series.ID));
       }
     };
   }
@@ -238,8 +237,8 @@ public class SeriesStat {
       public boolean matches(Glob seriesStat, GlobRepository repository) {
         return (seriesStat != null) &&
                isSummary(seriesStat) &&
-               equal(seriesStat.get(SeriesStat.TARGET_TYPE), SeriesType.SERIES.getId()) &&
-               equal(seriesStat.get(SeriesStat.TARGET), seriesKey.get(Series.ID));
+               Objects.equals(seriesStat.get(SeriesStat.TARGET_TYPE), SeriesType.SERIES.getId()) &&
+               Objects.equals(seriesStat.get(SeriesStat.TARGET), seriesKey.get(Series.ID));
       }
     };
   }
@@ -264,11 +263,11 @@ public class SeriesStat {
         }
         if (isForSeries(seriesStat)) {
           Glob series = repository.find(org.globsframework.model.Key.create(Series.TYPE, seriesStat.get(TARGET)));
-          return series != null && Utils.equal(series.get(Series.BUDGET_AREA), budgetArea.getId());
+          return series != null && Objects.equals(series.get(Series.BUDGET_AREA), budgetArea.getId());
         }
         if (isForGroup(seriesStat)) {
           Glob group = repository.find(org.globsframework.model.Key.create(SeriesGroup.TYPE, seriesStat.get(TARGET)));
-          return group != null && Utils.equal(group.get(SeriesGroup.BUDGET_AREA), budgetArea.getId());
+          return group != null && Objects.equals(group.get(SeriesGroup.BUDGET_AREA), budgetArea.getId());
         }
         throw new InvalidParameter("Unexpected value: " + seriesStat.get(TARGET_TYPE));
       }

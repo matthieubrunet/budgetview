@@ -4,9 +4,9 @@ import com.budgetview.model.*;
 import com.budgetview.shared.model.BudgetArea;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.model.*;
-import org.globsframework.utils.Utils;
 
 import java.util.Set;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 import static org.globsframework.model.utils.GlobMatchers.linkedTo;
@@ -16,7 +16,7 @@ public class ProjectTransferToSeriesTrigger implements ChangeSetListener {
     changeSet.safeVisit(ProjectTransfer.TYPE, new ChangeSetVisitor() {
       public void visitCreation(Key projectTransferKey, FieldValues values) throws Exception {
         Glob item = ProjectTransfer.getItemFromTransfer(projectTransferKey, repository);
-        if (Utils.equal(ProjectItemType.get(item), ProjectItemType.TRANSFER) &&
+        if (Objects.equals(ProjectItemType.get(item), ProjectItemType.TRANSFER) &&
             ProjectTransfer.usesSavingsAccounts(values, repository) &&
             ProjectItem.isComplete(item, repository)) {
           createSavingsSeriesIfComplete(projectTransferKey, repository);

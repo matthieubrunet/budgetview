@@ -1,13 +1,13 @@
 package com.budgetview.desktop.components.charts.stack;
 
 import org.globsframework.model.Key;
-import org.globsframework.utils.Utils;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class BasicStackClickMap {
 
@@ -23,7 +23,7 @@ public class BasicStackClickMap {
 
   public Rectangle getArea(String label) {
     for (Map.Entry<Rectangle, Item> entry : clickAreas.entrySet()) {
-      if (Utils.equal(label, entry.getValue().label)) {
+      if (Objects.equals(label, entry.getValue().label)) {
         return entry.getKey();
       }
     }

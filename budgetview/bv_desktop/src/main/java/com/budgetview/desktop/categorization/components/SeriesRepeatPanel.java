@@ -11,10 +11,10 @@ import org.globsframework.gui.splits.utils.Disposable;
 import org.globsframework.model.*;
 import org.globsframework.model.utils.DefaultChangeSetListener;
 import org.globsframework.utils.Functor;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
+import java.util.Objects;
 
 public class SeriesRepeatPanel implements Disposable {
   private final BudgetArea budgetArea;
@@ -100,7 +100,7 @@ public class SeriesRepeatPanel implements Disposable {
     }
 
     public boolean matches(Glob series, GlobRepository repository) {
-      return Utils.equal(groupId, series.get(Series.GROUP)) && innerFilter.matches(series, repository);
+      return Objects.equals(groupId, series.get(Series.GROUP)) && innerFilter.matches(series, repository);
     }
 
     public String toString() {

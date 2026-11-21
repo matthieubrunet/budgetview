@@ -13,10 +13,10 @@ import org.globsframework.model.Glob;
 import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.utils.TypeChangeSetListener;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
+import java.util.Objects;
 
 public class ReconciliationWarningPanel {
 
@@ -71,7 +71,7 @@ public class ReconciliationWarningPanel {
 
     Glob prefs = repository.find(UserPreferences.KEY);
     if ((prefs != null) &&
-        Utils.equal(CategorizationFilteringMode.TO_RECONCILE.getId(),
+        Objects.equals(CategorizationFilteringMode.TO_RECONCILE.getId(),
                     prefs.get(UserPreferences.CATEGORIZATION_FILTERING_MODE))) {
       panel.setVisible(false);
       return;

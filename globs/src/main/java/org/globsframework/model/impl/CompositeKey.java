@@ -6,12 +6,12 @@ import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.FieldValue;
 import org.globsframework.model.Key;
 import org.globsframework.model.utils.FieldValueGetter;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.MissingInfo;
 import org.globsframework.utils.exceptions.ItemNotFound;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 
 public class CompositeKey extends Key {
   private GlobType type;
@@ -116,7 +116,7 @@ public class CompositeKey extends Key {
       return false;
     }
     for (Field field : type.getKeyFields()) {
-      if (!Utils.equal(getValue(field), otherKey.getValue(field))) {
+      if (!Objects.equals(getValue(field), otherKey.getValue(field))) {
         return false;
       }
     }

@@ -13,8 +13,8 @@ import org.globsframework.utils.Strings;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 
-import static org.globsframework.utils.Utils.equal;
 
 @SuppressWarnings("UnusedDeclaration")
 public class BudgetAreaSeriesLayout implements RepeatLayout {
@@ -107,25 +107,25 @@ public class BudgetAreaSeriesLayout implements RepeatLayout {
         if (Strings.isNullOrEmpty(component.getName())) {
           continue;
         }
-        if (equal(component.getName(), "titleSeries") || equal(component.getName(), "seriesName")) {
+        if (Objects.equals(component.getName(), "titleSeries") || Objects.equals(component.getName(), "seriesName")) {
           maxLabelWidth = (int)Math.max(maxLabelWidth, preferredWidth);
         }
-        else if (equal(component.getName(), "groupToggle")) {
+        else if (Objects.equals(component.getName(), "groupToggle")) {
           maxToggleWidth = (int)Math.max(maxToggleWidth, preferredWidth);
         }
-        else if (equal(component.getName(), "gauge")) {
+        else if (Objects.equals(component.getName(), "gauge")) {
           maxGaugeWidth = (int)Math.max(maxGaugeWidth, preferredWidth);
         }
-        else if (equal(component.getName(), "titleAmountReal") || equal(component.getName(), "observedSeriesAmount")) {
+        else if (Objects.equals(component.getName(), "titleAmountReal") || Objects.equals(component.getName(), "observedSeriesAmount")) {
           maxActualWidth = (int)Math.max(maxActualWidth, preferredWidth);
         }
-        else if (equal(component.getName(), "slash")) {
+        else if (Objects.equals(component.getName(), "slash")) {
           maxSlashWidth = (int)Math.max(maxSlashWidth, preferredWidth);
         }
-        else if (equal(component.getName(), "titleAmountPlanned") || equal(component.getName(), "plannedSeriesAmount")) {
+        else if (Objects.equals(component.getName(), "titleAmountPlanned") || Objects.equals(component.getName(), "plannedSeriesAmount")) {
           maxPlannedWidth = (int)Math.max(maxPlannedWidth, preferredWidth);
         }
-        else if (equal(component.getName(), "deltaGauge")) {
+        else if (Objects.equals(component.getName(), "deltaGauge")) {
           maxDeltaGaugeWidth = (int)Math.max(maxDeltaGaugeWidth, preferredWidth);
         }
       }

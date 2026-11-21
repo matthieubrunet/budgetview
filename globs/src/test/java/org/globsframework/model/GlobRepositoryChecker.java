@@ -5,9 +5,9 @@ import org.globsframework.metamodel.Field;
 import org.globsframework.metamodel.fields.DateField;
 import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.utils.GlobMatchers;
-import org.globsframework.utils.Utils;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class GlobRepositoryChecker {
   private GlobRepository repository;
@@ -34,7 +34,7 @@ public class GlobRepositoryChecker {
 
   public void checkFields(Glob glob, FieldValue... values) {
     for (FieldValue value : values) {
-      if (!Utils.equal(glob.getValue(value.getField()), value.getValue())) {
+      if (!Objects.equals(glob.getValue(value.getField()), value.getValue())) {
         Assert.fail("Invalid value for " + value.getField() + " - expected: " + value.getValue() +
                     " but was: " + glob.getValue(value.getField()));
       }

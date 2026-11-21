@@ -14,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
+import java.util.Objects;
 
 public class AppPaths {
 
@@ -66,7 +67,7 @@ public class AppPaths {
   }
 
   public static boolean isNewDataDir(String path) {
-    return !Utils.equal(getCurrentStoragePath(), path);
+    return !Objects.equals(getCurrentStoragePath(), path);
   }
 
   public static boolean isEmptyDataDir(String path) {

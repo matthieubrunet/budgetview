@@ -8,8 +8,8 @@ import org.globsframework.metamodel.fields.IntegerField;
 import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.impl.ReadOnlyGlob;
 import org.globsframework.model.utils.GlobConstantContainer;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.ItemNotFound;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 
@@ -46,7 +46,7 @@ public enum BudgeaBankFieldType implements GlobConstantContainer {
 
   public static BudgeaBankFieldType get(int id) {
     for (BudgeaBankFieldType fieldType : values()) {
-      if (Utils.equal(fieldType.id, id)) {
+      if (Objects.equals(fieldType.id, id)) {
         return fieldType;
       }
     }

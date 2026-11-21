@@ -16,7 +16,6 @@ import org.globsframework.json.JsonGlobParser;
 import org.globsframework.model.*;
 import org.globsframework.utils.Log;
 import org.globsframework.utils.Strings;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.InvalidParameter;
 import org.globsframework.utils.exceptions.UnexpectedValue;
 import org.json.JSONArray;
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 import static org.globsframework.model.utils.GlobMatchers.fieldEquals;
@@ -323,7 +323,7 @@ public class CloudService {
 
       repository.startChangeSet();
       Glob bank = repository.get(bankKey);
-      if (!Utils.equal(Provider.BUDGEA.getId(), bank.get(Bank.PROVIDER))) {
+      if (!Objects.equals(Provider.BUDGEA.getId(), bank.get(Bank.PROVIDER))) {
         throw new InvalidParameter("Bank " + bank.get(Bank.NAME) + " (id:" + bank.get(Bank.ID) + ") is not supported by Budgea");
       }
 
@@ -876,7 +876,7 @@ public class CloudService {
       public void visitCreation(Key key, FieldValues values) throws Exception {
         Integer providerConnectionId = values.get(RealAccount.PROVIDER_CONNECTION_ID);
         Integer providerAccountId = values.get(RealAccount.PROVIDER_ACCOUNT_ID);
-        if (Utils.equal(values.get(RealAccount.PROVIDER), Provider.BUDGEA.getId())
+        if (Objects.equals(values.get(RealAccount.PROVIDER), Provider.BUDGEA.getId())
             && providerAccountId != null
             && !values.isTrue(RealAccount.ENABLED)) {
           updates.add(providerConnectionId, providerAccountId, false);
@@ -888,7 +888,7 @@ public class CloudService {
           Glob realAccount = repository.get(key);
           Integer providerConnectionId = realAccount.get(RealAccount.PROVIDER_CONNECTION_ID);
           Integer providerAccountId = realAccount.get(RealAccount.PROVIDER_ACCOUNT_ID);
-          if (Utils.equal(realAccount.get(RealAccount.PROVIDER), Provider.BUDGEA.getId())
+          if (Objects.equals(realAccount.get(RealAccount.PROVIDER), Provider.BUDGEA.getId())
               && providerAccountId != null) {
             updates.add(providerConnectionId, providerAccountId, realAccount.isTrue(RealAccount.ENABLED));
           }

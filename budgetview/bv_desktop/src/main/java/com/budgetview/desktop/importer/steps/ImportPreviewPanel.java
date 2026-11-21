@@ -25,7 +25,6 @@ import org.globsframework.model.utils.DefaultChangeSetListener;
 import org.globsframework.utils.Functor;
 import org.globsframework.utils.Log;
 import org.globsframework.utils.Strings;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.DefaultDirectory;
 import org.globsframework.utils.directory.Directory;
 
@@ -33,6 +32,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Set;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 
@@ -307,7 +307,7 @@ public class ImportPreviewPanel extends AbstractImportStepPanel implements Messa
     private void deleteOtherDuplicateAccounts(Glob selectedRealAccount) {
       for (Glob realAccount : sessionRepository.getAll(RealAccount.TYPE)) {
         if (RealAccount.areStrictlyEquivalent(selectedRealAccount, realAccount) &&
-            Utils.equal(selectedRealAccount.get(RealAccount.ACCOUNT), realAccount.get(RealAccount.ACCOUNT))) {
+            Objects.equals(selectedRealAccount.get(RealAccount.ACCOUNT), realAccount.get(RealAccount.ACCOUNT))) {
           sessionRepository.delete(realAccount);
           return;
         }

@@ -83,13 +83,13 @@ public class PlannedTransactionCreationTrigger implements ChangeSetListener {
           previousSeriesId = newSeriesId;
         }
         Glob newSeries = repository.find(Key.create(Series.TYPE, newSeriesId));
-        if (!Series.UNCATEGORIZED_SERIES_ID.equals(newSeriesId) && newSeries != null && Utils.equal(newSeries.get(Series.TARGET_ACCOUNT), Account.MAIN_SUMMARY_ACCOUNT_ID)) {
+        if (!Series.UNCATEGORIZED_SERIES_ID.equals(newSeriesId) && newSeries != null && Objects.equals(newSeries.get(Series.TARGET_ACCOUNT), Account.MAIN_SUMMARY_ACCOUNT_ID)) {
           for (Glob month : repository.getAll(Month.TYPE)) {
             seriesAndMonths.add(newSeriesId, month.get(Month.ID));
           }
         }
         Glob previousSeries = repository.find(Key.create(Series.TYPE, previousSeriesId));
-        if (!Series.UNCATEGORIZED_SERIES_ID.equals(previousSeriesId) && previousSeries != null && Utils.equal(previousSeries.get(Series.TARGET_ACCOUNT), Account.MAIN_SUMMARY_ACCOUNT_ID)) {
+        if (!Series.UNCATEGORIZED_SERIES_ID.equals(previousSeriesId) && previousSeries != null && Objects.equals(previousSeries.get(Series.TARGET_ACCOUNT), Account.MAIN_SUMMARY_ACCOUNT_ID)) {
           for (Glob month : repository.getAll(Month.TYPE)) {
             seriesAndMonths.add(previousSeriesId, month.get(Month.ID));
           }
@@ -104,8 +104,8 @@ public class PlannedTransactionCreationTrigger implements ChangeSetListener {
           previousMonth = newMonth;
         }
         if (values.contains(Transaction.AMOUNT)
-            || Utils.equal(newSeriesId, previousSeriesId)
-            || Utils.equal(newMonth, previousMonth)) {
+            || Objects.equals(newSeriesId, previousSeriesId)
+            || Objects.equals(newMonth, previousMonth)) {
           if (previousSeriesId != null) {
             seriesAndMonths.add(previousSeriesId, previousMonth);
           }
@@ -206,7 +206,7 @@ public class PlannedTransactionCreationTrigger implements ChangeSetListener {
           Log.write("[Triggers] No series for " + seriesBudget);
           return;
         }
-        if (Utils.equal(series.get(Series.TARGET_ACCOUNT), Account.MAIN_SUMMARY_ACCOUNT_ID)) {
+        if (Objects.equals(series.get(Series.TARGET_ACCOUNT), Account.MAIN_SUMMARY_ACCOUNT_ID)) {
           repository.delete(plannedTransactionsForMonth);
           plannedTransactionsForMonth.clear();
         }

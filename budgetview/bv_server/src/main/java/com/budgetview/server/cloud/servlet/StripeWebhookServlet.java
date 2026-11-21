@@ -20,7 +20,6 @@ import org.globsframework.model.format.GlobPrinter;
 import org.globsframework.sqlstreams.SqlConnection;
 import org.globsframework.sqlstreams.constraints.Where;
 import org.globsframework.utils.Files;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.servlet.ServletException;
@@ -31,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class StripeWebhookServlet extends HttpServlet {
 
@@ -134,7 +134,7 @@ public class StripeWebhookServlet extends HttpServlet {
 
         Glob user = users.getFirst();
 
-        if (Utils.equal(event.getId(), user.get(CloudUser.LAST_STRIPE_INVOICE_EVENT_ID))) {
+        if (Objects.equals(event.getId(), user.get(CloudUser.LAST_STRIPE_INVOICE_EVENT_ID))) {
           logger.info("Ignored duplicate subscription event " + event.getId() + " for invoice " + invoice);
           return HttpServletResponse.SC_OK;
         }

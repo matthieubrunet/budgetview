@@ -7,10 +7,10 @@ import org.globsframework.metamodel.fields.LinkField;
 import org.globsframework.metamodel.links.FieldMappingFunctor;
 import org.globsframework.model.*;
 import org.globsframework.utils.Ref;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.InvalidParameter;
 import org.globsframework.utils.exceptions.InvalidState;
 import org.globsframework.utils.exceptions.ItemNotFound;
+import java.util.Objects;
 
 public abstract class AbstractGlob extends AbstractFieldValues implements Glob {
 
@@ -134,7 +134,7 @@ public abstract class AbstractGlob extends AbstractFieldValues implements Glob {
     final Ref<Boolean> result = new Ref<Boolean>(true);
     values.safeApply(new FieldValues.Functor() {
       public void process(Field field, Object value) {
-        if (!Utils.equal(value, getValue(field))) {
+        if (!Objects.equals(value, getValue(field))) {
           result.set(false);
         }
       }
@@ -144,7 +144,7 @@ public abstract class AbstractGlob extends AbstractFieldValues implements Glob {
 
   public boolean matches(FieldValue... values) {
     for (FieldValue value : values) {
-      if (!Utils.equal(value.getValue(), getValue(value.getField()))) {
+      if (!Objects.equals(value.getValue(), getValue(value.getField()))) {
         return false;
       }
     }

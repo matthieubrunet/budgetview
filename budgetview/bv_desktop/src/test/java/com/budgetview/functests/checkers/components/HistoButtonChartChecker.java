@@ -6,7 +6,6 @@ import com.budgetview.desktop.components.charts.histo.button.HistoButtonDataset;
 import com.budgetview.desktop.components.charts.histo.button.HistoButtonElement;
 import junit.framework.Assert;
 import org.globsframework.utils.TestUtils;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.collections.Range;
 import org.uispec4j.Trigger;
 import org.uispec4j.Window;
@@ -15,6 +14,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class HistoButtonChartChecker extends HistoChartChecker {
   public HistoButtonChartChecker(Window window, String panelName, String chartName) {
@@ -57,7 +57,7 @@ public class HistoButtonChartChecker extends HistoChartChecker {
 
   private HistoButtonBlock getBlock(String label) {
     for (HistoButtonBlock block : getDataset().getBlocks()) {
-      if (Utils.equal(block.label, label)) {
+      if (Objects.equals(block.label, label)) {
         return block;
       }
     }
@@ -67,7 +67,7 @@ public class HistoButtonChartChecker extends HistoChartChecker {
 
   private HistoButtonElement getElement(String label) {
     for (HistoButtonElement element : getDataset().getElements()) {
-      if (Utils.equal(element.label, label)) {
+      if (Objects.equals(element.label, label)) {
         return element;
       }
     }

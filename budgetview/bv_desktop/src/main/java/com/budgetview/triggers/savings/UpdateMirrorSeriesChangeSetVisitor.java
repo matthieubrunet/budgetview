@@ -5,7 +5,7 @@ import com.budgetview.model.Transaction;
 import com.budgetview.shared.model.BudgetArea;
 import org.globsframework.metamodel.Field;
 import org.globsframework.model.*;
-import org.globsframework.utils.Utils;
+import java.util.Objects;
 
 import static org.globsframework.model.utils.GlobMatchers.isFalse;
 
@@ -42,10 +42,10 @@ public class UpdateMirrorSeriesChangeSetVisitor implements ChangeSetVisitor {
         }
       });
 
-      if (Utils.equal(series.get(Series.TARGET_ACCOUNT), series.get(Series.FROM_ACCOUNT))) {
+      if (Objects.equals(series.get(Series.TARGET_ACCOUNT), series.get(Series.FROM_ACCOUNT))) {
         localRepository.update(mirror.getKey(), Series.TARGET_ACCOUNT, series.get(Series.TO_ACCOUNT));
       }
-      else if (Utils.equal(series.get(Series.TARGET_ACCOUNT), series.get(Series.TO_ACCOUNT))) {
+      else if (Objects.equals(series.get(Series.TARGET_ACCOUNT), series.get(Series.TO_ACCOUNT))) {
         localRepository.update(mirror.getKey(), Series.TARGET_ACCOUNT, series.get(Series.FROM_ACCOUNT));
       }
       else {

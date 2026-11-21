@@ -10,12 +10,12 @@ import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.format.*;
 import org.globsframework.utils.Ref;
-import org.globsframework.utils.Utils;
 
 import java.util.Date;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Objects;
 
 public class DefaultDescriptionService implements DescriptionService {
   private Formats formats;
@@ -207,7 +207,7 @@ public class DefaultDescriptionService implements DescriptionService {
       String current = stringifier.toString(list.get(0), repository);
       for (Glob glob : list) {
         String text = stringifier.toString(glob, repository);
-        if (!Utils.equal(current, text)) {
+        if (!Objects.equals(current, text)) {
           return textForMultipleValues;
         }
       }

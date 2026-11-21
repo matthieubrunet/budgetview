@@ -15,12 +15,12 @@ import com.budgetview.shared.utils.Amounts;
 import com.budgetview.utils.Lang;
 import org.globsframework.model.*;
 import org.globsframework.model.utils.GlobMatchers;
-import org.globsframework.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 import static org.globsframework.model.utils.GlobMatchers.*;
@@ -167,10 +167,10 @@ public class SeriesUpgradeV40 {
     if (transactions2.size() > 0) {
       return transactions2.getFirst().get(Transaction.AMOUNT) > 0;
     }
-    return Utils.equal(series1.get(Series.FROM_ACCOUNT), targetAccount1) ||
-           Utils.equal(series1.get(Series.TO_ACCOUNT), targetAccount2) ||
-           Utils.equal(series2.get(Series.FROM_ACCOUNT), targetAccount2) ||
-           Utils.equal(series2.get(Series.TO_ACCOUNT), targetAccount1);
+    return Objects.equals(series1.get(Series.FROM_ACCOUNT), targetAccount1) ||
+           Objects.equals(series1.get(Series.TO_ACCOUNT), targetAccount2) ||
+           Objects.equals(series2.get(Series.FROM_ACCOUNT), targetAccount2) ||
+           Objects.equals(series2.get(Series.TO_ACCOUNT), targetAccount1);
   }
 
   private void tryToRepairTransactionSeries(Glob multiSeries, GlobList multiTransactions, Integer[] multiAccountIds, Glob monoSeries, GlobList monoTransactions, Integer[] monoAccountIds){

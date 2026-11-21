@@ -15,12 +15,12 @@ import org.globsframework.model.*;
 import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.model.utils.KeyChangeListener;
 import org.globsframework.utils.Functor;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
 
 import static org.globsframework.model.utils.GlobMatchers.*;
 
@@ -104,7 +104,7 @@ public class ProjectItemTransferPanel extends ProjectItemEditionPanel {
                         directory);
       return false;
     }
-    if (Utils.equal(fromAccount, toAccount)) {
+    if (Objects.equals(fromAccount, toAccount)) {
       ErrorTip.showLeft(fromAccountCombo.getComponent(),
                         Lang.get("projectEdition.error.sameFromAndToAccounts"),
                         directory);

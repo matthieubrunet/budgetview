@@ -3,11 +3,11 @@ package org.globsframework.metamodel.utils;
 import org.globsframework.metamodel.Field;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.annotations.Required;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.InvalidParameter;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.Objects;
 
 abstract class AbstractField extends AnnotatedPropertyHolder<Field> implements Field {
   private String name;
@@ -91,7 +91,7 @@ abstract class AbstractField extends AnnotatedPropertyHolder<Field> implements F
   }
 
   public boolean valueEqual(Object o1, Object o2) {
-    return Utils.equal(o1, o2);
+    return Objects.equals(o1, o2);
   }
 
   public boolean equals(Object o) {

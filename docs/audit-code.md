@@ -157,12 +157,13 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   depuis le passage à Java 17, mais par réflexion et avec un repli `com.apple.eawt` mort ; navigateur lancé par trois
   `Runtime.exec(String)` selon le système. Deux lots proposés (A et B), faits le 2026-11-20 : plus aucun `com.apple.eawt` ni
   `Runtime.exec` dans le code livré, −189 lignes.
-- [ ] **3d. Utilitaires maison** (`Utils`, `Strings`, `Files`…) comparés à `java.util`,
+- [x] **3d. Utilitaires maison** (`Utils`, `Strings`, `Files`…) comparés à `java.util`,
   `java.nio.file`, `Objects`, `String` (`isBlank`, `repeat`, `strip`…).
   Inventaire fait le 2026-11-21, voir [3d, inventaire](#3d-inventaire) plus bas : peu de remplacements exacts
   (`Objects.equals`, `Arrays.copyOf`, `String.repeat`, comparateurs), le reste a une sémantique propre. **Découverte** :
   les balises `Utils.beginRemove`/`endRemove`, que le shrinker supprimé exploitait, laissent depuis la 6.0.1 du code de
-  développement dans l'application livrée (menu `[Dev]`…). Quatre lots proposés (0, A à C).
+  développement dans l'application livrée (menu `[Dev]`…). Quatre lots proposés (0, A à C), tous faits le 2026-11-21 :
+  balises remplacées par `Application.isDevMode()`, 4 classes et ~25 méthodes supprimées, `Utils.equal` → `Objects.equals`.
 - [ ] **3e. Collections synchronisées** (`Vector`, `Hashtable`, `StringBuffer`, 5 fichiers).
 - [ ] **3f. Dates** (35 fichiers) → `java.time`. C'est le chantier le plus délicat : le modèle
   stocke des mois et des jours sous forme d'entiers. Ne toucher qu'au code de calcul et
@@ -1311,6 +1312,15 @@ comportement de la 5.01 dans l'application livrée).
   que la sérialisation accepte) ; le champ reste dans le modèle. 10 fichiers, +11 −217 lignes. Tests de `globs` 808 verts ;
   `bv_desktop` 1 026, 1 erreur « No such child » de `TransactionFilteringTest` (course d'uispec4j, verte relancée seule
   deux fois), 4 min 56 s ; 0 `[WARNING]`, `bv_server` compile.
+- Lot C (2026-11-21) : `Utils.equal` → `Objects.equals`, 174 appels dans 79 fichiers (dont 3 imports statiques, et 6
+  fichiers de `bv_server`), par script ; la méthode est supprimée. Les fichiers en CRLF le restent (`newline=''`). Un
+  import statique de `Objects.equals` ne marcherait pas : la méthode d'instance `equals(Object)` le masque, d'où
+  `Objects.equals(` en toutes lettres. Tests de `globs` 808 verts ; `bv_desktop` 1 026, 1 erreur « No such child » de
+  `SavingsCategorizationTest` (verte relancée seule deux fois), 5 min 02 s ; 0 `[WARNING]`, `bv_server` compile.
+
+**Bilan.** −3 classes et ~25 méthodes de `globs`, −1 classe de `bv_desktop` (`RandomStrings`) ; `FilesTest` ajouté. La
+course d'uispec4j « No such child » est sortie à deux suites sur quatre (lots B et C, deux classes différentes), toujours
+verte seule : elle reste à traiter avec les tests instables (voir 5c).
 
 
 
@@ -1395,3 +1405,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 3d, lot 0 (balises « dev ») | 13 blocs `beginRemove`/`endRemove` remplacés par `Application.isDevMode()`, des `assert` ou supprimés (+53 −86 lignes, 18 fichiers) ; application livrée revenue au comportement de la 5.01. Tests de `globs` 796, `bv_desktop` 1 026 verts, 4 min 51 s |
 | 2026-11-21 | 3d, lot A (JDK direct) | 3 classes et `Utils.copyOf` supprimés, `Files` modernisé (4 flux fermés) ; `FilesTest` ajouté (12 tests). Tests de `globs` 808 verts, `bv_desktop` 1 026 verts, 4 min 43 s |
 | 2026-11-21 | 3d, lot B (doublons et morts) | 5 doublons fusionnés, 7 méthodes mortes, `RandomStrings` et le tirage du mot de passe mobile supprimés (+11 −217 lignes). Tests de `globs` 808 verts, `bv_desktop` 1 026 (1 course d'uispec4j, verte relancée), 4 min 56 s |
+| 2026-11-21 | 3d, lot C (`Objects.equals`) | 174 appels dans 79 fichiers, `Utils.equal` supprimé (+238 −243 lignes). Tests de `globs` 808 verts, `bv_desktop` 1 026 (1 course d'uispec4j, verte relancée), 5 min 02 s. **3d terminé** |

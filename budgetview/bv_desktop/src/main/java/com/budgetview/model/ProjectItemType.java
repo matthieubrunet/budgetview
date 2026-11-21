@@ -9,8 +9,8 @@ import org.globsframework.model.GlobRepository;
 import org.globsframework.model.impl.ReadOnlyGlob;
 import org.globsframework.model.utils.GlobConstantContainer;
 import org.globsframework.model.utils.GlobMatcher;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.InvalidData;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 
@@ -59,7 +59,7 @@ public enum ProjectItemType implements GlobConstantContainer {
   public static GlobMatcher isExpenses() {
     return new GlobMatcher() {
       public boolean matches(Glob item, GlobRepository repository) {
-        return item != null && Utils.equal(EXPENSE.id, item.get(ProjectItem.ITEM_TYPE));
+        return item != null && Objects.equals(EXPENSE.id, item.get(ProjectItem.ITEM_TYPE));
       }
     };
   }
@@ -67,7 +67,7 @@ public enum ProjectItemType implements GlobConstantContainer {
   public static GlobMatcher isTransfer() {
     return new GlobMatcher() {
       public boolean matches(Glob item, GlobRepository repository) {
-        return item != null && Utils.equal(TRANSFER.id, item.get(ProjectItem.ITEM_TYPE));
+        return item != null && Objects.equals(TRANSFER.id, item.get(ProjectItem.ITEM_TYPE));
       }
     };
   }

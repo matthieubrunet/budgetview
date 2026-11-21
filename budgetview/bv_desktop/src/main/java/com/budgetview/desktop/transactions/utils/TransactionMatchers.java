@@ -8,12 +8,12 @@ import org.globsframework.model.GlobRepository;
 import org.globsframework.model.Key;
 import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.model.utils.GlobMatchers;
-import org.globsframework.utils.Utils;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
 
 import static org.globsframework.model.utils.GlobMatchers.*;
 
@@ -72,7 +72,7 @@ public class TransactionMatchers {
     return new GlobMatcher() {
       public boolean matches(Glob transaction, GlobRepository repository) {
         Integer seriesId = transaction.get(Transaction.SERIES);
-        return Utils.equal(targetSeriesId, seriesId);
+        return Objects.equals(targetSeriesId, seriesId);
       }
 
       public String toString() {

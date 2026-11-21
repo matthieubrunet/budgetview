@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.globsframework.model.utils.GlobMatchers.*;
-import static org.globsframework.utils.Utils.equal;
 
 public class TransactionFilter {
 
@@ -270,7 +270,7 @@ public class TransactionFilter {
     }
 
     private boolean areEqual(Glob actualTransaction, Glob importedTransaction) {
-      return equal(actualTransaction.get(Transaction.ORIGINAL_LABEL),
+      return Objects.equals(actualTransaction.get(Transaction.ORIGINAL_LABEL),
                    importedTransaction.get(Transaction.ORIGINAL_LABEL))
              && Amounts.equal(getAmount(actualTransaction, this.actualSplitedTransaction),
                               getAmount(importedTransaction, this.importedSplitedTransaction));

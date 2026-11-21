@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.globsframework.utils.Strings;
-import org.globsframework.utils.Utils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Objects;
 
 public class BudgeaStubServer {
 
@@ -193,13 +193,13 @@ public class BudgeaStubServer {
   }
 
   public void checkUserDeleted(int userId) {
-    if (!Utils.equal(lastDeletedUserId, userId)) {
+    if (!Objects.equals(lastDeletedUserId, userId)) {
       throw new RuntimeException("Last deleted user ID: " + lastDeletedUserId + " but expected: " + userId);
     }
   }
 
   public void checkConnectionDeleted(int connectionId) {
-    if (!Utils.equal(lastDeletedConnectionId, connectionId)) {
+    if (!Objects.equals(lastDeletedConnectionId, connectionId)) {
       throw new RuntimeException("Last deleted connection ID: " + lastDeletedConnectionId + " but expected: " + connectionId);
     }
   }
@@ -581,7 +581,7 @@ public class BudgeaStubServer {
     String actual = request.getHeader(BudgeaConstants.AUTHORIZATION);
     String expectedTemp = "Bearer " + lastTempToken;
     String expectedPersistent = "Bearer " + persistentToken;
-    if (!Utils.equal(actual, expectedTemp) && !Utils.equal(actual, expectedPersistent)) {
+    if (!Objects.equals(actual, expectedTemp) && !Objects.equals(actual, expectedPersistent)) {
       logger.error("Unexpected token: " + actual + " - expected: " + expectedTemp + " or " + expectedPersistent);
       return false;
     }

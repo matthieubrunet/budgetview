@@ -11,10 +11,6 @@ public class Utils {
   private Utils() {
   }
 
-  public static boolean equal(Object o1, Object o2) {
-    return (o1 == null) && (o2 == null) || !((o1 == null) || (o2 == null)) && o1.equals(o2);
-  }
-
   public static boolean equalIgnoreCase(String o1, String o2) {
     if ((o1 == null) && (o2 == null)) {
       return true;

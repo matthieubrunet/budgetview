@@ -20,7 +20,6 @@ import org.globsframework.model.indexing.IndexTables;
 import org.globsframework.model.utils.GlobFunctor;
 import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.model.utils.GlobMatchers;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.collections.MapOfMaps;
 import org.globsframework.utils.collections.Pair;
 import org.globsframework.utils.exceptions.*;
@@ -415,7 +414,7 @@ public class DefaultGlobRepository implements GlobRepository, IndexSource {
                                  globType.getName() + "'");
     }
     Object previousValue = mutableGlob.getValue(field);
-    if (Utils.equal(previousValue, newValue)) {
+    if (Objects.equals(previousValue, newValue)) {
       return false;
     }
     if (field.isKeyField()) {
@@ -846,7 +845,7 @@ public class DefaultGlobRepository implements GlobRepository, IndexSource {
     public void process(Field sourceField, Field targetField) {
       Object value = targetKey != null ? targetKey.getValue(targetField) : null;
       Object previousValue = sourceGlob.setObject(sourceField, value);
-      if (Utils.equal(previousValue, value)) {
+      if (Objects.equals(previousValue, value)) {
         return;
       }
       hasChange = true;

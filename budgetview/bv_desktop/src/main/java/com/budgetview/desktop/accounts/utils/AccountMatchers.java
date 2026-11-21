@@ -8,9 +8,9 @@ import org.globsframework.model.Glob;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.model.utils.GlobMatchers;
-import org.globsframework.utils.Utils;
 
 import java.util.SortedSet;
+import java.util.Objects;
 
 public class AccountMatchers {
 
@@ -18,7 +18,7 @@ public class AccountMatchers {
     return new GlobMatcher() {
       public boolean matches(Glob account, GlobRepository repository) {
         Integer accountId = account.get(Account.ID);
-        return Utils.equal(accountId, userAccountId) || Utils.equal(accountId, Account.MAIN_SUMMARY_ACCOUNT_ID);
+        return Objects.equals(accountId, userAccountId) || Objects.equals(accountId, Account.MAIN_SUMMARY_ACCOUNT_ID);
       }
     };
   }

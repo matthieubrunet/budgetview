@@ -8,7 +8,6 @@ import org.globsframework.metamodel.fields.DoubleField;
 import org.globsframework.metamodel.fields.IntegerField;
 import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.*;
-import org.globsframework.utils.Utils;
 
 import java.util.*;
 
@@ -149,7 +148,7 @@ public class GlobUtils {
 
     Object fromT = fromArray.length == 0 ? null : fromArray[0];
     for (T element : to) {
-      if (!Utils.equal(element, fromT)) {
+      if (!Objects.equals(element, fromT)) {
         boolean moved = false;
         for (int i = toPos + 1; i < fromArray.length; i++) {
           Object t = fromArray[i];

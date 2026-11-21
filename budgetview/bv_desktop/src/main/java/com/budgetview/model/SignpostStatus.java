@@ -16,11 +16,11 @@ import org.globsframework.model.FieldValues;
 import org.globsframework.model.Glob;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.format.GlobPrinter;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.serialization.SerializedByteArrayOutput;
 import org.globsframework.utils.serialization.SerializedInput;
 import org.globsframework.utils.serialization.SerializedInputOutputFactory;
 import org.globsframework.utils.serialization.SerializedOutput;
+import java.util.Objects;
 
 public class SignpostStatus {
 
@@ -139,7 +139,7 @@ public class SignpostStatus {
   }
 
   public static boolean isOnboardingCompleted(Glob status) {
-    return (status != null) && Utils.equal(status.get(CURRENT_SECTION), SignpostSectionType.COMPLETED.getId());
+    return (status != null) && Objects.equals(status.get(CURRENT_SECTION), SignpostSectionType.COMPLETED.getId());
   }
 
   public static void setInitialGuidanceCompleted(GlobRepository repository) {

@@ -8,11 +8,11 @@ import org.globsframework.model.GlobList;
 import org.globsframework.sqlstreams.GlobsDatabase;
 import org.globsframework.sqlstreams.SqlConnection;
 import org.globsframework.sqlstreams.constraints.Where;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 import org.globsframework.utils.exceptions.InvalidConfiguration;
 
 import javax.crypto.BadPaddingException;
+import java.util.Objects;
 
 public class CloudSerializationBuilder {
 
@@ -46,7 +46,7 @@ public class CloudSerializationBuilder {
         Glob config = configs.getFirst();
         byte[] decoded = serializationService.decode(config.get(CloudConfig.SAMPLE));
         String previousPhrase = new String(decoded, "UTF-8");
-        if (!Utils.equal(previousPhrase, encryptionPhrase)) {
+        if (!Objects.equals(previousPhrase, encryptionPhrase)) {
           throw new InvalidConfiguration("Phrase '" + DB_ENCRYPTION_PHRASE_PROPERTY + "' is different from previous one - aborting");
         }
       }

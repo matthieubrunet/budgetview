@@ -13,11 +13,11 @@ import com.budgetview.shared.model.BudgetArea;
 import com.budgetview.utils.Lang;
 import org.globsframework.gui.SelectionService;
 import org.globsframework.model.*;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 
@@ -141,7 +141,7 @@ public class CreateSeriesActionFactory {
       int account2Neg = 0;
       for (Glob transaction : currentTransactions) {
         boolean positive = transaction.get(Transaction.AMOUNT) > 0;
-        if (Utils.equal(account1, transaction.get(Transaction.ACCOUNT))) {
+        if (Objects.equals(account1, transaction.get(Transaction.ACCOUNT))) {
           if (positive) {
             account1Pos++;
           }
@@ -149,7 +149,7 @@ public class CreateSeriesActionFactory {
             account1Neg++;
           }
         }
-        if (Utils.equal(account2, transaction.get(Transaction.ACCOUNT))) {
+        if (Objects.equals(account2, transaction.get(Transaction.ACCOUNT))) {
           if (positive) {
             account2Pos++;
           }

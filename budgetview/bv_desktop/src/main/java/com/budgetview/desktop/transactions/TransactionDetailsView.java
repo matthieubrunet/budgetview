@@ -29,13 +29,13 @@ import org.globsframework.model.format.utils.GlobListStringFieldStringifier;
 import org.globsframework.model.utils.GlobListMatcher;
 import org.globsframework.model.utils.GlobListMatchers;
 import org.globsframework.utils.Strings;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
 
 public class TransactionDetailsView extends View {
   private TableView tableView;
@@ -154,7 +154,7 @@ public class TransactionDetailsView extends View {
       }
       Glob transaction = list.get(0);
       return Strings.isNotEmpty(transaction.get(Transaction.ORIGINAL_LABEL)) &&
-             !Utils.equal(transaction.get(Transaction.LABEL), transaction.get(Transaction.ORIGINAL_LABEL));
+             !Objects.equals(transaction.get(Transaction.LABEL), transaction.get(Transaction.ORIGINAL_LABEL));
     }
   }
 
@@ -172,8 +172,8 @@ public class TransactionDetailsView extends View {
         return false;
       }
       Glob transaction = list.get(0);
-      return !Utils.equal(transaction.get(Transaction.DAY), transaction.get(dayField)) ||
-             !Utils.equal(transaction.get(Transaction.MONTH), transaction.get(monthField));
+      return !Objects.equals(transaction.get(Transaction.DAY), transaction.get(dayField)) ||
+             !Objects.equals(transaction.get(Transaction.MONTH), transaction.get(monthField));
     }
   }
 

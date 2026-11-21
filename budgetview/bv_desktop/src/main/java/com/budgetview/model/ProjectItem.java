@@ -10,7 +10,6 @@ import org.globsframework.metamodel.annotations.Key;
 import org.globsframework.metamodel.fields.*;
 import org.globsframework.metamodel.index.NotUniqueIndex;
 import org.globsframework.model.*;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.UnexpectedApplicationState;
 import org.globsframework.utils.serialization.SerializedByteArrayOutput;
 import org.globsframework.utils.serialization.SerializedInput;
@@ -18,6 +17,7 @@ import org.globsframework.utils.serialization.SerializedInputOutputFactory;
 import org.globsframework.utils.serialization.SerializedOutput;
 
 import java.util.SortedSet;
+import java.util.Objects;
 
 import static org.globsframework.model.utils.GlobMatchers.fieldEquals;
 import static org.globsframework.model.utils.GlobMatchers.linkedTo;
@@ -131,7 +131,7 @@ public class ProjectItem {
   }
 
   public static boolean usesExtrasSeries(FieldValues itemValues) {
-    return !Utils.equal(ProjectItemType.TRANSFER.getId(), itemValues.get(ITEM_TYPE));
+    return !Objects.equals(ProjectItemType.TRANSFER.getId(), itemValues.get(ITEM_TYPE));
   }
 
   public static Glob findProjectItem(Glob series, GlobRepository repository) {

@@ -13,7 +13,6 @@ import org.globsframework.model.utils.GlobFieldsComparator;
 import org.globsframework.sqlstreams.GlobsDatabase;
 import org.globsframework.sqlstreams.SqlConnection;
 import org.globsframework.sqlstreams.constraints.Where;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 import org.globsframework.utils.serialization.Encoder;
 
@@ -28,6 +27,7 @@ import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
+import java.util.Objects;
 
 public class RegisterServlet extends HttpServlet {
   static Logger logger = Logger.getLogger("RegisterServlet");
@@ -115,7 +115,7 @@ public class RegisterServlet extends HttpServlet {
           for (Glob glob : globList) {
             if (glob != license) {
               // on ne doit avoir qu'un seul enregistrement valide par repo.
-              if (Utils.equal(glob.get(License.REPO_ID), repoId)) {
+              if (Objects.equals(glob.get(License.REPO_ID), repoId)) {
                 db.startUpdate(License.TYPE, Where.globEquals(glob))
                   .set(License.REPO_ID, ((String) null))
                   .run();
@@ -128,7 +128,7 @@ public class RegisterServlet extends HttpServlet {
         }
       }
       for (Glob license : globList) {
-        if (Utils.equal(activationCode, license.get(License.LAST_ACTIVATION_CODE))) {
+        if (Objects.equals(activationCode, license.get(License.LAST_ACTIVATION_CODE))) {
           String newCode = LicenseGenerator.generateActivationCode();
           logger.info("Mail sent with new code " + newCode);
           db.startUpdate(License.TYPE, Where.fieldEquals(License.MAIL, mail))

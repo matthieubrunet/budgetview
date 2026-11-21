@@ -9,8 +9,8 @@ import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.Glob;
 import org.globsframework.model.impl.ReadOnlyGlob;
 import org.globsframework.model.utils.GlobConstantContainer;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.ItemNotFound;
+import java.util.Objects;
 
 import static org.globsframework.model.FieldValue.value;
 
@@ -39,7 +39,7 @@ public enum TransactionType implements GlobConstantContainer {
   public static StringField NAME;
 
   public static boolean isOfType(Glob transaction, TransactionType type) {
-    return Utils.equal(transaction.get(Transaction.TRANSACTION_TYPE), type.getGlob().get(ID));
+    return Objects.equals(transaction.get(Transaction.TRANSACTION_TYPE), type.getGlob().get(ID));
   }
 
   public static TransactionType getType(Integer id) {
@@ -87,7 +87,7 @@ public enum TransactionType implements GlobConstantContainer {
   public static TransactionType get(Glob transactionTypeMatcher) throws ItemNotFound {
     Integer transactionTypeId = transactionTypeMatcher.get(PreTransactionTypeMatcher.TRANSACTION_TYPE);
     for (TransactionType transactionType : values()) {
-      if (Utils.equal(transactionType.id, transactionTypeId)) {
+      if (Objects.equals(transactionType.id, transactionTypeId)) {
         return transactionType;
       }
     }

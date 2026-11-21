@@ -5,11 +5,11 @@ import com.budgetview.shared.model.Provider;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 import org.globsframework.utils.Strings;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.InvalidParameter;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class CloudAPI {
 
@@ -76,7 +76,7 @@ public class CloudAPI {
       .addHeader(CloudConstants.DEVICE_TOKEN, deviceToken)
       .addHeader(CloudConstants.PROVIDER_ID, Integer.toString(Provider.BUDGEA.getId()));
     JSONObject json = Http.executeAndGetJson(url, request);
-    return Utils.equal("ok", json.optString("status"));
+    return Objects.equals("ok", json.optString("status"));
   }
 
   public void addProviderAccess(Integer cloudUserId, Integer deviceId, String deviceToken, String budgeaToken, Integer budgeaUserId) throws IOException {

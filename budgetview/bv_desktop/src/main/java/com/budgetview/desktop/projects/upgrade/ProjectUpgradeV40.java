@@ -22,11 +22,11 @@ import org.globsframework.model.Key;
 import org.globsframework.model.utils.GlobFieldsComparator;
 import org.globsframework.model.utils.GlobMatchers;
 import org.globsframework.utils.Log;
-import org.globsframework.utils.Utils;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.Objects;
 
 import static com.budgetview.model.ProjectItemType.isExpenses;
 import static com.budgetview.model.ProjectItemType.isTransfer;
@@ -79,7 +79,7 @@ public class ProjectUpgradeV40 {
       Integer projectSeriesId = project.get(Project.SERIES);
 
       Integer itemSeriesId = item.get(ProjectItem.SERIES);
-      if ((itemSeriesId != null) && !Utils.equal(projectSeriesId, itemSeriesId)) {
+      if ((itemSeriesId != null) && !Objects.equals(projectSeriesId, itemSeriesId)) {
         repository.update(Key.create(Series.TYPE, itemSeriesId), Series.GROUP, project.get(Project.SERIES_GROUP));
         repository.update(item.getKey(),
                           value(ProjectItem.SUB_SERIES, null),
@@ -190,8 +190,8 @@ public class ProjectUpgradeV40 {
       Integer target = series.get(Series.TARGET_ACCOUNT);
       for (Glob seriesBudget : repository.findLinkedTo(series, SeriesBudget.SERIES)) {
         Double amount = seriesBudget.get(SeriesBudget.PLANNED_AMOUNT, 0.00);
-        if (((amount < 0) && Utils.equal(target, to)) ||
-            ((amount > 0) && Utils.equal(target, from))) {
+        if (((amount < 0) && Objects.equals(target, to)) ||
+            ((amount > 0) && Objects.equals(target, from))) {
           repository.update(seriesBudget.getKey(), SeriesBudget.PLANNED_AMOUNT, -amount);
         }
       }

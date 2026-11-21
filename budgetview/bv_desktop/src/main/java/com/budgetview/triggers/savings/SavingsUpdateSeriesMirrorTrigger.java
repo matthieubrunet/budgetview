@@ -6,7 +6,7 @@ import com.budgetview.shared.model.BudgetArea;
 import org.globsframework.metamodel.Field;
 import org.globsframework.model.*;
 import org.globsframework.model.utils.DefaultChangeSetListener;
-import org.globsframework.utils.Utils;
+import java.util.Objects;
 
 public class SavingsUpdateSeriesMirrorTrigger extends DefaultChangeSetListener {
 
@@ -27,7 +27,7 @@ public class SavingsUpdateSeriesMirrorTrigger extends DefaultChangeSetListener {
         if (budgetForMirror != null) {
           return;
         }
-        int sign = Utils.equal(series.get(Series.FROM_ACCOUNT), series.get(Series.TARGET_ACCOUNT)) ? -1 : 1;
+        int sign = Objects.equals(series.get(Series.FROM_ACCOUNT), series.get(Series.TARGET_ACCOUNT)) ? -1 : 1;
         if (mirrorSeriesId != null) {
           FieldValue[] fieldValues = values.toArray();
           for (int i = 0; i < fieldValues.length; i++) {

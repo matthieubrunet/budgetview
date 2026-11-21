@@ -1,11 +1,11 @@
 package com.budgetview.shared.gui.histochart;
 
 import com.budgetview.shared.gui.TextMetrics;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.exceptions.InvalidParameter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 public class HistoChartMetrics {
 
@@ -328,7 +328,7 @@ public class HistoChartMetrics {
     String previousName = dataset.getSection(0);
     for (int i = 0; i < dataset.size(); i++) {
       String sectionName = dataset.getSection(i);
-      if (!Utils.equal(sectionName, previousName)) {
+      if (!Objects.equals(sectionName, previousName)) {
         int blockRight = left(i);
         sections.add(createSection(previousName, blockLeft, blockRight));
         previousName = sectionName;

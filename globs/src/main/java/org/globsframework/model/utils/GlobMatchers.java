@@ -46,7 +46,7 @@ public class GlobMatchers {
       public boolean matches(Glob item, GlobRepository repository) {
         Integer fieldValue = item.get(field);
         for (Integer value : values) {
-          if (Utils.equal(fieldValue, value)) {
+          if (Objects.equals(fieldValue, value)) {
             return true;
           }
         }
@@ -193,7 +193,7 @@ public class GlobMatchers {
       public boolean matches(final Glob item, GlobRepository repository) {
         for (int j = 0; j < sourceFielsArray.length; j++) {
           Field field = sourceFielsArray[j];
-          if (!Utils.equal(targetValue[j], item.getValue(field))) {
+          if (!Objects.equals(targetValue[j], item.getValue(field))) {
             return false;
           }
         }
@@ -521,7 +521,7 @@ public class GlobMatchers {
     }
 
     public boolean matches(Glob glob, GlobRepository repository) {
-      return Utils.equal(value, glob.getValue(field));
+      return Objects.equals(value, glob.getValue(field));
     }
 
     public String toString() {

@@ -22,7 +22,6 @@ import org.globsframework.model.GlobRepository;
 import org.globsframework.model.Key;
 import org.globsframework.model.utils.GlobComparators;
 import org.globsframework.model.utils.GlobMatchers;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
@@ -31,6 +30,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.globsframework.model.utils.GlobMatchers.linkedTo;
 
@@ -149,7 +149,7 @@ public class ImportCloudAccountsPanel extends AbstractImportStepPanel {
     for (Map.Entry<Key, Boolean> entry : accountStates.entrySet()) {
       Glob account = repository.get(entry.getKey());
       Boolean accountEnabled = account.get(CloudProviderAccount.ENABLED);
-      if (!Utils.equal(accountEnabled, entry.getValue())) {
+      if (!Objects.equals(accountEnabled, entry.getValue())) {
         return true;
       }
     }
@@ -169,7 +169,7 @@ public class ImportCloudAccountsPanel extends AbstractImportStepPanel {
     for (Map.Entry<Key, Boolean> entry : accountStates.entrySet()) {
       Glob account = repository.get(entry.getKey());
       Boolean accountEnabled = account.get(CloudProviderAccount.ENABLED);
-      if (!Utils.equal(accountEnabled, entry.getValue())) {
+      if (!Objects.equals(accountEnabled, entry.getValue())) {
         updates.add(account.get(CloudProviderAccount.PROVIDER_CONNECTION_ID), account.get(CloudProviderAccount.PROVIDER_ACCOUNT_ID), entry.getValue());
       }
     }
