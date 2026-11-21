@@ -190,6 +190,12 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
 - [ ] **4c. Tester sans le contournement** sous Java 21, sur macOS, et le retirer s'il n'est plus utile.
   Lot A fait le 2026-11-21 : versions de Windows de `GuiUtils` et `AppPaths`, `sun.awt.exception.handler`,
   `PicsouLinuxLookAndFeel` (gardée en 1e comme « Linux, hors champ », mais aucun système ne la chargeait).
+  Lot B fait le 2026-11-21 (choix de Matthieu : les quatre méthodes, tests d'abord) : masques `InputEvent` dépréciés
+  remplacés par `getModifiersEx`, `getButton` et `ActionEvent.*_MASK`, en reproduisant le calcul des anciens masques par AWT
+  (bouton qui change d'état pour appui, relâchement et clic ; boutons tenus sinon). Le défaut « Meta = clic droit,
+  Alt = bouton du milieu » est gardé et documenté. Garde : `MouseModifiersTest`, `GlobTableViewRightClickTest` (`globs`)
+  et `GuiModifiersTest` (`bv_desktop`) comparent aux anciens masques sur ~3 000 événements, construits comme AWT
+  (masques étendus) et à l'ancienne.
 
 ## Étape 5 : les tests
 
@@ -1590,3 +1596,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 3f, `Month` en `java.time` | `Month` sans `Calendar` ni `synchronized`, `hh` → `HH`, `OfxImporter.DATE_FORMAT` non partagé (7 fichiers, +84 −66 lignes, dont un test de 42 lignes comparant au `Calendar`). Tests de `globs` 808, `bv_desktop` 1 027 verts. Lots B et C abandonnés. **3f terminé** |
 | 2026-11-21 | 4a et 4b, inventaire | Rien de modifié. 21 tests de plateforme (11 fichiers), 34 `invokeLater`, 5 `Thread.sleep`, 25 `catch` vides, origine retrouvée par `git blame`. Morts sous Java 21 : versions de Windows d'`AppPaths`, `sun.awt.exception.handler`, `PicsouLinuxLookAndFeel` ; masques `InputEvent` dépréciés, dont un défaut latent (clic droit pris pour « Meta ») ; 5 contournements à essayer dans l'appli. Trois lots proposés (A à C) |
 | 2026-11-21 | 4c, lot A (morts sous Java 21) | Détection de Windows XP à 8 (`GuiUtils`, `AppPaths`), `setProperty("sun.awt.exception.handler")` et `PicsouLinuxLookAndFeel` supprimés (−87 lignes, 4 fichiers) ; build sans `[WARNING]`. Tests de `globs` 808, `bv_desktop` 1 027 verts, 5 min 11 s |
+| 2026-11-21 | 4c, lot B (masques dépréciés) | `Gui.isAddModifier` (prend désormais le `MouseEvent`), `Gui.hasModifiers`, `GuiUtils.isRightClick`, condition de `GlobTableView` sans API dépréciée, comportement identique défaut compris ; nouveau `GuiUtils.isButton` (4 fichiers, +37 −15 lignes ; 3 classes de test, 5 tests). Tests de `globs` 811, `bv_desktop` 1 029 (1 course d'uispec4j dans `DashboardTest`, verte relancée seule deux fois), 5 min 11 s |

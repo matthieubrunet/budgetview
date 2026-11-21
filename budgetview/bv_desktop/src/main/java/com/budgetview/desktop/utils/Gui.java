@@ -178,11 +178,15 @@ public class Gui {
     return inWindow;
   }
 
-  public static boolean isAddModifier(int modifiers) {
-    return ((modifiers & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) ||
-           ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
-           ((modifiers & InputEvent.ALT_MASK) == InputEvent.ALT_MASK) ||
-           ((modifiers & InputEvent.META_MASK) == InputEvent.META_MASK);
+  /**
+   * Ctrl, Maj, Alt ou Meta enfoncée, ou bouton du milieu ou de droite : reproduit l'ancien test sur getModifiers(), où
+   * ALT_MASK = BUTTON2_MASK et META_MASK = BUTTON3_MASK. Défaut gardé, voir GuiModifiersTest.
+   */
+  public static boolean isAddModifier(MouseEvent e) {
+    int keys = InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK | InputEvent.META_DOWN_MASK;
+    return (e.getModifiersEx() & keys) != 0 ||
+           GuiUtils.isButton(e, MouseEvent.BUTTON2) ||
+           GuiUtils.isButton(e, MouseEvent.BUTTON3);
   }
 
   public static class RolloverColorListener extends MouseAdapter {
@@ -226,10 +230,7 @@ public class Gui {
   }
 
   public static boolean hasModifiers(ActionEvent e) {
-    return ((e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) ||
-           ((e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
-           ((e.getModifiers() & InputEvent.ALT_MASK) == InputEvent.ALT_MASK) ||
-           ((e.getModifiers() & InputEvent.META_MASK) == InputEvent.META_MASK);
+    return (e.getModifiers() & (ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK | ActionEvent.ALT_MASK | ActionEvent.META_MASK)) != 0;
   }
 
   public static class RolloverMouseMotionListener extends MouseMotionAdapter {

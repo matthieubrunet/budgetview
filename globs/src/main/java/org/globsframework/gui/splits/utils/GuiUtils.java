@@ -399,9 +399,27 @@ public class GuiUtils {
     return "";
   }
 
+  /**
+   * Clic droit, ou Meta (Cmd) enfoncée : reproduit l'ancien test (getModifiers() & BUTTON3_MASK), où META_MASK et
+   * BUTTON3_MASK ont la même valeur. Défaut gardé, voir MouseModifiersTest.
+   */
   public static boolean isRightClick(MouseEvent event) {
-    int modifiers = event.getModifiers();
-    return (modifiers & MouseEvent.BUTTON3_MASK) != 0;
+    return isButton(event, MouseEvent.BUTTON3) || event.isMetaDown();
+  }
+
+  /**
+   * Le bouton est-il en jeu, au sens des anciens masques (BUTTON1_MASK…) : celui qui change d'état pour un appui, un
+   * relâchement ou un clic, ceux qui sont tenus pour les autres événements.
+   */
+  public static boolean isButton(MouseEvent event, int button) {
+    switch (event.getID()) {
+      case MouseEvent.MOUSE_PRESSED:
+      case MouseEvent.MOUSE_RELEASED:
+      case MouseEvent.MOUSE_CLICKED:
+        return event.getButton() == button;
+      default:
+        return (event.getModifiersEx() & InputEvent.getMaskForButton(button)) != 0;
+    }
   }
 
   /**

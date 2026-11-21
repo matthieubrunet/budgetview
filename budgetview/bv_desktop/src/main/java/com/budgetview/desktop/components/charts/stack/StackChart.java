@@ -199,7 +199,7 @@ public class StackChart extends JPanel {
   private void registerMouseActions() {
     addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
-        boolean addModifier = Gui.isAddModifier(e.getModifiers());
+        boolean addModifier = Gui.isAddModifier(e);
         boolean rightClick = GuiUtils.isRightClick(e);
         selectionManager.startClick(addModifier && !rightClick, rightClick);
       }

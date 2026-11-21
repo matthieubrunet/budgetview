@@ -590,10 +590,13 @@ public class GlobTableView extends AbstractGlobComponentHolder<GlobTableView> im
     }
   }
 
+  /** Clic droit sans Ctrl : il sélectionne la ligne cliquée avant d'ouvrir le menu contextuel. */
+  static boolean isRowSelectingClick(MouseEvent e) {
+    return GuiUtils.isRightClick(e) && !e.isControlDown();
+  }
+
   private void selectRowOnRightClickIfNeeded(JTable table, MouseEvent e) {
-    int modifiers = e.getModifiers();
-    if (((modifiers & MouseEvent.BUTTON3_MASK) == 0) ||
-        (modifiers & MouseEvent.CTRL_MASK) != 0) {
+    if (!isRowSelectingClick(e)) {
       return;
     }
     int selectedRow = table.rowAtPoint(e.getPoint());
