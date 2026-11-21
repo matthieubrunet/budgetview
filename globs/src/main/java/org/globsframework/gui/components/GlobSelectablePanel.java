@@ -63,7 +63,7 @@ public class GlobSelectablePanel implements GlobSelectionListener, Disposable, C
     this.selectionService = directory.get(SelectionService.class);
     this.colorService = directory.get(ColorService.class);
     this.selectionKey = key;
-    this.keys = Utils.joinedList(key, otherKeys);
+    this.keys = Utils.list(key, otherKeys);
     this.type = key.getGlobType();
     checkKeyTypes(otherKeys);
 

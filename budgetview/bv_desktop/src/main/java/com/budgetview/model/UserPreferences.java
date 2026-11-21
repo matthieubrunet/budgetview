@@ -2,7 +2,6 @@ package com.budgetview.model;
 
 import com.budgetview.model.util.TypeLoader;
 import com.budgetview.shared.utils.GlobSerializer;
-import com.budgetview.utils.RandomStrings;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.annotations.*;
 import org.globsframework.metamodel.fields.*;
@@ -132,13 +131,6 @@ public class UserPreferences {
   public static boolean isReconciliationShown(GlobRepository repository) {
     Glob prefs = repository.find(KEY);
     return (prefs != null) && prefs.isTrue(SHOW_RECONCILIATION);
-  }
-
-  public static void initMobilePassword(GlobRepository repository, boolean force) {
-    Glob prefs = repository.findOrCreate(KEY);
-    if (prefs.get(PASSWORD_FOR_MOBILE) == null || force) {
-      repository.update(KEY, PASSWORD_FOR_MOBILE, RandomStrings.randomAlphanumeric(6).toLowerCase());
-    }
   }
 
   public static boolean isTrue(BooleanField field, GlobRepository repository) {

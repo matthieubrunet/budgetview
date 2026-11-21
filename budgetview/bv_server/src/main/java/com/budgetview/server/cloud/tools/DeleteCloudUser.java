@@ -8,8 +8,8 @@ import com.budgetview.server.cloud.utils.CloudDb;
 import com.budgetview.server.config.ConfigService;
 import com.budgetview.server.utils.Args;
 import org.globsframework.model.Glob;
+import org.globsframework.utils.Strings;
 import org.globsframework.sqlstreams.constraints.Where;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import java.util.Scanner;
@@ -75,7 +75,7 @@ public class DeleteCloudUser {
       public void processError(String message, Exception e) {
         builder.append("Failed to delete user with email ").append(email).append("\n")
           .append("Message: ").append(message).append("\n")
-          .append(Utils.toString(e)).append("\n");
+          .append(Strings.toString(e)).append("\n");
       }
     });
 

@@ -5,7 +5,7 @@ import com.budgetview.server.utils.Lang;
 import com.budgetview.server.utils.Template;
 import org.apache.log4j.Logger;
 import org.globsframework.utils.Dates;
-import org.globsframework.utils.Utils;
+import org.globsframework.utils.Strings;
 import org.globsframework.utils.exceptions.ResourceAccessFailed;
 
 import javax.mail.*;
@@ -166,7 +166,7 @@ public class Mailer {
                      "<p>On : " + Dates.toString(Dates.now()) + "</p>\n" +
                      "<p>Exception:</p>\n" +
                      "<pre><code>\n" +
-                     Utils.toString(e) +
+                     Strings.toString(e) +
                      "</code></pre>\n" +
                      "</body></html>";
     doSend(Mailbox.ADMIN, title, content, Mailbox.ADMIN.getEmail(), Mailbox.ADMIN.getEmail());

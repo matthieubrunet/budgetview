@@ -250,7 +250,7 @@ public class PicsouInit {
           }
         }
 
-        UserPreferences.initMobilePassword(repository, false);
+        repository.findOrCreate(UserPreferences.KEY);
 
         dataAccess.applyChanges(changeSet, repository);
       }

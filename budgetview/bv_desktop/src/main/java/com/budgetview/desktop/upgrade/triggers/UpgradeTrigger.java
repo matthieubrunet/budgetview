@@ -165,7 +165,7 @@ public class UpgradeTrigger implements ChangeSetListener {
       resetLayout(config, repository);
     }
 
-    UserPreferences.initMobilePassword(repository, false);
+    repository.findOrCreate(UserPreferences.KEY);
 
     deleteDeprecatedGlobs(repository);
 

@@ -3,8 +3,6 @@ package org.globsframework.utils;
 import org.globsframework.utils.exceptions.InvalidParameter;
 import org.globsframework.utils.exceptions.ItemNotFound;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,10 +57,6 @@ public class Utils {
 
   public static Double zeroIfNull(Double value) {
     return value != null ? value : 0.;
-  }
-
-  public static Integer defaultIfNull(Integer value, int def) {
-    return value != null ? value : def;
   }
 
   public static <T extends Comparable> T min(Collection<T> values) {
@@ -168,23 +162,6 @@ public class Utils {
     return result;
   }
 
-  public static <T> Set<T> set(T[] array) {
-    Set<T> result = new HashSet<T>();
-    for (T value : array) {
-      result.add(value);
-    }
-    return result;
-  }
-
-  public static <T> Set<T> set(T first, T... other) {
-    Set<T> result = new HashSet<T>();
-    result.add(first);
-    for (T t : other) {
-      result.add(t);
-    }
-    return result;
-  }
-
   public static <T> List<T> sort(Set<T> list, Comparator<T> comparator) {
     List<T> result = new ArrayList<T>(list);
     return sort(result, comparator);
@@ -217,13 +194,6 @@ public class Utils {
     return array;
   }
 
-  public static String[] remove(String[] initial, String... toExclude) {
-    List<String> result = new ArrayList<String>();
-    result.addAll(Arrays.asList(initial));
-    result.removeAll(Arrays.asList(toExclude));
-    return result.toArray(new String[result.size()]);
-  }
-
   public static int[] append(int[] array1, int... array2) {
     int[] result = new int[array1.length + array2.length];
     int index = 0;
@@ -232,16 +202,6 @@ public class Utils {
     }
     for (int i : array2) {
       result[index++] = i;
-    }
-    return result;
-  }
-
-  public static double sum(Double[] values) {
-    double result = 0;
-    for (Double value : values) {
-      if (value != null) {
-        result += value;
-      }
     }
     return result;
   }
@@ -272,29 +232,11 @@ public class Utils {
     if (name == null) {
       return null;
     }
-    T result = T.valueOf(enumClass, toNiceUpperCase(name.trim()));
+    T result = T.valueOf(enumClass, Strings.toNiceUpperCase(name.trim()));
     if (result == null) {
       throw new ItemNotFound("No enum " + enumClass.getSimpleName() + " found for value: " + name);
     }
     return result;
-  }
-
-  public static void dumpStack() {
-    Map<Thread, StackTraceElement[]> map = Thread.getAllStackTraces();
-    for (StackTraceElement[] elements : map.values()) {
-      System.err.println("dumpStack ------------------------------------------");
-      for (StackTraceElement element : elements) {
-        System.err.println("  at " + element.getClassName() + "." + element.getMethodName()
-                           + "(" + element.getFileName() + ":" + element.getLineNumber() + ')');
-      }
-    }
-  }
-
-  public static <T> List<T> joinedList(T first, T... others) {
-    ArrayList<T> list = new ArrayList<T>();
-    list.add(first);
-    Collections.addAll(list, others);
-    return list;
   }
 
   public static <T> List<List<T>> split(List<T> list, int count) {
@@ -343,40 +285,6 @@ public class Utils {
       return null;
     }
     return replace(matcher, placementRegexp, targetString);
-  }
-
-  public static String toNiceUpperCase(String value) {
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < value.length(); i++) {
-      char c = value.charAt(i);
-      if ((i > 0) && Character.isUpperCase(c) && Character.isLowerCase(value.charAt(i - 1))) {
-        builder.append("_");
-      }
-      builder.append(Character.toUpperCase(c));
-    }
-    return builder.toString();
-  }
-
-  public static String capitalize(String value) {
-    if ((value == null) || "".equals(value)) {
-      return value;
-    }
-    return value.substring(0, 1).toUpperCase() + value.substring(1, value.length());
-  }
-
-
-  public static Integer[] box(int[] array) {
-    Integer[] result = new Integer[array.length];
-    for (int i = 0; i < array.length; i++) {
-      result[i] = array[i];
-    }
-    return result;
-  }
-
-  public static String toString(Throwable t) {
-    StringWriter stringWriter = new StringWriter();
-    t.printStackTrace(new PrintWriter(stringWriter));
-    return stringWriter.toString();
   }
 
   public static String toString(Iterable collection) {

@@ -359,7 +359,7 @@ public class PlannedTransactionCreationTriggerTest extends PicsouTriggerTestCase
     for (int i = 0; i < accountIds.length; i++) {
       amounts.add(accountIds[i], actual[i]);
     }
-    PlannedTransactionCreationTrigger.levelPlannedWhenExceeded(Utils.box(accountIds), planned, amounts);
+    PlannedTransactionCreationTrigger.levelPlannedWhenExceeded(Utils.toObjectIntegers(accountIds), planned, amounts);
     TestUtils.assertEquals(planned, expectedPlanned);
   }
 }

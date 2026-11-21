@@ -1304,6 +1304,13 @@ comportement de la 5.01 dans l'application livrée).
   d'abord le comportement de `Files`, défauts compris, puis ses méthodes passent en `try`-avec-ressources et `transferTo` :
   quatre flux qui restaient ouverts sont fermés. Tests de `globs` 808 verts (+12), `bv_desktop` 1 026 verts, 4 min 43 s ;
   0 `[WARNING]`, `bv_server` compile.
+- Lot B (2026-11-21) : `Utils.box`, `joinedList`, `toString(Throwable)`, `capitalize`, `toNiceUpperCase` fusionnés dans
+  leurs doubles (`toObjectIntegers`, `list`, `Strings`), 7 méthodes mortes supprimées ; `RandomStrings` et
+  `initMobilePassword` aussi. Ce dernier créait au passage les préférences de l'utilisateur (`findOrCreate`) : ses deux
+  appels sont remplacés par ce seul `findOrCreate`. Les nouveaux utilisateurs n'ont plus de mot de passe mobile (`null`,
+  que la sérialisation accepte) ; le champ reste dans le modèle. 10 fichiers, +11 −217 lignes. Tests de `globs` 808 verts ;
+  `bv_desktop` 1 026, 1 erreur « No such child » de `TransactionFilteringTest` (course d'uispec4j, verte relancée seule
+  deux fois), 4 min 56 s ; 0 `[WARNING]`, `bv_server` compile.
 
 
 
@@ -1387,3 +1394,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 3d, inventaire | Rien de modifié. `Utils`, `Strings`, `Files` (941 lignes) : 8 remplacements exacts par le JDK, dont `Utils.equal` (155 appels) ; 4 doublons internes, 7 méthodes mortes, `RandomStrings` reste du mobile. Balises `beginRemove`/`endRemove` inopérantes depuis la suppression du shrinker : 7 blocs de développement actifs en production, dont le menu `[Dev]`. Quatre lots proposés (0, A à C) |
 | 2026-11-21 | 3d, lot 0 (balises « dev ») | 13 blocs `beginRemove`/`endRemove` remplacés par `Application.isDevMode()`, des `assert` ou supprimés (+53 −86 lignes, 18 fichiers) ; application livrée revenue au comportement de la 5.01. Tests de `globs` 796, `bv_desktop` 1 026 verts, 4 min 51 s |
 | 2026-11-21 | 3d, lot A (JDK direct) | 3 classes et `Utils.copyOf` supprimés, `Files` modernisé (4 flux fermés) ; `FilesTest` ajouté (12 tests). Tests de `globs` 808 verts, `bv_desktop` 1 026 verts, 4 min 43 s |
+| 2026-11-21 | 3d, lot B (doublons et morts) | 5 doublons fusionnés, 7 méthodes mortes, `RandomStrings` et le tirage du mot de passe mobile supprimés (+11 −217 lignes). Tests de `globs` 808 verts, `bv_desktop` 1 026 (1 course d'uispec4j, verte relancée), 4 min 56 s |

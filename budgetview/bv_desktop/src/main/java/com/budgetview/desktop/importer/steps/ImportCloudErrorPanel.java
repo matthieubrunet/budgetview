@@ -6,9 +6,9 @@ import com.budgetview.desktop.help.HyperlinkHandler;
 import com.budgetview.desktop.importer.ImportController;
 import com.budgetview.utils.Lang;
 import org.globsframework.gui.GlobsPanelBuilder;
+import org.globsframework.utils.Strings;
 import org.globsframework.gui.splits.utils.GuiUtils;
 import org.globsframework.model.GlobRepository;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
@@ -73,7 +73,7 @@ public class ImportCloudErrorPanel extends AbstractImportStepPanel {
     errorMessage.setText(Lang.get("import.cloud.error.message.default"));
     detailsTitle.setVisible(true);
     detailsText.setVisible(true);
-    detailsText.setText(Utils.toString(e));
+    detailsText.setText(Strings.toString(e));
     GuiUtils.scrollToTop(detailsText);
   }
 
