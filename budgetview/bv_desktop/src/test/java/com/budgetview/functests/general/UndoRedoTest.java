@@ -132,33 +132,6 @@ public class UndoRedoTest extends LoggedInFunctionalTestCase {
     assertTrue(i < 25);
   }
 
-  public void DISABLED_testUndoRedoMaintainsSelection() throws Exception {
-
-    OfxBuilder.init(this)
-      .addTransaction("2008/08/15", 15.00, "McDo")
-      .addTransaction("2008/07/15", 95.00, "Orange")
-      .load();
-
-    timeline.selectMonth("2008/07");
-    transactions.initContent()
-      .add("15/07/2008", TransactionType.VIREMENT, "Orange", "", 95.00)
-      .check();
-
-//    transactions.assignOccasionalSeries(MasterCategory.TELECOMS, 0);
-
-    timeline.selectMonth("2008/08");
-    transactions.initContent()
-      .add("15/08/2008", TransactionType.VIREMENT, "McDo", "", 15.00)
-      .check();
-
-    operations.undo();
-
-    timeline.checkSelection("2008/07");
-    transactions.initContent()
-      .add("15/07/2008", TransactionType.VIREMENT, "Orange", "", 95.00)
-      .check();
-  }
-
   @Test
   public void testUndoImportWithManyMonths() throws Exception {
     OfxBuilder.init(this)

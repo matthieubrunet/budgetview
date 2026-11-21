@@ -195,16 +195,4 @@ public class DashboardTest extends LoggedInFunctionalTestCase {
       "| 0     | Available on your main accounts until the end of September        |\n" +
       "| +250  | Total amount for your main accounts on 2014/08/09                 |\n");
   }
-
-  // Désactivé (JUnit 3 : renommé pour ne plus commencer par "test") — TODO laissé par l'auteur (fail() sans test).
-  @Test
-  public void disabled_testNothingShownBeforeFirstAccountIsCreated() throws Exception {
-    fail("faire disparaître les signposts");
-  }
-
-  // Désactivé (JUnit 3 : renommé pour ne plus commencer par "test") — TODO laissé par l'auteur (fail() sans test).
-  @Test
-  public void disabled_testTODO() throws Exception {
-    fail("cas où il n'y a pas d'opérations prévues - sunny?");
-  }
 }

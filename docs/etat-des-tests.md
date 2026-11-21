@@ -82,15 +82,16 @@ Corrections de l'appli elle-même (le test passe sans modification) :
 Les tests héritent de JUnit 3 (`TestCase`) : `@Ignore` n'a aucun effet. Une méthode est donc
 désactivée en la renommant, et une classe vide est exclue dans le `pom` (sinon « No tests found »).
 
+Audit 5a, lot A (2026-11-21) : supprimés, car ils ne testaient plus rien, `DashboardTest` ×2 et `SeriesEditionTest` ×2
+(pense-bêtes de l'auteur, notés dans [idees-ameliorations.md](idees-ameliorations.md)), `UndoRedoTest.testUndoRedoMaintainsSelection`
+(fonction commencée en 2008, jamais finie), `UrlTest` (budgetview.fr), `JsonImporterTest` (synchro Budgea) et
+`LaPosteTest.testDeferred` (plugin La Poste laissé débranché). Détail : [audit-code.md](audit-code.md), « 5a, inventaire ».
+
 | Tests | Raison |
 |---|---|
-| `DashboardTest` ×2, `SeriesEditionTest` ×2 | TODO de l'auteur : `fail("…")` explicite |
 | `RestartTest.testChangeDayChangesPlannedTransactionsForSavingsSeries` | **bug connu** noté par l'auteur : des opérations prévues sont générées sur un mois passé après redémarrage |
-| `UrlTest` ×2 (classe exclue) | vérifie en ligne les URL des textes : dépend du réseau et de budgetview.fr |
-| `JsonImporterTest` (classe exclue) | import du service cloud Budgea, arrêté en 2018 |
 | `ImportTest.testImportAndChangeDate` | **bug connu** noté par l'auteur dans un `fail()` final : `PositionTrigger` saute le contrôle si le solde importé égale le précédent |
 | `DeferredTest.testCategorization` | test en chantier chez l'auteur (« en cours », 2015) : ses attentes de fin ne correspondent pas au fichier importé ; la partie catégorisation passe |
-| `LaPosteTest.testDeferred` | repose sur le plugin La Poste (inversion de signe des cartes à débit différé, relevé de 2011), volontairement laissé débranché : format actuel de La Poste inconnu, risque d'inverser des montants corrects |
 
 ### Mis de côté durablement (2026-11-15), sans correction
 
@@ -178,7 +179,7 @@ Désactivés :
 | Tests | Raison |
 |---|---|
 | `SqlExceptionTest.testConcurrentModification` (pour HSQLDB et MySQL) | suppose une lecture non isolée, comme HSQLDB 1.8 ; depuis HSQLDB 2.3.4 (`fc89dcb0c`, 2016), la seconde connexion attend le verrou de la première, tenu par le même fil : **c'était le blocage sans fin** |
-| `MySqlExceptionTest` (classe exclue du `pom`) | demande un serveur MySQL local |
+| `MySqlExceptionTest` | demande un serveur MySQL local ; parti dans `bv_server` avec `sqlstreams` (audit 2a), son exclusion du `pom` de `globs` a été retirée en 5a |
 | `GlobTableViewTest.testRefreshUpdatesTheSortingAndKeepsSelection` | **comportement réel, gardé exprès** : `refresh()` coupe les notifications de sélection, mais la remise à zéro du modèle (`globListPreReset` / `globListReset`) les rétablit avant la fin, et la sélection réappliquée part en événements transitoires (vide, puis ligne par ligne) vers le `SelectionService`. Essai d'une coupure imbriquable (compteur, demandes `sendPending` gardées pour la sortie) : `AnalysisSeriesGroupViewTest.testDeletingAndAddingGroupElements` échoue dans bv_desktop (graphique des enveloppes vide après « ajouter à un nouveau groupe »), donc l'appli dépend de ces événements. `GlobTableView` sert dans 57 fichiers de l'appli : non retouché |
 | `ReplacementInputStreamTest.testRegexp` | attente incohérente (le motif exige `</SCRIPT>\n</font>`, absent de l'entrée) ; `ReplacementInputStream` ne servait plus nulle part. Supprimé avec sa classe (audit 2a, lot C, 2026-11-20) |
 

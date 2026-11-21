@@ -907,43 +907,6 @@ public class SeriesEditionTest extends LoggedInFunctionalTestCase {
       .validate();
   }
 
-  // Désactivé (JUnit 3 : renommé pour ne plus commencer par "test") — l'auteur conteste le comportement testé (fail() en tête du test).
-  @Test
-  public void disabled_testUnknownPeriodicity() throws Exception {
-    fail("Je ne suis pas d'accord avec le test et ce n'est pas conforme a la version precedente : alors pourquoi le test passe?");
-    OfxBuilder.init(this)
-      .addTransaction("2008/06/29", -100.00, "Virement")
-      .load();
-
-    categorization.selectTableRow(0);
-    categorization.selectTransfers()
-      .selectAndCreateTransferSeries("Epargne", "Account n. 00001123");
-
-    budgetView.transfer.align("Epargne");
-
-    timeline.selectMonths("2008/06", "2008/07");
-    transactions
-      .showPlannedTransactions()
-      .initContent()
-      .add("27/07/2008", TransactionType.PLANNED, "Planned: Epargne", "", -100.00, "Epargne")
-      .add("29/06/2008", TransactionType.PRELEVEMENT, "Virement", "", -100.00, "Epargne")
-      .check();
-
-    categorization.selectTransfers().editSeries("Epargne")
-      .setRepeatIrregular()
-      .checkChart(new Object[][]{
-        {"2008", "June", 100.00, 100.00, true},
-        {"2008", "July", 0.00, 0.00, true},
-        {"2008", "August", 0.00, 0.00},
-      })
-      .validate();
-
-    timeline.selectMonths("2008/06", "2008/07");
-    transactions.initContent()
-      .add("29/06/2008", TransactionType.PRELEVEMENT, "Virement", "", -100.00, "Epargne")
-      .check();
-  }
-
   @Test
   public void testUnkownPeriodicityAndPreverseAutomatic() throws Exception {
     OfxBuilder.init(this)
@@ -1526,12 +1489,5 @@ public class SeriesEditionTest extends LoggedInFunctionalTestCase {
     mainAccounts.getChart("Account n. 000123")
       .checkValue(200808, 1, 1030.00)
       .checkValue(200808, 15, 950.00);
-  }
-
-  // Désactivé (JUnit 3 : renommé pour ne plus commencer par "test") — TODO laissé par l'auteur (fail() sans test) : date de fin des séries sur compte clos.
-  @Test
-  public void disabled_testClosedAccount() throws Exception {
-    fail("MG: if the account is closed we must update the end date? (or not create planned operation) - \n" +
-         "RM: je propose de positionner automatiquement Series.END_DATE dans ce cas là");
   }
 }

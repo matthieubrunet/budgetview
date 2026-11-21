@@ -86,32 +86,6 @@ public class SerializationTest extends TestCase {
     inputStream.close();
   }
 
-//  public void testBigWrite() throws Exception {
-//    for (int i = 0; i < 550000; i++){
-//      output.writeJavaString("blah");
-//      output.writeBoolean(Boolean.TRUE);
-//      output.writeDouble(6.33);
-//      output.writeDate(currentDate);
-//      output.writeInteger(4);
-//      output.writeLong(666L);
-//      output.write(new long[100]);
-//    }
-//    outputStream.close();
-//  }
-//
-//
-//  public void testBigRead() throws Exception {
-//    for (int i = 0; i < 250000; i++){
-//      input.readJavaString();
-//      input.readBoolean();
-//      input.readDouble();
-//      input.readDate();
-//      input.readInteger();
-//      assertEquals(666L, (long)input.readLong());
-//      input.readLongArray();
-//    }
-//  }
-
   private FieldValues createSampleValues() {
     return FieldValuesBuilder.init()
       .set(DummyObject.ID, 1)

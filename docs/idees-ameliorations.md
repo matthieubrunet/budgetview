@@ -38,6 +38,28 @@ Un défaut avéré qui bloque l'usage ne va pas ici : il se corrige tout de suit
 - **Piste** : un fichier de propriétés par extension (`extension=ofx`, `mime-type`, `description`) passé par
   `--file-associations`, puis essayer glisser-déposer et « Ouvrir avec », appli ouverte et fermée.
 
+## Pense-bêtes de l'auteur
+
+Trouvés en audit 5a (2026-11-21) sous forme de tests vides (`fail("…")` seul), supprimés avec eux. Rien n'a été
+essayé dans l'appli.
+
+### Tableau de bord avant le premier compte
+
+- **Note de l'auteur** (`DashboardTest`) : « faire disparaître les signposts » tant qu'aucun compte n'existe.
+- **Piste** : vérifier sur un dossier vide (`BV_DEV_DATA=/tmp/bv-essai ./run-dev.sh`) ce que montrent le tableau de bord
+  et les bulles de guidage (`signpost`) avant la création du premier compte.
+
+### Tableau de bord sans opération prévue
+
+- **Note de l'auteur** (`DashboardTest`) : « cas où il n'y a pas d'opérations prévues - sunny ? ». L'icône météo
+  (`sunny`, pas de découvert prévu) s'affiche-t-elle à raison quand aucune opération n'est prévue ?
+
+### Date de fin des enveloppes d'un compte clos
+
+- **Échange entre auteurs** (`SeriesEditionTest`) : quand un compte est clos, faut-il mettre à jour la date de fin des
+  enveloppes qui s'y rattachent, ou au moins ne plus y créer d'opérations prévues ? Proposition laissée :
+  renseigner `Series.END_DATE` d'office.
+
 ## À vérifier
 
 ### Interface en anglais sur le compte de test

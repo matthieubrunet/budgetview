@@ -83,10 +83,8 @@
           </includes>
           <excludes>
             <exclude>**/*TestCase.java</exclude>
-            <!-- Classes dont tous les tests sont désactivés (voir les commentaires dans chaque classe) :
+            <!-- Classe dont tous les tests sont désactivés (voir ses commentaires) :
                  JUnit 3 signale sinon « No tests found » comme un échec. -->
-            <exclude>**/UrlTest.java</exclude>
-            <exclude>**/JsonImporterTest.java</exclude>
             <exclude>**/SingleInstanceTest.java</exclude>
           </excludes>
         </configuration>
