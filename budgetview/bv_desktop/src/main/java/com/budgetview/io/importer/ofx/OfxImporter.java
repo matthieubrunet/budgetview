@@ -29,7 +29,8 @@ import java.util.List;
 import static org.globsframework.model.FieldValue.value;
 
 public class OfxImporter implements AccountFileImporter {
-  public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+  /** Un SimpleDateFormat par usage : il n'est pas sûr entre threads. */
+  public static final String DATE_PATTERN = "yyyyMMdd";
 
   public OfxImporter() {
   }
@@ -282,7 +283,7 @@ public class OfxImporter implements AccountFileImporter {
         DateFormatAnalyzer formatAnalyzer = new DateFormatAnalyzer(TimeService.getToday());
         List<String> parse = formatAnalyzer.parse(Collections.singleton(substring),
                                                   new ArrayList<String>(Arrays.asList("yy/MM/dd", "dd/MM/yy")));
-        SimpleDateFormat format = DATE_FORMAT;
+        SimpleDateFormat format = new SimpleDateFormat(DATE_PATTERN);
         if (parse.size() == 1) {
           format = new SimpleDateFormat(parse.get(0));
         }

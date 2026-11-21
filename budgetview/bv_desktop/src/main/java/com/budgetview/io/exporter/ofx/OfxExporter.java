@@ -13,6 +13,7 @@ import org.globsframework.utils.Strings;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 
@@ -137,6 +138,6 @@ public class OfxExporter implements Exporter {
   }
 
   private String toString(Date updateDate) {
-    return (OfxImporter.DATE_FORMAT.format(updateDate) + "000000");
+    return (new SimpleDateFormat(OfxImporter.DATE_PATTERN).format(updateDate) + "000000");
   }
 }

@@ -14,10 +14,9 @@ import org.globsframework.utils.serialization.SerializedInput;
 import org.globsframework.utils.serialization.SerializedInputOutputFactory;
 import org.globsframework.utils.serialization.SerializedOutput;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Month {
 
@@ -31,25 +30,21 @@ public class Month {
   }
 
   public static final String DATE_FORMAT_STRING = "yyyy/MM/dd";
-  private static NumberFormat MONTH_FORMAT = new DecimalFormat("00");
-  private static final Calendar CALENDAR = Calendar.getInstance();
 
   public static String toString(int yyyymm) {
-    synchronized (MONTH_FORMAT){
-      return toYearString(yyyymm) + "/" + MONTH_FORMAT.format(Month.toMonth(yyyymm));
-    }
+    return toYearString(yyyymm) + "/" + twoDigits(Month.toMonth(yyyymm));
   }
 
   public static String toString(int yyyymm, int day) {
-    synchronized (MONTH_FORMAT){
-      return toYearString(yyyymm) + "/" + MONTH_FORMAT.format(Month.toMonth(yyyymm)) + "/" + MONTH_FORMAT.format(day);
-    }
+    return toYearString(yyyymm) + "/" + twoDigits(Month.toMonth(yyyymm)) + "/" + twoDigits(day);
   }
 
   public static String toCompactString(int yyyymm, int day) {
-    synchronized (MONTH_FORMAT){
-      return toYearString(yyyymm) + MONTH_FORMAT.format(Month.toMonth(yyyymm)) + MONTH_FORMAT.format(day);
-    }
+    return toYearString(yyyymm) + twoDigits(Month.toMonth(yyyymm)) + twoDigits(day);
+  }
+
+  private static String twoDigits(int value) {
+    return value < 10 ? "0" + value : Integer.toString(value);
   }
 
   public static String toYearString(int yyyymm) {
@@ -68,34 +63,35 @@ public class Month {
     return year * 100 + month;
   }
 
-  public static int getMonthId(Date date) {
-    synchronized (CALENDAR) {
-      CALENDAR.setTime(date);
-      return toYyyyMm(CALENDAR.get(Calendar.YEAR), CALENDAR.get(Calendar.MONTH) + 1);
-    }
+  /**
+   * Une Date est un instant : elle est lue, et créée par toDate, dans le fuseau courant, comme le faisait le
+   * Calendar d'origine.
+   */
+  private static LocalDate toLocalDate(Date date) {
+    return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
   }
 
-  public static Calendar createCalendar(int yyyymm) {
-    Calendar calendar = new GregorianCalendar();
-    calendar.clear();
-    calendar.set(Calendar.YEAR, toYear(yyyymm));
-    calendar.set(Calendar.MONTH, toMonth(yyyymm) - 1);
-    return calendar;
+  /**
+   * Premier jour du mois, par addition comme le Calendar souple (lenient) d'origine : un mois 0 ou 13 déborde
+   * sur l'année voisine au lieu de lever une exception.
+   */
+  private static LocalDate firstDay(int yyyymm) {
+    return LocalDate.of(toYear(yyyymm), 1, 1).plusMonths(toMonth(yyyymm) - 1);
+  }
+
+  public static int getMonthId(Date date) {
+    LocalDate localDate = toLocalDate(date);
+    return toYyyyMm(localDate.getYear(), localDate.getMonthValue());
   }
 
   public static int getDay(Date date) {
-    synchronized (CALENDAR) {
-      CALENDAR.setTime(date);
-      return CALENDAR.get(Calendar.DAY_OF_MONTH);
-    }
+    return toLocalDate(date).getDayOfMonth();
   }
 
+  /** Minuit, heure locale. Un jour 0 ou 31 en avril déborde sur le mois voisin, comme avec le Calendar d'origine. */
   public static Date toDate(int yyyymm, int day) {
-    synchronized (CALENDAR) {
-      CALENDAR.clear();
-      CALENDAR.set(toYear(yyyymm), toMonth(yyyymm) - 1, day);
-      return CALENDAR.getTime();
-    }
+    LocalDate localDate = firstDay(yyyymm).plusDays(day - 1);
+    return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
   }
 
   public static int offset(int yyyymm, int offset) {
@@ -245,22 +241,8 @@ public class Month {
     return monthIds;
   }
 
-  static Map<Integer, Integer> monthIdToLastDay = new ConcurrentHashMap<Integer, Integer>();
-
   public static int getLastDayNumber(int monthId) {
-    Integer lastDay = monthIdToLastDay.get(monthId);
-    if (lastDay == null) {
-      synchronized (CALENDAR) {
-        CALENDAR.clear();
-        CALENDAR.set(toYear(monthId), toMonth(monthId) - 1, 1);
-        lastDay = CALENDAR.getActualMaximum(Calendar.DAY_OF_MONTH);
-      }
-      monthIdToLastDay.put(monthId, lastDay);
-      return lastDay;
-    }
-    else {
-      return lastDay;
-    }
+    return firstDay(monthId).lengthOfMonth();
   }
 
   public static Integer getDay(Integer day, int monthId) {
@@ -271,12 +253,9 @@ public class Month {
     return day;
   }
 
+  /** Garde l'heure locale, y compris au passage de l'heure d'été, comme Calendar.add(DAY_OF_MONTH). */
   public static Date addDays(Date date, int day) {
-    synchronized (CALENDAR) {
-      CALENDAR.setTime(date);
-      CALENDAR.add(Calendar.DAY_OF_MONTH, day);
-      return CALENDAR.getTime();
-    }
+    return Date.from(date.toInstant().atZone(ZoneId.systemDefault()).plusDays(day).toInstant());
   }
 
   public static boolean isContinuousSequence(int[] months) {

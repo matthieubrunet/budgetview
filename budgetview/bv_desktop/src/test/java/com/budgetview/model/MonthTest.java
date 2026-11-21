@@ -4,9 +4,12 @@ import junit.framework.TestCase;
 import org.globsframework.utils.Dates;
 import org.globsframework.utils.TestUtils;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.TimeZone;
 
 public class MonthTest extends TestCase {
 
@@ -105,5 +108,44 @@ public class MonthTest extends TestCase {
   private void shift(final String from, final String to) {
     Date date = Month.addDays(Dates.parse(from), 46);
     assertEquals(Dates.parse(to), date);
+  }
+
+  /**
+   * Month calculait avec un Calendar souple (lenient) jusqu'à l'audit 3f : java.time doit donner les mêmes résultats,
+   * jours hors du mois compris, y compris là où le passage à l'heure d'été tombait à minuit (São Paulo).
+   */
+  public void testSameResultsAsLenientCalendar() throws Exception {
+    TimeZone initial = TimeZone.getDefault();
+    try {
+      for (String zone : new String[]{"Europe/Paris", "America/Sao_Paulo", "UTC"}) {
+        TimeZone.setDefault(TimeZone.getTimeZone(zone));
+        for (int year = 1995; year <= 2040; year++) {
+          for (int month = 1; month <= 12; month++) {
+            int monthId = Month.toYyyyMm(year, month);
+            Calendar calendar = new GregorianCalendar();
+            calendar.clear();
+            calendar.set(year, month - 1, 1);
+            assertEquals(zone + " " + monthId, calendar.getActualMaximum(Calendar.DAY_OF_MONTH),
+                         Month.getLastDayNumber(monthId));
+            for (int day = -1; day <= 33; day++) {
+              calendar.clear();
+              calendar.set(year, month - 1, day);
+              Date expected = calendar.getTime();
+              String context = zone + " " + monthId + "/" + day;
+              Date date = Month.toDate(monthId, day);
+              assertEquals(context, expected, date);
+              assertEquals(context, Month.toYyyyMm(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1),
+                           Month.getMonthId(date));
+              assertEquals(context, calendar.get(Calendar.DAY_OF_MONTH), Month.getDay(date));
+              calendar.add(Calendar.DAY_OF_MONTH, 46);
+              assertEquals(context, calendar.getTime(), Month.addDays(date, 46));
+            }
+          }
+        }
+      }
+    }
+    finally {
+      TimeZone.setDefault(initial);
+    }
   }
 }

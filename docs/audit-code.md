@@ -167,12 +167,15 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
 - [x] **3e. Collections synchronisées** (`Vector`, `Hashtable`, `StringBuffer`, 5 fichiers).
   Fait le 2026-11-21 en un seul lot, voir [3e](#3e-collections-synchronisées) plus bas : 41 `StringBuffer` → `StringBuilder`
   (17 fichiers), 1 `Vector` → tableau, aucun `Hashtable` ; tous locaux à un thread.
-- [ ] **3f. Dates** (35 fichiers) → `java.time`. C'est le chantier le plus délicat : le modèle
+- [x] **3f. Dates** (35 fichiers) → `java.time`. C'est le chantier le plus délicat : le modèle
   stocke des mois et des jours sous forme d'entiers. Ne toucher qu'au code de calcul et
   d'affichage, et le faire en dernier.
   Inventaire fait le 2026-11-21, voir [3f, inventaire](#3f-inventaire) plus bas : 97 fichiers et non 35, dont les deux
   tiers ne font que transmettre le type (API de globs et de Prevayler, champs `DateField` du modèle) et restent. Trois lots
   proposés (A à C) ; l'analyse des dates à l'import reste en `SimpleDateFormat`, sauf décision contraire.
+  Clos le 2026-11-21 sur le seul plus évident (choix de Matthieu : meilleur rapport gain/risque), voir
+  [3f, ce qui a été fait](#3f-ce-qui-a-été-fait) : `Month` en `java.time`, `hh` → `HH`, `OfxImporter.DATE_FORMAT`
+  non partagé. Lots B et C abandonnés.
 
 ## Étape 4 : les contournements, par l'historique
 
@@ -1400,6 +1403,27 @@ les snapshots et journaux. Aucun `TimeStampField` dans le modèle.
 - `TimeService` (`Date` statique, date forcée des tests et du menu `[Dev]`) : son API reste en `Date`, ses appelants (15 fichiers)
   aussi ; un passage à `LocalDate` serait un chantier à part, sans gain fonctionnel.
 
+## 3f, ce qui a été fait
+
+Le 2026-11-21, en un lot, limité à ce dont le gain est net et le risque mesurable :
+- **`Month`** : le `Calendar` statique et le `DecimalFormat("00")` partagés sous `synchronized` sont remplacés par
+  `java.time` (`toDate`, `getMonthId`, `getDay`, `addDays`, `getLastDayNumber`) et une petite fonction `twoDigits`.
+  Même API (entiers et `Date`). Le comportement souple du `Calendar` est reproduit par addition (`1er janvier + (mois − 1)
+  mois + (jour − 1) jours`) : un jour 0 ou 31 avril déborde sur le mois voisin au lieu de lever une exception. Fuseau :
+  `ZoneId.systemDefault()` (l'ancien `Calendar` figeait celui du chargement de la classe ; différence seulement si le
+  fuseau change en cours d'exécution). Le cache `monthIdToLastDay` et `createCalendar` (seul appelant : `DayGenerator`)
+  sont supprimés. Garde : `MonthTest.testSameResultsAsLenientCalendar` compare au `Calendar` d'origine 1995-2040, jours
+  −1 à 33, à Paris, São Paulo (heure d'été à minuit jusqu'en 2019) et UTC.
+- **`hh` → `HH`** dans `Formats.DEFAULT_TIMESTAMP_FORMAT` (globs) et `Formatting.dateAndTimeFormat` : défaut latent, ces
+  formats ne servent qu'aux `TimeStampField`, absents du modèle.
+- **`OfxImporter.DATE_FORMAT`** (statique partagé avec `OfxExporter`) devient le motif `DATE_PATTERN`, et chaque usage crée
+  son `SimpleDateFormat` : ce qu'accepte l'import ne change pas.
+- `Formatting.toString(year, month)` : `GregorianCalendar` → `Month.toDate`.
+
+Laissés, faute de gain à la hauteur du risque : lot B (formats d'affichage et de sérialisation, dont l'API `Formats` de
+globs ; les formats statiques ne servent en pratique que sur le fil de Swing), lot C (analyse des imports, trois pièges de
+comportement), `TimeService`, `DateFormatAnalyzer`, et les `DateField` (format sur disque).
+
 ## 5c, durée
 
 Fait les 2026-11-20 et 21.
@@ -1488,3 +1512,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 3d, lot C (`Objects.equals`) | 174 appels dans 79 fichiers, `Utils.equal` supprimé (+238 −243 lignes). Tests de `globs` 808 verts, `bv_desktop` 1 026 (1 course d'uispec4j, verte relancée), 5 min 02 s. **3d terminé** |
 | 2026-11-21 | 3e, collections synchronisées | 41 `StringBuffer` → `StringBuilder`, 1 `Vector` → tableau (18 fichiers, +25 −26 lignes). Tests de `globs` 808, `prevayler` 26, `bv_desktop` 1 026 verts, 4 min 50 s. **3e terminé** |
 | 2026-11-21 | 3f, inventaire | 97 fichiers (et non 35) : ~65 transmettent le type et restent ; 3 lots proposés (A calcul de `Month`, B formats, C imports à ne pas faire sans décision) ; défaut latent `hh` → `HH` relevé |
+| 2026-11-21 | 3f, `Month` en `java.time` | `Month` sans `Calendar` ni `synchronized`, `hh` → `HH`, `OfxImporter.DATE_FORMAT` non partagé (7 fichiers, +84 −66 lignes, dont un test de 42 lignes comparant au `Calendar`). Tests de `globs` 808, `bv_desktop` 1 027 verts. Lots B et C abandonnés. **3f terminé** |

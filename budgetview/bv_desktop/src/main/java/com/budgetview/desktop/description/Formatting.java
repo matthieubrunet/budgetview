@@ -11,7 +11,6 @@ import org.globsframework.utils.Strings;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class Formatting extends AmountFormat {
 
@@ -44,9 +43,7 @@ public class Formatting extends AmountFormat {
   }
 
   public static String toString(int year, int month) {
-    GregorianCalendar calendar =
-      new GregorianCalendar(year, month - 1, 1);
-    return Strings.capitalize(yearMonthFormat.format(calendar.getTime()));
+    return Strings.capitalize(yearMonthFormat.format(Month.toDate(Month.toYyyyMm(year, month), 1)));
   }
 
   public static String toString(Double value, BudgetArea area) {
@@ -79,7 +76,7 @@ public class Formatting extends AmountFormat {
 
   public static void update(TextDateType textDate, NumericDateType numericDate) {
     dateFormat = new SimpleDateFormat(numericDate.getFormat());
-    dateAndTimeFormat = new SimpleDateFormat(numericDate.getFormat() + " hh:mm:ss");
+    dateAndTimeFormat = new SimpleDateFormat(numericDate.getFormat() + " HH:mm:ss");
     dateMessageFormat = Lang.createMessageFormatFromText(numericDate.getMessageFormat());
     yearMonthFormat = new SimpleDateFormat("MMMMMMMMMM yyyy", Lang.getLocale());
     fullLabelFormat = Lang.createMessageFormatFromText(textDate.getFormat());

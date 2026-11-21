@@ -2,8 +2,6 @@ package com.budgetview.utils.generator;
 
 import com.budgetview.model.Month;
 
-import java.util.Calendar;
-
 public abstract class DayGenerator {
   public abstract int get(Integer month);
 
@@ -13,7 +11,7 @@ public abstract class DayGenerator {
   public static DayGenerator anyDay() {
     return new DayGenerator() {
       public int get(Integer month) {
-        int actualMaximum = Month.createCalendar(month).getActualMaximum(Calendar.DAY_OF_MONTH);
+        int actualMaximum = Month.getLastDayNumber(month);
         return (int)(1 + Math.random() * actualMaximum);
       }
     };
