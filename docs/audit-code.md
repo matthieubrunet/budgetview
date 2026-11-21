@@ -170,6 +170,9 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
 - [ ] **3f. Dates** (35 fichiers) → `java.time`. C'est le chantier le plus délicat : le modèle
   stocke des mois et des jours sous forme d'entiers. Ne toucher qu'au code de calcul et
   d'affichage, et le faire en dernier.
+  Inventaire fait le 2026-11-21, voir [3f, inventaire](#3f-inventaire) plus bas : 97 fichiers et non 35, dont les deux
+  tiers ne font que transmettre le type (API de globs et de Prevayler, champs `DateField` du modèle) et restent. Trois lots
+  proposés (A à C) ; l'analyse des dates à l'import reste en `SimpleDateFormat`, sauf décision contraire.
 
 ## Étape 4 : les contournements, par l'historique
 
@@ -1338,6 +1341,65 @@ Un seul lot, 18 fichiers, +25 −26 lignes. Tests de `globs` 808, `prevayler` 26
 JUnit 4.12) 69, dont les 7 échecs anciens de `SiteUploaderTest` (5d) ; `bv_desktop` 1 026 verts, 4 min 50 s ; 0 `[WARNING]`,
 `bv_server` compile.
 
+## 3f, inventaire
+
+Fait le 2026-11-21. Le chiffre de départ (35) ne comptait que les imports explicites : avec les `import java.util.*`, le
+code livré compte **97 fichiers** qui citent `Date`, `Calendar`, `SimpleDateFormat`, `DateFormat` ou `TimeZone` :
+`bv_desktop` 49, `globs` 36, `prevayler` 12, `bv_shared` 0.
+
+**Représentation des dates.** Le modèle ne stocke presque que des entiers : mois `yyyymm`, jour, date complète `yyyymmdd`
+(`Month.toFullDate`), calculés à la main dans `Month`. Seuls 10 champs sont des `DateField` (`java.util.Date`) :
+`Account.POSITION_DATE`, `OPEN_DATE`, `CLOSED_DATE`, `RealAccount.POSITION_DATE`, `TransactionImport.IMPORT_DATE`,
+`AccountPositionError.UPDATE_DATE`, `StandardMessage.DATE`, `CloudDesktopUser.SUBSCRIPTION_END_DATE`, et
+`DashboardStat.TOTAL_*_DATE` (calculés). globs les sérialise en millisecondes (`DefaultSerializationOutput.writeDate`) dans
+les snapshots et journaux. Aucun `TimeStampField` dans le modèle.
+
+**Ce qui reste tel quel (~65 fichiers).**
+- `globs`, API des champs (28 fichiers : `FieldValue`, `Key`, `GlobBuilder`, `*FieldKey`, visiteurs, sérialisation) : ils
+  transmettent `Date` sans calcul. Passer `DateField` à `LocalDate` changerait le format des données sur disque.
+- `prevayler` (12) et les transactions `persistence/prevayler/users` (11) : `executeOn(Object, Date)` est l'API de Prevayler.
+- Les lectures de `DateField` dans les triggers, les comparateurs et les contrôles (`AccountInitialPositionTrigger`,
+  `SavingsBudgetStatTrigger`, `DeferredCardDayTrigger`, `UpgradeTrigger`, `Account`, `AccountCheck`, `TransactionMatchers`,
+  `AutomaticAccountComparator`, `BankPluginService`…) : ils comparent des `Date` ou les convertissent par `Month.getMonthId`
+  et `getDay`. Ils suivront `Month` sans changer.
+- `DatePicker` : `JXDatePicker` (SwingX) exige un `java.text.DateFormat` et des `java.util.Date`. `Formatting.getDateFormat`
+  reste donc un `SimpleDateFormat`.
+
+**Pièges relevés.**
+- *Fuseau horaire.* Une `Date` est un instant : `Month.toDate` la crée à minuit, heure locale, et `getMonthId`/`getDay` la
+  relisent dans le fuseau courant. Toute conversion vers `LocalDate` doit passer par `ZoneId.systemDefault()` pour garder ce
+  comportement (y compris le décalage d'un jour si le fuseau a changé entre l'écriture et la lecture).
+- *Analyse souple.* Aucun `setLenient(false)` : `SimpleDateFormat` accepte « 31/02 » (→ 3 mars) et ignore ce qui suit une
+  date valide. `DateTimeFormatter` en mode par défaut (`SMART`) ramène « 31/02 » au 28 ou 29 février, refuse « 32/01 » et le
+  texte en trop. Trois comportements différents pour un fichier de banque mal formé.
+- *Années à deux chiffres.* `SimpleDateFormat` place `yy` entre 80 ans avant et 20 ans après la création du format ;
+  `DateTimeFormatter` dans 2000-2099. Les formats d'import `yy/MM/dd` et `dd/MM/yy` (`DateFormatAnalyzer`) en dépendent.
+- *Dates sans année.* `AbstractTransactionTypeFinalizer.getDate` reconnaît une date du libellé sans année par l'année 1970
+  que lui donne `SimpleDateFormat`, puis la remplace par celle de l'opération bancaire. Avec `java.time`, il faudrait un
+  `parseDefaulting` explicite.
+- *Partage entre threads.* `SimpleDateFormat` n'est pas sûr entre threads. Formats statiques partagés :
+  `OfxImporter.DATE_FORMAT` (réutilisé par `OfxExporter`), `Dates.DEFAULT_*`, `Formats.DEFAULT_*`, `FieldConverter`,
+  `JsonGlobFormat`, `BackupAction`, `PicsouDescriptionService.LOCAL_TIME_STAMP`, et le `Calendar` statique de `Month`
+  (protégé par `synchronized`).
+- *`hh` au lieu de `HH`* dans `Formats.DEFAULT_TIMESTAMP_FORMAT` et `Formatting.dateAndTimeFormat` (heures de 1 à 12, sans
+  AM/PM). Défaut latent : ces formats ne servent qu'aux `TimeStampField`, absents du modèle.
+
+**Lots proposés.**
+- **A. Calcul interne** : `Month` (`Calendar` statique → `LocalDate`/`YearMonth` : `toDate`, `getMonthId`, `getDay`,
+  `addDays`, `getLastDayNumber`, `createCalendar`), `DayGenerator`, `Formatting.getFullMonthLabel` (`GregorianCalendar`),
+  `DateFormatAnalyzer` (année de référence), `CurrentMonth`. Même API d'entiers et de `Date` ; tests de `MonthTest` en garde.
+- **B. Formats d'affichage et de sérialisation texte** : `Dates`, `Formats`, `FieldConverter`, `JsonGlobFormat`,
+  `BackupAction`, `RestoreSnapshotAction`, `PicsouDescriptionService.LOCAL_TIME_STAMP`, `OfxExporter`,
+  `DirectAccountDataManager`, `DumpStackTracesAction` → `DateTimeFormatter` (immuable, sûr entre threads), `hh` → `HH`.
+  `Formats` prend des `SimpleDateFormat` dans son constructeur (API de globs) : à garder, ou à changer avec ses appelants.
+  Les formats texte de `FieldConverter` et `JsonGlobFormat` (XML et JSON) doivent rester identiques au caractère près.
+- **C. Analyse des imports** (`OfxImporter`, `ImportSession`, `*TransactionFinalizer`, `ImportedTransactionDateRenderer`) :
+  **ne pas faire** sans décision. Le gain est faible (des formats locaux, non partagés, sauf `OfxImporter.DATE_FORMAT`, réglé
+  en B) et les trois pièges ci-dessus changent ce qu'accepte l'import. Seule mesure proposée : rendre
+  `OfxImporter.DATE_FORMAT` privé à chaque analyse.
+- `TimeService` (`Date` statique, date forcée des tests et du menu `[Dev]`) : son API reste en `Date`, ses appelants (15 fichiers)
+  aussi ; un passage à `LocalDate` serait un chantier à part, sans gain fonctionnel.
+
 ## 5c, durée
 
 Fait les 2026-11-20 et 21.
@@ -1425,3 +1487,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 3d, lot B (doublons et morts) | 5 doublons fusionnés, 7 méthodes mortes, `RandomStrings` et le tirage du mot de passe mobile supprimés (+11 −217 lignes). Tests de `globs` 808 verts, `bv_desktop` 1 026 (1 course d'uispec4j, verte relancée), 4 min 56 s |
 | 2026-11-21 | 3d, lot C (`Objects.equals`) | 174 appels dans 79 fichiers, `Utils.equal` supprimé (+238 −243 lignes). Tests de `globs` 808 verts, `bv_desktop` 1 026 (1 course d'uispec4j, verte relancée), 5 min 02 s. **3d terminé** |
 | 2026-11-21 | 3e, collections synchronisées | 41 `StringBuffer` → `StringBuilder`, 1 `Vector` → tableau (18 fichiers, +25 −26 lignes). Tests de `globs` 808, `prevayler` 26, `bv_desktop` 1 026 verts, 4 min 50 s. **3e terminé** |
+| 2026-11-21 | 3f, inventaire | 97 fichiers (et non 35) : ~65 transmettent le type et restent ; 3 lots proposés (A calcul de `Month`, B formats, C imports à ne pas faire sans décision) ; défaut latent `hh` → `HH` relevé |
