@@ -1,14 +1,12 @@
 package com.budgetview.desktop.components;
 
 import com.budgetview.desktop.utils.Gui;
-import org.globsframework.gui.splits.utils.GuiUtils;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 
 public class PicsouFrame extends JFrame {
   private GlobRepository repository;
@@ -25,18 +23,6 @@ public class PicsouFrame extends JFrame {
         isIconified = false;
       }
     });
-
-    if (GuiUtils.isMacOSX()) {
-      addWindowFocusListener(new WindowFocusListener() {
-        public void windowLostFocus(WindowEvent e) {
-          ToolTipManager.sharedInstance().setEnabled(false);
-        }
-
-        public void windowGainedFocus(WindowEvent e) {
-          ToolTipManager.sharedInstance().setEnabled(true);
-        }
-      });
-    }
 
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setIconImage(Gui.IMAGE_LOCATOR.get("app_icon_128.png").getImage());
