@@ -3,7 +3,6 @@ package com.budgetview.desktop.printing.budget.tables;
 import com.budgetview.desktop.printing.PrintFonts;
 import com.budgetview.desktop.printing.PrintMetrics;
 import org.globsframework.gui.views.Alignment;
-import org.globsframework.utils.Strings;
 import org.globsframework.utils.exceptions.InvalidParameter;
 
 import java.awt.*;
@@ -37,7 +36,7 @@ public class SeriesTableMetrics {
     this.rowHeight = textHeight + 4;
     this.textYOffset = (rowHeight - textHeight) / 2 + tableFontMetrics.getDescent();
 
-    this.firstColumnWidth = tableFontMetrics.stringWidth(Strings.repeat("a", 20));
+    this.firstColumnWidth = tableFontMetrics.stringWidth("a".repeat(20));
   }
 
   public int tableLeft() {

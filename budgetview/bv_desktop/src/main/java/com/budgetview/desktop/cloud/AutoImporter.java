@@ -13,7 +13,6 @@ import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.Key;
 import org.globsframework.model.repository.LocalGlobRepository;
-import org.globsframework.utils.Runnables;
 import org.globsframework.utils.directory.Directory;
 import org.globsframework.utils.exceptions.NotSupported;
 
@@ -32,7 +31,7 @@ public class AutoImporter {
   private Callback callback;
   private boolean finished = false;
   private Glob currentRealAccount = null;
-  private Runnable callbackResult = Runnables.NO_OP;
+  private Runnable callbackResult = () -> {};
 
   public interface Callback {
     void importCompleted(Set<Integer> months, int importedTransactionCount, Set<Key> createdTransactionImports);

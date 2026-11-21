@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Strings {
-  public static final String LINE_SEPARATOR = System.getProperty("line.separator");
+  public static final String LINE_SEPARATOR = System.lineSeparator();
 
   private Strings() {
   }
@@ -123,14 +123,6 @@ public class Strings {
       return null;
     }
     return text;
-  }
-
-  public static String repeat(String text, int count) {
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < count; i++) {
-      builder.append(text);
-    }
-    return builder.toString();
   }
 
   public static String trim(String text) {

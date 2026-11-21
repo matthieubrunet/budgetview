@@ -6,7 +6,6 @@ import org.globsframework.gui.splits.repeat.Repeat;
 import org.globsframework.gui.splits.repeat.RepeatComponentFactory;
 import org.globsframework.gui.splits.utils.Disposable;
 import org.globsframework.gui.splits.utils.DummyRepeatLayout;
-import org.globsframework.utils.Strings;
 import org.uispec4j.finder.ComponentMatchers;
 import org.uispec4j.utils.AssertionFailureNotDetectedError;
 
@@ -941,7 +940,7 @@ public class SplitsRepeatTest extends SplitsTestCase {
 
   private static void dump(Container panel, StringBuilder builder, int level) {
     for (Component component : panel.getComponents()) {
-      builder.append(Strings.repeat(" ", level * 2));
+      builder.append(" ".repeat(level * 2));
       if (component instanceof JLabel label) {
         builder.append("label:").append(label.getText());
         builder.append('\n');

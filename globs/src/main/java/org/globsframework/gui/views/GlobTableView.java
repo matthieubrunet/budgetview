@@ -20,7 +20,6 @@ import org.globsframework.metamodel.fields.LinkField;
 import org.globsframework.model.*;
 import org.globsframework.model.format.GlobStringifier;
 import org.globsframework.model.utils.GlobMatcher;
-import org.globsframework.utils.comparators.CompositeComparator;
 import org.globsframework.utils.directory.Directory;
 import org.globsframework.utils.exceptions.ItemNotFound;
 
@@ -152,7 +151,7 @@ public class GlobTableView extends AbstractGlobComponentHolder<GlobTableView> im
       .setStringifier(stringifier)
       .setBackgroundPainter(backgroundPainter)
       .addLabelCustomizer(chain(LabelCustomizers.stringifier(stringifier, repository), customizer))
-      .setComparator(new CompositeComparator<Glob>(stringifier.getComparator(repository), initialComparator));
+      .setComparator(stringifier.getComparator(repository).thenComparing(initialComparator));
     columnAdded(builder.getColumn());
     return this;
   }
@@ -169,7 +168,7 @@ public class GlobTableView extends AbstractGlobComponentHolder<GlobTableView> im
       .setRenderer(renderer)
       .setBackgroundPainter(defaultBackgroundPainter)
       .setStringifier(stringifier)
-      .setComparator(new CompositeComparator<Glob>(stringifier.getComparator(repository), initialComparator));
+      .setComparator(stringifier.getComparator(repository).thenComparing(initialComparator));
     columnAdded(builder.getColumn());
     return this;
   }
@@ -181,7 +180,7 @@ public class GlobTableView extends AbstractGlobComponentHolder<GlobTableView> im
       .setRenderer(renderer)
       .setEditor(editor)
       .setStringifier(stringifier)
-      .setComparator(new CompositeComparator<Glob>(stringifier.getComparator(repository), initialComparator));
+      .setComparator(stringifier.getComparator(repository).thenComparing(initialComparator));
     columnAdded(builder.getColumn());
     return this;
   }

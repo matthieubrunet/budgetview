@@ -54,6 +54,9 @@ Il faut mesurer (étapes 1 et 2), puis interroger l'historique git (étape 4).
   propres `getFirst()`/`getLast()`, qui rendent `null` sur liste vide ; OpenRewrite les a traitées comme celles de Java 21
   et a rendu `getFirst()` récursive (3b). Une recette se juge en appliquant son patch dans une copie et en y lançant les
   suites de tests, pas sur la seule relecture du diff.
+- **Fins de ligne** : 48 fichiers source suivis sont en CRLF (aucun `.gitattributes`). Un script Python qui les réécrit
+  avec `open(p)` les convertit en LF sans le dire (`TransactionView`, 737 lignes « modifiées » en 3d, lot A). Lire et écrire
+  avec `newline=''`, et contrôler `git diff --stat` avant chaque commit.
 
 ## Étape 1 : le code mort, mesuré
 
@@ -1295,6 +1298,12 @@ comportement de la 5.01 dans l'application livrée).
   Préférences sans sélection, sa valeur est gardée (`GlobComboEditor`). 18 fichiers, +53 −86 lignes. Tests de `globs`
   796, `bv_desktop` 1 026 verts, 4 min 51 s ; 0 `[WARNING]`, `bv_server` compile. Vérifié par Matthieu dans le jar
   livré lancé sans mode dev : ni menu `[Dev]`, ni Préférences/Quitter dans Fichier, mois futurs de 12 à 60.
+- Lot A (2026-11-21) : `Arrays.copyOf`, `String.repeat`, `System.lineSeparator()`, `Comparator.reversed()` et
+  `thenComparing` (aucun comparateur nul possible : `GlobViewModel` trie déjà avec le comparateur initial), lambda vide ;
+  `Runnables`, `InvertedComparator`, `CompositeComparator` et `Utils.copyOf` supprimés. `FilesTest` (12 tests) fige
+  d'abord le comportement de `Files`, défauts compris, puis ses méthodes passent en `try`-avec-ressources et `transferTo` :
+  quatre flux qui restaient ouverts sont fermés. Tests de `globs` 808 verts (+12), `bv_desktop` 1 026 verts, 4 min 43 s ;
+  0 `[WARNING]`, `bv_server` compile.
 
 
 
@@ -1377,3 +1386,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 5c, durée | Calages de 80 s à 8 min dus à la veille du Mac : `caffeinate -i`. 3 JVM de test en parallèle, chacune dans `target/forks/<n>` (`pom` de `bv_desktop`) : suite de `bv_desktop` 1 026 verts en 5 min 08 s (9 à 21 min avant). **5c terminé** |
 | 2026-11-21 | 3d, inventaire | Rien de modifié. `Utils`, `Strings`, `Files` (941 lignes) : 8 remplacements exacts par le JDK, dont `Utils.equal` (155 appels) ; 4 doublons internes, 7 méthodes mortes, `RandomStrings` reste du mobile. Balises `beginRemove`/`endRemove` inopérantes depuis la suppression du shrinker : 7 blocs de développement actifs en production, dont le menu `[Dev]`. Quatre lots proposés (0, A à C) |
 | 2026-11-21 | 3d, lot 0 (balises « dev ») | 13 blocs `beginRemove`/`endRemove` remplacés par `Application.isDevMode()`, des `assert` ou supprimés (+53 −86 lignes, 18 fichiers) ; application livrée revenue au comportement de la 5.01. Tests de `globs` 796, `bv_desktop` 1 026 verts, 4 min 51 s |
+| 2026-11-21 | 3d, lot A (JDK direct) | 3 classes et `Utils.copyOf` supprimés, `Files` modernisé (4 flux fermés) ; `FilesTest` ajouté (12 tests). Tests de `globs` 808 verts, `bv_desktop` 1 026 verts, 4 min 43 s |

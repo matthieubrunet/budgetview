@@ -5,7 +5,6 @@ import org.globsframework.utils.exceptions.ItemNotFound;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -365,20 +364,6 @@ public class Utils {
     return value.substring(0, 1).toUpperCase() + value.substring(1, value.length());
   }
 
-
-  // code from java 1.6
-  public static <T> T[] copyOf(T[] original, int newLength) {
-    return (T[]) copyOf(original, newLength, original.getClass());
-  }
-
-  public static <T, U> T[] copyOf(U[] original, int newLength, Class<? extends T[]> newType) {
-    T[] copy = ((Object) newType == (Object) Object[].class)
-      ? (T[]) new Object[newLength]
-      : (T[]) Array.newInstance(newType.getComponentType(), newLength);
-    System.arraycopy(original, 0, copy, 0,
-                     Math.min(original.length, newLength));
-    return copy;
-  }
 
   public static Integer[] box(int[] array) {
     Integer[] result = new Integer[array.length];

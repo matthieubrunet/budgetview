@@ -15,7 +15,6 @@ import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.Key;
 import org.globsframework.model.utils.GlobMatchers;
-import org.globsframework.utils.Runnables;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
@@ -29,7 +28,7 @@ public class AutoCloudImportView extends View {
   private ProgressPanel progressPanel;
   private JButton actionButton;
   private JButton cancelButton;
-  private Runnable switchToMainPanel = Runnables.NO_OP;
+  private Runnable switchToMainPanel = () -> {};
 
   public AutoCloudImportView(GlobRepository repository, Directory directory) {
     super(repository, directory);

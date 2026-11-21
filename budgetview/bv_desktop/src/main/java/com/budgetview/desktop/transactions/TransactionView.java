@@ -45,7 +45,6 @@ import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.model.utils.GlobMatchers;
 import org.globsframework.model.utils.GlobUtils;
 import org.globsframework.model.utils.TypeChangeSetListener;
-import org.globsframework.utils.comparators.InvertedComparator;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
@@ -280,7 +279,7 @@ public class TransactionView extends View implements Filterable {
       .addColumn(Lang.get("transactionView.date.user"),
                  new TransactionDateStringifier(comparator), font(dateFont))
       .addColumn(Lang.get("transactionView.date.bank"),
-                 new TransactionDateStringifier(new InvertedComparator(TransactionComparator.ASCENDING_ACCOUNT),
+                 new TransactionDateStringifier(TransactionComparator.ASCENDING_ACCOUNT.reversed(),
                                                 Transaction.POSITION_MONTH,
                                                 Transaction.POSITION_DAY), font(dateFont)
       )

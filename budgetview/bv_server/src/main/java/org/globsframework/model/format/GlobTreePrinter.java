@@ -7,7 +7,6 @@ import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.metamodel.fields.TimeStampField;
 import org.globsframework.model.FieldValues;
 import org.globsframework.utils.Dates;
-import org.globsframework.utils.Strings;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -24,11 +23,11 @@ public class GlobTreePrinter {
                             FieldValues values,
                             Field idField,
                             Field... otherFields) {
-    builder.append(Strings.repeat("  ", indent));
+    builder.append("  ".repeat(indent));
     builder.append(type).append(" ");
     builder.append(idField.getName()).append(": ").append(value(values, idField)).append('\n');
     for (Field field : otherFields) {
-      builder.append(Strings.repeat("  ", indent + 1));
+      builder.append("  ".repeat(indent + 1));
       builder.append(field.getName()).append(": ").append(value(values, field)).append('\n');
     }
   }
@@ -36,7 +35,7 @@ public class GlobTreePrinter {
   public void writeFlat(String type,
                         FieldValues values,
                         Field... fields) {
-    builder.append(Strings.repeat("  ", indent));
+    builder.append("  ".repeat(indent));
     builder.append(type).append(" ");
     for (int i = 0; i < fields.length; i++) {
       Field field = fields[i];

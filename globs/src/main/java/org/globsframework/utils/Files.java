@@ -19,37 +19,18 @@ public class Files {
     return loadFileToString(file);
   }
 
+  /** Réécrit les fins de ligne en LINE_SEPARATOR et en ajoute une à la dernière ligne : ce n'est pas Files.readString. */
   public static String loadFileToString(File file) {
     StringBuilder builder = new StringBuilder();
-    FileReader fileReader = null;
-    BufferedReader reader = null;
-    try {
-      fileReader = new FileReader(file);
-      reader = new BufferedReader(fileReader);
-      while (true) {
-        String line = reader.readLine();
-        if (line == null) {
-          break;
-        }
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
         builder.append(line).append(Strings.LINE_SEPARATOR);
       }
       return builder.toString();
     }
     catch (IOException e) {
       throw new IOFailure(e);
-    }
-    finally {
-      try {
-        if (reader != null) {
-          reader.close();
-        }
-        else if (fileReader != null) {
-          fileReader.close();
-        }
-      }
-      catch (IOException e) {
-        throw new IOFailure(e);
-      }
     }
   }
 
@@ -76,14 +57,8 @@ public class Files {
 
   public static String loadStreamToString(Reader input) throws IOFailure {
     try {
-      Reader reader = new BufferedReader(input);
-      StringBuilder result = new StringBuilder();
-      char[] buffer = new char[1024];
-      int count = reader.read(buffer);
-      while (count != -1) {
-        result.append(buffer, 0, count);
-        count = reader.read(buffer);
-      }
+      StringWriter result = new StringWriter();
+      input.transferTo(result);
       return result.toString();
     }
     catch (IOException e) {
@@ -99,25 +74,12 @@ public class Files {
   }
 
   public static String dumpStringToFile(String fileName, String content) throws IOFailure {
-    FileWriter writer = null;
-    try {
-      writer = new FileWriter(fileName);
+    try (FileWriter writer = new FileWriter(fileName)) {
       writer.append(content);
-      writer.close();
       return fileName;
     }
     catch (IOException e) {
       throw new IOFailure(e);
-    }
-    finally {
-      if (writer != null) {
-        try {
-          writer.close();
-        }
-        catch (IOException e) {
-          throw new IOFailure(e);
-        }
-      }
     }
   }
 
@@ -167,13 +129,11 @@ public class Files {
     return path;
   }
 
+  /** Ferme le flux de sortie, pas celui d'entrée. */
   public static void copyStream(InputStream inputStream, OutputStream outputStream) throws IOException {
-    byte[] bytes = new byte[1024];
-    int readed;
-    while ((readed = inputStream.read(bytes)) != -1) {
-      outputStream.write(bytes, 0, readed);
+    try (OutputStream output = outputStream) {
+      inputStream.transferTo(output);
     }
-    outputStream.close();
   }
 
   public static void loadProperties(Properties properties, String propertiesFile) throws ResourceAccessFailed {
@@ -181,8 +141,8 @@ public class Files {
     if (!file.exists()) {
       throw new ResourceAccessFailed("Properties file not found: " + file.getAbsolutePath());
     }
-    try {
-      properties.load(new FileInputStream(propertiesFile));
+    try (InputStream stream = new FileInputStream(propertiesFile)) {
+      properties.load(stream);
     }
     catch (IOException e) {
       throw new ResourceAccessFailed("Could not load properties file: " + propertiesFile, e);
@@ -190,9 +150,8 @@ public class Files {
   }
 
   public static Properties loadProperties(Class refClass, String fileName) throws ResourceAccessFailed {
-    InputStream stream = getStream(refClass, fileName);
     Properties properties = new Properties();
-    try {
+    try (InputStream stream = getStream(refClass, fileName)) {
       properties.load(stream);
     }
     catch (IOException e) {
@@ -203,7 +162,9 @@ public class Files {
 
   public static SortedSet<Object> loadPropertyKeys(String fileName, Class refClass) throws IOException {
     Properties root = new Properties();
-    root.load(getStream(refClass, fileName));
+    try (InputStream stream = getStream(refClass, fileName)) {
+      root.load(stream);
+    }
     TreeSet<Object> result = new TreeSet<Object>();
     result.addAll(root.keySet());
     return result;
@@ -257,8 +218,8 @@ public class Files {
   }
 
   public static void copyFile(File sourceFile, File targetFile) throws IOException {
-    BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(sourceFile));
-    copyStream(inputStream, new BufferedOutputStream(new FileOutputStream(targetFile)));
-    inputStream.close();
+    try (InputStream inputStream = new FileInputStream(sourceFile)) {
+      copyStream(inputStream, new FileOutputStream(targetFile));
+    }
   }
 }

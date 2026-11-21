@@ -18,7 +18,6 @@ import org.globsframework.model.format.DescriptionService;
 import org.globsframework.model.utils.GlobFieldComparator;
 import org.globsframework.model.utils.ReverseGlobFieldComparator;
 import org.globsframework.utils.Utils;
-import org.globsframework.utils.comparators.InvertedComparator;
 import org.globsframework.utils.directory.Directory;
 import org.globsframework.utils.exceptions.InvalidParameter;
 
@@ -167,7 +166,7 @@ public abstract class SeriesOrderManager implements ChangeSetListener {
       SeriesOrder currentOrder = orderManager.getUserCurrentOrder();
       if (currentOrder.equals(order)) {
         if (inverted) {
-          return new InvertedComparator(getOrder());
+          return getOrder().reversed();
         }
         else {
           return getOrder();
@@ -178,7 +177,7 @@ public abstract class SeriesOrderManager implements ChangeSetListener {
           return getOrder();
         }
         else {
-          return new InvertedComparator(getOrder());
+          return getOrder().reversed();
         }
       }
       return null;
