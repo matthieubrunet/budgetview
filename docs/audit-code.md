@@ -179,10 +179,12 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
 
 ## Étape 4 : les contournements, par l'historique
 
-- [ ] **4a. Repérer les motifs suspects** : tests sur `os.name` ou `java.version`, `invokeLater`
+- [x] **4a. Repérer les motifs suspects** : tests sur `os.name` ou `java.version`, `invokeLater`
   imbriqués, `Thread.sleep` et minuteries dans l'IHM, `catch` vides, réglages forcés de Swing
   (`UIManager.put`, propriétés `apple.*`, `sun.*`).
-- [ ] **4b. Retrouver leur raison** : `git log -L <début>,<fin>:<fichier>` ou `git blame`, puis le
+  Fait le 2026-11-21 avec 4b, voir [4a et 4b, inventaire](#4a-et-4b-inventaire) plus bas : peu de contournements
+  vivants ; trois lots proposés (A code mort sous Java 21, B masques d'événements dépréciés, C cinq essais dans l'appli).
+- [x] **4b. Retrouver leur raison** : `git log -L <début>,<fin>:<fichier>` ou `git blame`, puis le
   message du commit d'origine. Chercher aussi directement dans les messages :
   `git log -i -E --grep='bug|mac|swing|jdk|java'`.
 - [ ] **4c. Tester sans le contournement** sous Java 21, sur macOS, et le retirer s'il n'est plus utile.
@@ -1424,6 +1426,77 @@ Laissés, faute de gain à la hauteur du risque : lot B (formats d'affichage et 
 globs ; les formats statiques ne servent en pratique que sur le fil de Swing), lot C (analyse des imports, trois pièges de
 comportement), `TimeService`, `DateFormatAnalyzer`, et les `DateField` (format sur disque).
 
+## 4a et 4b, inventaire
+
+Fait le 2026-11-21, sur le code livré (`bv_desktop`, `bv_shared`, `globs`, `prevayler`), avec l'origine de chaque site par
+`git blame -w -C -C` et par les messages de commit (`git log -i -E --grep='mac|jdk|java ?[0-9]|swing|linux|windows|vista|
+contourn|workaround|hack|blocage'`, 109 commits, dont une vingtaine touchent encore du code présent).
+
+**Relevé brut.** Tests de plateforme : 21 sites dans 11 fichiers, tous par `GuiUtils.isMacOSX()` & co (aucun `os.name` ni
+`java.version` lu ailleurs, hors `AboutDialog` qui les affiche). `UIManager.put` : 3, tous légitimes. `System.setProperty` :
+`apple.*` (2, voulus), `sun.awt.exception.handler` (1). `Thread.sleep` : 5. `invokeLater`/`invokeAndWait` : 34, dont 12 dans
+`MainWindow`. `catch` vides : 25. Minuteries Swing : 3 (animations de `TimeViewPanel`, `ProgressPanel`, panneau cloud).
+
+**Morts sous Java 21, sans essai à faire (lot A).**
+- *Versions de Windows* (`f4a2d5648`, 2013, « fix App dir for vista, win 7/8 » ; `bbe9eb355`, 2009) : `GuiUtils.IS_XP`,
+  `IS_VISTA`, `IS_WIN7`, `IS_WIN8` et leurs branches dans `AppPaths.getDefaultDataPath`. Java 21 ne tourne que sur Windows 10
+  et plus ; sur ces versions `AppData\Local` existe toujours, donc la troisième vérification d'existence répond avant elles,
+  et la dernière branche rend de toute façon le même chemin que celle de Vista. Les vérifications d'existence (anciennes
+  installations dans `Application Data`) restent.
+- *`sun.awt.exception.handler`* (`47410cc95`, 2009) : la propriété n'est plus lue depuis Java 7, le relais par
+  `setDefaultUncaughtExceptionHandler` posé en 6.00 la remplace. Le `setProperty` et le commentaire sur `jsmooth` (fichier
+  absent du dépôt) sont à retirer.
+- *`PicsouLinuxLookAndFeel`* : aucune référence hors d'elle-même (`Gui.init` prend `PicsouWindowsLookAndFeel` pour tout ce
+  qui n'est pas macOS). Gardée jusqu'ici par les règles `keep` des look and feel.
+
+**Dépréciations à corriger sans changer le comportement (lot B, renvoyé ici par 3a).** `InputEvent.CTRL_MASK` & co dans
+`Gui.isAddModifier`, `Gui.hasModifiers`, `GuiUtils.isRightClick`, `GlobTableView.selectRowOnRightClickIfNeeded`.
+- `Gui.hasModifiers(ActionEvent)` : `ActionEvent.CTRL_MASK`, `SHIFT_MASK`… (mêmes valeurs, non dépréciées). Sans risque.
+- Les trois autres lisent `MouseEvent.getModifiers()`, dont les anciens masques se recouvrent : `META_MASK` = `BUTTON3_MASK`,
+  `ALT_MASK` = `BUTTON2_MASK`. Un clic droit compte donc comme « Meta » dans `isAddModifier` (sélection additive de
+  `StackChart`). Passer à `getModifiersEx()` et `*_DOWN_MASK` changerait cela, et aussi le relâchement (le bouton n'est plus
+  dans `getModifiersEx()` au `mouseReleased`). **Défaut latent** : figer d'abord le comportement par des tests, ou laisser
+  ces trois-là en l'état avec un `@SuppressWarnings("deprecation")` commenté.
+
+**Contournements à essayer dans l'appli (lot C, sur macOS, avec Matthieu pour les gestes).**
+- *Dialogue d'import quand la fenêtre est réduite* (`e421a6066`, 2008, « blocage à l'ouverture de boîte de dialogue
+  lorsque l'application est iconifiée ») : `ImportDialog.show` ouvre un `JDialog` modal vide qu'un `invokeLater` qui se
+  relance (avec `Thread.sleep(200)` sur le fil de l'IHM) referme aussitôt, puis montre le vrai dialogue à la restauration.
+  Essai : réduire la fenêtre, ouvrir un `.ofx` depuis le Finder (« Ouvrir avec » ou dépôt sur l'icône du Dock).
+- *`Thread.sleep(50)` avant `openFiles`* dans `ImportController` (`c86763fc3`, 2008, « fin open with ») : même essai, fenêtre
+  d'import ouverte à l'étape 1.
+- *Bulles d'aide fantômes après Cmd-Tab* (`f0ec4602a`, 2011, « Correction tooltips phantomes sur alt-tab sous Mac ») :
+  `PicsouFrame` et `PicsouDialog` coupent le `ToolTipManager` à la perte du focus. Essai : survoler un bouton à bulle, Cmd-Tab
+  vers une autre appli, regarder si la bulle reste à l'écran.
+- *Hauteur réduite de 1 ou 2 pixels sous macOS* dans `CustomButtonUI`, `FlatButtonUI`, `FlatIconButtonUI` (`height -= 2`) et
+  `SlidingToggleUI` (`-= 1`), venus avec ces classes (2013-2014), sans raison donnée. Probablement l'anneau de focus ou la
+  ligne de base d'Aqua. Essai : captures avant / après des boutons de l'accueil, des projets et des bascules.
+- *`GuiUtils.IS_OPEN_JDK`* (`0c001940f`, 2009) : `PicsouWindowsLookAndFeel` (Windows et Linux seulement) pose
+  `Button.margin` sauf sous OpenJDK. Le JDK 21 de Homebrew et le runtime de jpackage s'annoncent « OpenJDK 64-Bit Server VM »,
+  comme Temurin : la marge n'est plus jamais posée. Impossible à essayer ici (pas de Windows ni de Linux). Proposé : retirer
+  le test et la marge, ce qui fige le comportement actuel des JDK courants.
+
+**Conventions de plateforme, à garder.** Ordre Annuler / OK (`PicsouDialog`, 2008) et marge des boutons, Cmd au lieu de Ctrl
+(`getCtrlModifier`, `6408375a9`), dossier de données macOS, barre de menus en haut de l'écran, Aqua sous macOS, taille de
+police des tableaux par système (`Gui`, 2008).
+
+**Légitimes, à laisser.**
+- `invokeLater` : presque tous passent du fil de connexion à celui de l'IHM (`MainWindow.LoginFunctor`), avec une vraie
+  contrainte notée dans le code (« il faut attendre que le main soit terminé », `f87edde7c`, 2009). Un seul imbriqué (pile
+  d'erreur affichée après le message), sans effet.
+- `Thread.sleep(2000)` d'`Application` avant de sortir quand une autre instance a reçu les fichiers ; `Thread.sleep(100)` de
+  `SingleApplicationInstanceListener` après des `accept` en échec rapprochés ; `Thread.sleep(5000)` de `PersistentJournal`
+  entre deux essais d'écriture : temporisations voulues.
+- `catch` vides : `InterruptedException` des attentes ci-dessus, port libre (`SingleApplicationInstanceListener`), fichiers
+  absents (`DirectAccountDataManager`), ressource de langue manquante (`DefaultDescriptionService`), fin de flux
+  (`DurableInputStream`). Un seul masque un défaut possible : `SplitTransactionDialog.EnterKeyValidator` avale toute exception
+  de l'action « Ajouter » (`927c6cf87`, 2008). À relever pour le chantier des tests unitaires, pas à changer dans l'audit.
+- Déjà retirés par des chantiers précédents : la « protection exit MAC » (`33e86e14d`, 2011, `MRJAdapter`, remplacé en 3c),
+  le contournement `AquaLabelUI` de `GlobSliderEditor` (`90d6d53fa`, classe supprimée en 2a).
+
+**Lots proposés.** A (code mort, ~60 lignes), B (`hasModifiers` seul, ou les quatre avec tests qui figent le comportement),
+C (cinq essais dans l'appli, un commit par contournement retiré).
+
 ## 5c, durée
 
 Fait les 2026-11-20 et 21.
@@ -1513,3 +1586,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 3e, collections synchronisées | 41 `StringBuffer` → `StringBuilder`, 1 `Vector` → tableau (18 fichiers, +25 −26 lignes). Tests de `globs` 808, `prevayler` 26, `bv_desktop` 1 026 verts, 4 min 50 s. **3e terminé** |
 | 2026-11-21 | 3f, inventaire | 97 fichiers (et non 35) : ~65 transmettent le type et restent ; 3 lots proposés (A calcul de `Month`, B formats, C imports à ne pas faire sans décision) ; défaut latent `hh` → `HH` relevé |
 | 2026-11-21 | 3f, `Month` en `java.time` | `Month` sans `Calendar` ni `synchronized`, `hh` → `HH`, `OfxImporter.DATE_FORMAT` non partagé (7 fichiers, +84 −66 lignes, dont un test de 42 lignes comparant au `Calendar`). Tests de `globs` 808, `bv_desktop` 1 027 verts. Lots B et C abandonnés. **3f terminé** |
+| 2026-11-21 | 4a et 4b, inventaire | Rien de modifié. 21 tests de plateforme (11 fichiers), 34 `invokeLater`, 5 `Thread.sleep`, 25 `catch` vides, origine retrouvée par `git blame`. Morts sous Java 21 : versions de Windows d'`AppPaths`, `sun.awt.exception.handler`, `PicsouLinuxLookAndFeel` ; masques `InputEvent` dépréciés, dont un défaut latent (clic droit pris pour « Meta ») ; 5 contournements à essayer dans l'appli. Trois lots proposés (A à C) |
