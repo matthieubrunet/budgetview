@@ -215,8 +215,10 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   pour chacun, réparer ou supprimer.
   Fait le 2026-11-21, voir [5a, inventaire](#5a-inventaire) plus bas : 9 supprimés, 2 réactivés, 12 gardés désactivés
   (bugs de l'appli et limites d'uispec4j, repris après l'audit). Suite de `bv_desktop` 1 031 verts.
-- [ ] **5b. Tests en double** : avec JaCoCo par test, repérer ceux qui couvrent exactement les
+- [x] **5b. Tests en double** : avec JaCoCo par test, repérer ceux qui couvrent exactement les
   mêmes lignes.
+  Fait le 2026-11-21, voir [5b, inventaire](#5b-inventaire) plus bas : 8 groupes identiques, presque tous des variantes de
+  données à garder ; un seul vrai doublon, `HelpTest`, supprimé. Suite de `bv_desktop` 1 029 verts. **Étape 5 terminée.**
 - [x] **5c. Durée** : repérer les classes de test les plus lentes (`target/surefire-reports`) et
   voir si leur coût est justifié.
   Fait le 2026-11-21 (avancé avant 3d à la demande de Matthieu), voir [5c, durée](#5c-durée) plus bas : suite de
@@ -1552,6 +1554,40 @@ Trois lots proposés : **A** suppressions (9 méthodes, 2 classes, 1 fichier de 
 **B** `DeferredTest` et `TimeViewPanelUISpecTest` ; **C** mise à jour d'[etat-des-tests.md](etat-des-tests.md) (les 12 gardés,
 avec leur raison).
 
+## 5b, inventaire
+
+Fait le 2026-11-21. Rien de modifié dans l'arbre : mesure faite dans une copie (`git clone` dans un dossier temporaire,
+comptes de démo recopiés).
+
+**Méthode** : JaCoCo ne sépare pas la couverture par test. Un écouteur JUnit
+([docs/audit/PerTestCoverageListener.java](audit/PerTestCoverageListener.java)), déclaré dans la copie du `pom` de
+`bv_desktop` (`<properties><property><name>listener</name>…`, que le fournisseur JUnit 4 de surefire accepte pour les
+tests JUnit 3), vide les compteurs de l'agent à chaque début et fin de test, la session portant le nom du test. Le fichier
+`jacoco.exec` contient alors une session par test (88 Mo pour la suite). [docs/audit/Dup5b.java](audit/Dup5b.java) les lit
+(`java -cp org.jacoco.core-0.8.16.jar docs/audit/Dup5b.java <exec> <test-classes> <sortie>`), écarte les classes de test, et
+compare les **sondes** couvertes (plus strict que les lignes : mêmes sondes ⇒ mêmes lignes et mêmes branches).
+
+**Suite** : 1 031 tests en 6 min 18 s sous JaCoCo ; `SetPasswordTest` (2) a dépassé le délai d'uispec4j sous la charge,
+verte relancée seule. 40 143 sondes du code livré couvertes en tout ; un test fonctionnel en touche 13 000 à 20 000
+(démarrage, connexion), un test unitaire quelques dizaines.
+
+**Résultats** :
+
+| Mesure | Nombre | Lecture |
+|---|---|---|
+| Groupes de tests à couverture identique | 8 (16 tests) | 7 sont des variantes de données d'un même code : 4 fichiers LCL de logiciels différents (Money, Quicken, Tout Compte Fait), 2 cas d'`OfxParserTest`, 4 de `CarryOverComputerTest`, 2 de `HistoButtonDatasetTest`, 2 largeurs de `TimeViewPanelUISpecTest`. Mêmes chemins, valeurs vérifiées différentes : **à garder**. Le 8e est un vrai doublon (ci-dessous) |
+| Tests strictement inclus dans un autre | 63 | ~40 tests unitaires contenus dans un test fonctionnel (relation normale : l'unitaire est rapide et localise la panne) ; ~15 variantes de données d'une même classe unitaire ; 9 tests fonctionnels inclus dans un autre, qui vérifient d'autres choses sur le même parcours (`ViewsManagementTest` ×3, `CsvImportTest.testImport`, `ImportTest.testCloseButtonLabelBeforeImport`, `TransactionSplittingTest.testAmountIsSubtractedWhateverTheSign`, LCL) : **à garder** |
+| Tests sans aucune sonde propre | 746 sur 1 031 | attendu : les tests fonctionnels partagent presque tout leur code et diffèrent par leurs assertions, que la couverture ne voit pas. Aucune conclusion à en tirer |
+| Paires quasi identiques (écart ≤ 1 % ou ≤ 20 sondes) | 544 | même lecture, surtout des tests d'une même classe fonctionnelle |
+
+**Seul vrai doublon** : `HelpTest` (2 tests, 3 s, une JVM). `testHelpMenu` vérifie l'URL du support par
+`Lang.get("site.support.url")`, qui vaut en anglais (langue des tests) `http://www.budgetview.fr/support` ; `testDefaultLinks`
+vérifie la même URL écrite en dur. `LocalModeTest.testHelpMenuHasNoServerActions` (ajouté en 6.00) vérifie le menu Aide
+puis la même URL. Les trois ont une couverture identique ou incluse.
+
+Conclusion : la couverture par test confirme que la suite a peu de redondance exploitable ; elle désigne surtout des
+variantes de données, qui sont le but de ces tests. Un lot proposé : **A** supprimer `HelpTest`.
+
 ## 5c, durée
 
 Fait les 2026-11-20 et 21.
@@ -1677,3 +1713,5 @@ site : seulement les fichiers modifiés » (`FileHandle.isNewer` forcé à vrai)
 | 2026-11-21 | 5a, lot C (documentation) | `etat-des-tests.md` : les 12 tests gardés désactivés, avec leur échec du jour et le chantier qui les reprendra ; `CLAUDE.md` à 1 031 tests, 163 classes. **5a terminé** |
 | 2026-11-21 | 5d, `siteweaver` sous Maven | JUnit 4.12, surefire 3.0.0 ; `SiteUploaderTest` réaligné sur l'envoi complet (`isNewer` forcé à vrai), 2 tests de dates supprimés, ordre d'envoi rendu stable (`LinkedHashMap`, tri par nom). Tests de `siteweaver` 67 verts sous Maven, pour la première fois. **5d terminé** |
 | 2026-11-21 | `siteweaver` supprimé | Module retiré du réacteur et de l'arbre : 85 fichiers, dont 83 de Java (58 du programme, 25 de test, ~5 450 lignes), 67 tests ; dépendances Xerces et Jetty sorties du réacteur. `bv_website/readme.txt` renvoie à l'historique git (`7fc3ff608`). Réacteur : 4 modules construits |
+| 2026-11-21 | 5b, inventaire | Rien de modifié. JaCoCo par test (écouteur JUnit, une session par test, dans une copie) : 1 031 tests, 40 143 sondes ; 8 groupes à couverture identique (16 tests), 63 tests inclus dans un autre, 746 sans sonde propre. Hors `HelpTest`, tous des variantes de données ou des unitaires contenus dans un fonctionnel, à garder. Outils dans `docs/audit/` |
+| 2026-11-21 | 5b, lot A (`HelpTest`) | `HelpTest` supprimé (2 tests, 18 lignes), couvert par `LocalModeTest`. Tests de `bv_desktop` 1 029 verts, 162 classes (1 course d'uispec4j dans `DashboardDatesTest`, verte relancée seule deux fois), 4 min 53 s. **5b terminé, étape 5 terminée, audit terminé** |
