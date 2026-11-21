@@ -1,7 +1,6 @@
 package com.budgetview.desktop.importer;
 
 import com.budgetview.desktop.accounts.AccountPositionEditionDialog;
-import com.budgetview.desktop.components.PicsouFrame;
 import com.budgetview.desktop.components.dialogs.MessageAndDetailsDialog;
 import com.budgetview.desktop.components.dialogs.PicsouDialog;
 import com.budgetview.desktop.importer.series.ImportSeriesDialog;
@@ -26,8 +25,6 @@ import org.globsframework.utils.directory.Directory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -173,38 +170,9 @@ public class ImportDialog implements Disposable, ImportDisplay {
   }
 
   public void show() {
-    final PicsouFrame frame = (PicsouFrame) parentDirectory.get(JFrame.class);
-    if (frame.isIconified()) {
-      frame.addWindowListener(new WindowAdapter() {
-        public void windowDeiconified(WindowEvent e) {
-          frame.removeWindowListener(this);
-          dialog.pack();
-          dialog.showCentered();
-        }
-      });
-      final JDialog dialog = new JDialog(frame);
-      SwingUtilities.invokeLater(new Runnable() {
-        public void run() {
-          while (!dialog.isVisible()) {
-            SwingUtilities.invokeLater(this);
-            try {
-              Thread.sleep(200);
-            }
-            catch (InterruptedException e) {
-            }
-          }
-          dialog.setVisible(false);
-        }
-      });
-      currentPanel.prepareForDisplay();
-      dialog.setModal(true);
-      dialog.setVisible(true);
-    }
-    else {
-      dialog.pack();
-      currentPanel.prepareForDisplay();
-      dialog.showCentered();
-    }
+    dialog.pack();
+    currentPanel.prepareForDisplay();
+    dialog.showCentered();
   }
 
   public void closeDialog() {
