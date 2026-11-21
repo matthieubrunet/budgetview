@@ -9,7 +9,7 @@ import com.designup.siteweaver.server.utils.StringOutput;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SiteUploader {
@@ -23,7 +23,7 @@ public class SiteUploader {
   }
 
   public void run() throws IOException {
-    final Map<String, FileHandle> remoteHandles = new HashMap<String, FileHandle>();
+    final Map<String, FileHandle> remoteHandles = new LinkedHashMap<String, FileHandle>();
     for (FileHandle handle : access.listAllFiles()) {
       if (!site.ignoreTargetPath(handle.path)) {
         remoteHandles.put(handle.path, handle);

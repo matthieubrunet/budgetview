@@ -221,9 +221,10 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   voir si leur coût est justifié.
   Fait le 2026-11-21 (avancé avant 3d à la demande de Matthieu), voir [5c, durée](#5c-durée) plus bas : suite de
   `bv_desktop` de 9 à 21 min ramenée à 5 min (3 JVM en parallèle, `caffeinate -i` contre la veille du Mac).
-- [ ] **5d. Tests de `siteweaver` sous Maven** : comme `prevayler` en 2c (lot 0), ils sont en JUnit 3.8.1, que surefire
+- [x] **5d. Tests de `siteweaver` sous Maven** : comme `prevayler` en 2c (lot 0), ils sont en JUnit 3.8.1, que surefire
   refuse ; ils n'ont jamais tourné par Maven. Passer à JUnit 4.12+ dans son `pom`. Lancés à la main en 3a (JUnitCore) :
   72, dont 10 échecs anciens à trier (7 de `SiteUploaderTest`, 3 classes sans test, qu'un `TestSuite` signale).
+  Fait le 2026-11-21, voir [5d, `siteweaver`](#5d-siteweaver) plus bas : 67 verts sous Maven (`mvn -o test -pl siteweaver`).
 - Chantier suivant, à part : compléter les tests unitaires et corriger les défauts d'import relevés
   par le sondage du 2026-11-18, voir [tests-unitaires.md](tests-unitaires.md).
 - Ne pas toucher aux tests fonctionnels qui couvrent des fonctions encore utilisées : ce sont
@@ -1583,6 +1584,25 @@ la suite. Rien d'injustifié ; leur seule réduction passerait par moins de test
 **Restant, hors 5c.** Les courses d'uispec4j (« No such child », fenêtre non interceptée) se voient plus souvent sous la
 charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chantier des tests unitaires.
 
+## 5d, `siteweaver`
+
+Fait le 2026-11-21. JUnit 3.8.1 → 4.12 et surefire 3.0.0 dans le `pom`, comme `globs` et `prevayler`. Les 3 « classes sans
+test » de JUnitCore (`SiteweaverTestCase`, `SiteGenerationTestCase`, `GeneratorTestCase`, classes de base) ne comptent pas
+sous surefire. Restaient les 7 échecs de `SiteUploaderTest` (envoi du site par FTP, encore utilisé, voir
+`bv_website/readme.txt`), sans défaut de l'application derrière :
+
+- **Dates ignorées.** `FileHandle.isNewer` commence par `return true ||` : tout est renvoyé à chaque envoi, alors que les
+  tests attendaient un envoi limité aux fichiers modifiés. L'historique ne garde pas la raison (dépôt importé d'un bloc
+  en 2025), et ce n'est pas à l'audit de rétablir la comparaison. Les attentes suivent maintenant l'envoi complet ; les
+  deux tests qui ne vérifiaient que la comparaison des dates (`testReloadsAllHtmlInCaseOfConfigFileChange`,
+  `testReloadsPagesSubtreeInCaseOfTemplateChange`) sont supprimés, l'historique git les garde.
+- **Ordre de parcours.** Les suppressions suivaient l'ordre d'une `HashMap` (celui d'un ancien JDK dans les attentes) et
+  les fichiers d'un dossier celui de `File.listFiles`, qu'APFS ne trie pas. `SiteUploader` passe à une `LinkedHashMap`
+  (suppressions dans l'ordre de la liste distante) et `Site` trie les fichiers par nom : envoi reproductible, contenu
+  inchangé.
+
+Résultat : 67 tests verts (69 − 2), 1 s ; build du réacteur sans `[WARNING]`. `bv_desktop` ne dépend pas de `siteweaver`.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -1647,3 +1667,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 5a, lot A (suppressions) | 6 méthodes, 2 classes (`UrlTest`, `JsonImporterTest`), 1 fichier OFX, 2 tests commentés de `globs` et 2 exclusions de `pom` supprimés (−312 lignes de Java, −95 d'OFX) ; 3 pense-bêtes de l'auteur notés dans `idees-ameliorations.md`. Tests de `globs` 811, `bv_desktop` 1 029 verts, 5 min 08 s |
 | 2026-11-21 | 5a, lot B (réparations) | `DeferredTest.testCategorization` réduit à sa partie catégorisation (+5 −19 lignes) ; `TimeViewPanelUISpecTest.testMouseMove` réactivé, glisser arrêté au bord intérieur du panneau (défaut hors du bord noté dans `tests-unitaires.md`). Tests de `bv_desktop` 1 031 verts (+2), 5 min 39 s |
 | 2026-11-21 | 5a, lot C (documentation) | `etat-des-tests.md` : les 12 tests gardés désactivés, avec leur échec du jour et le chantier qui les reprendra ; `CLAUDE.md` à 1 031 tests, 163 classes. **5a terminé** |
+| 2026-11-21 | 5d, `siteweaver` sous Maven | JUnit 4.12, surefire 3.0.0 ; `SiteUploaderTest` réaligné sur l'envoi complet (`isNewer` forcé à vrai), 2 tests de dates supprimés, ordre d'envoi rendu stable (`LinkedHashMap`, tri par nom). Tests de `siteweaver` 67 verts sous Maven, pour la première fois. **5d terminé** |

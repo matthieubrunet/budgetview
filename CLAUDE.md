@@ -258,6 +258,8 @@ Tests de `globs` : `mvn -o clean test -pl globs` (~1 min ; le `pom` fixe JVM par
 compilateur ne recompile pas les tests non touchés) ; `mvn -o install -pl globs -DskipTests` avant de tester bv_desktop,
 qui prend globs dans `~/.m2`.
 
+Tests de `siteweaver` (générateur et envoi du site) : `mvn -o test -pl siteweaver`, 67 verts en 1 s au 2026-11-21.
+
 Modules hors build (`bv_server`, `bv_analytics`) : après `mvn install` du réacteur, `mvn -f budgetview/bv_server/pom.xml compile`
 (la première fois en ligne, pour télécharger ses dépendances) vérifie le `main`. Ses tests ne compilent plus en bloc
 (`functests` de licence, qui dépendent de checkers supprimés de bv_desktop). Pour vérifier des tests précis :

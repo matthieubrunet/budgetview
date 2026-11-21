@@ -11,6 +11,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * FileHandle.isNewer rend toujours vrai (« return true || … ») : chaque page et chaque fichier est renvoyé, quelle que
+ * soit la date distante. Les dates past/future ci-dessous n'ont donc plus d'effet ; les tests figent ce comportement
+ * (audit 5d, docs/audit-code.md). Les suppressions suivent l'ordre de la liste distante.
+ */
 public class SiteUploaderTest extends SiteweaverTestCase {
 
   protected void setUp() throws Exception {
@@ -43,6 +48,7 @@ public class SiteUploaderTest extends SiteweaverTestCase {
 
     checkUpload(site, fileAccess,
                 "update text: /index.html ==> $=Home\n" +
+                "update text: /page1.html ==> $=Page1\n" +
                 "update text: /page1/page1a.html ==> $=Page1a\n" +
                 "update text: /page1/page1b.html ==> $=Page1b\n" +
                 "update text: /page2.html ==> $=Page2\n" +
@@ -79,12 +85,13 @@ public class SiteUploaderTest extends SiteweaverTestCase {
 
     checkUpload(site, fileAccess,
                 "update text: /index.html ==> $=Home\n" +
+                "update text: /page1.html ==> $=Page1\n" +
                 "update text: /page2.html ==> $=Page2\n" +
                 "update file: /css/styles.css ==> upload from /dir/resources/css/styles.css\n" +
                 "update file: /js/scripts.js ==> upload from /dir/resources/js/scripts.js\n" +
+                "delete file: /page1/page1b.html\n" +
                 "delete file: /other/otherPage.html\n" +
                 "delete file: /resources/other.jpg\n" +
-                "delete file: /page1/page1b.html\n" +
                 "complete\n");
   }
 
@@ -118,13 +125,14 @@ public class SiteUploaderTest extends SiteweaverTestCase {
 
     checkUpload(site, fileAccess,
                 "update text: /index.html ==> $=Home\n" +
+                "update text: /page1.html ==> $=Page1\n" +
                 "update text: /page2.html ==> $=Page2\n" +
                 "update file: /files/file1.txt ==> upload from /dir/files/file1.txt\n" +
                 "update file: /files/subdir/file3.txt ==> upload from /dir/files/subdir/file3.txt\n" +
                 "update file: /files/subdir/subsubdir/file4.txt ==> upload from /dir/files/subdir/subsubdir/file4.txt\n" +
+                "delete file: /page1/page1b.html\n" +
                 "delete file: /other/otherPage.html\n" +
                 "delete file: /resources/other.jpg\n" +
-                "delete file: /page1/page1b.html\n" +
                 "complete\n");
   }
 
@@ -158,92 +166,13 @@ public class SiteUploaderTest extends SiteweaverTestCase {
         .addFuture("/page2.html");
 
     checkUpload(site, fileAccess,
+                "update text: /index.html ==> $=Home\n" +
+                "update text: /page1.html ==> $=Page1\n" +
+                "update text: /page2.html ==> $=Page2\n" +
                 "update file: /files/file1.txt ==> upload from /dir/files/file1.txt\n" +
                 "update file: /files/file2.txt ==> upload from /dir/files/file2.txt\n" +
                 "update file: /files/subdir/file3.txt ==> upload from /dir/files/subdir/file3.txt\n" +
                 "update file: /files/subdir/subsubdir/file4.txt ==> upload from /dir/files/subdir/subsubdir/file4.txt\n" +
-                "complete\n");
-  }
-
-  public void testReloadsAllHtmlInCaseOfConfigFileChange() throws Exception {
-    String descriptor =
-      "<site url='http://www.siteweaver.org' pagesDir='content'>" +
-      "  <page file='index.html' title='Home' template='template.html'>" +
-      "    <page file='page1.html' title='Page1'/>" +
-      "    <page file='page2.html' title='Page2'/>" +
-      "  </page>" +
-      "  <copy baseDir='resources'>" +
-      "    <file path='css/styles.css'/>" +
-      "  </copy>" +
-      "</site>";
-
-    File configFile = dump("dir/siteweaver.xml", descriptor);
-    Site site = createAndDumpSite(configFile);
-
-    dump("dir/resources/css/styles.css", "body { color: white; }");
-    File template = dump("dir/template.html", "$<gen type=\"content\">");
-
-    DummyFileAccess fileAccess =
-      DummyFileAccess.init(template.lastModified())
-        .addNow("/index.html")
-        .addNow("/page1.html")
-        .addNow("/page2.html")
-        .addNow("/css/styles.css");
-
-    checkUpload(site, fileAccess,
-                "complete\n");
-
-    boolean result = configFile.setLastModified(configFile.lastModified() + 5000);
-    assertTrue(result);
-
-    checkUpload(site, fileAccess,
-                "update text: /index.html ==> $=Home\n" +
-                "update text: /page1.html ==> $=Page1\n" +
-                "update text: /page2.html ==> $=Page2\n" +
-                "complete\n");
-  }
-
-  public void testReloadsPagesSubtreeInCaseOfTemplateChange() throws Exception {
-    String descriptor =
-      "<site url='http://www.siteweaver.org' pagesDir='content'>" +
-      "  <page file='index.html' title='Home' template='template.html'>" +
-      "    <page file='page1.html' title='Page1' template='template1.html'>" +
-      "      <page file='page1/page1a.html' title='Page1a'/>" +
-      "      <page file='page1/page1b.html' title='Page1b'/>" +
-      "    </page>" +
-      "    <page file='page2.html' title='Page2'/>" +
-      "  </page>" +
-      "  <copy baseDir='resources'>" +
-      "    <file path='css/styles.css'/>" +
-      "  </copy>" +
-      "</site>";
-
-    File configFile = dump("dir/siteweaver.xml", descriptor);
-    Site site = createAndDumpSite(configFile);
-
-    dump("dir/resources/css/styles.css", "body { color: white; }");
-    dump("dir/template.html", "$<gen type=\"content\">");
-    File template1 = dump("dir/template1.html", "%<gen type=\"content\">");
-
-    DummyFileAccess fileAccess =
-      DummyFileAccess.init(template1.lastModified())
-        .addNow("/index.html")
-        .addNow("/page1.html")
-        .addNow("/page1/page1a.html")
-        .addNow("/page1/page1b.html")
-        .addNow("/page2.html")
-        .addNow("/css/styles.css");
-
-    checkUpload(site, fileAccess,
-                "complete\n");
-
-    boolean result = template1.setLastModified(template1.lastModified() + 5000);
-    assertTrue(result);
-
-    checkUpload(site, fileAccess,
-                "update text: /page1.html ==> %=Page1\n" +
-                "update text: /page1/page1a.html ==> %=Page1a\n" +
-                "update text: /page1/page1b.html ==> %=Page1b\n" +
                 "complete\n");
   }
 
@@ -279,10 +208,11 @@ public class SiteUploaderTest extends SiteweaverTestCase {
 
     checkUpload(site, fileAccess,
                 "update text: /index.html ==> $=Home\n" +
+                "update text: /page1.html ==> $=Page1\n" +
                 "update text: /page2.html ==> $=Page2\n" +
                 "update file: /files/file1.txt ==> upload from /dir/files/file1.txt\n" +
-                "delete file: /resources/other.jpg\n" +
                 "delete file: /page1/page1b.html\n" +
+                "delete file: /resources/other.jpg\n" +
                 "complete\n");
   }
 

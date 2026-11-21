@@ -60,6 +60,13 @@ essayé dans l'appli.
   enveloppes qui s'y rattachent, ou au moins ne plus y créer d'opérations prévues ? Proposition laissée :
   renseigner `Series.END_DATE` d'office.
 
+### Envoi du site : seulement les fichiers modifiés
+
+- **Relevé en audit 5d** (`siteweaver`) : `FileHandle.isNewer` rend toujours vrai (`return true || …`), donc chaque envoi
+  FTP du site renvoie toutes les pages et tous les fichiers. La comparaison des dates existe derrière ; raison de sa
+  coupure inconnue (dates du serveur FTP peu fiables ?). Les deux tests qui la vérifiaient sont dans l'historique git,
+  supprimés de `SiteUploaderTest` par le commit de 5d.
+
 ## À vérifier
 
 ### Interface en anglais sur le compte de test

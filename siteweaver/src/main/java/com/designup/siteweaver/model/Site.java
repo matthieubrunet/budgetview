@@ -4,6 +4,7 @@ import org.eclipse.jetty.util.URIUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class Site {
@@ -130,7 +131,10 @@ public class Site {
       functor.process(inputFile, targetPath);
     }
     else {
-      for (File subFile : inputFile.listFiles()) {
+      // listFiles ne garantit aucun ordre (APFS rend un ordre de hachage) : tri par nom, pour un envoi reproductible.
+      File[] subFiles = inputFile.listFiles();
+      Arrays.sort(subFiles);
+      for (File subFile : subFiles) {
         recurseProcessFile(subFile, targetPath + "/" + subFile.getName(), functor);
       }
     }
