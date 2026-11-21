@@ -153,6 +153,11 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
   - macOS empêche de passer l'appli Java au premier plan depuis un script (ni `AXRaise`, ni
     `NSRunningApplication.activate`) : un vrai clic doit être fait par Matthieu.
   - L'application redirige `System.out` vers son log : un harnais lancé dans sa JVM y écrit aussi.
+  - Une fenêtre ne se dessine dans `screencapture -l` qu'après un premier clic de Matthieu dedans : avant, capture blanche.
+  - Ouvrir un fichier dans l'appli qui tourne (`OpenRequestManager.openFiles`) : ni l'icône Java de `run-dev.sh` ni
+    `BudgetView 6.app` (sans association de fichiers) n'acceptent un fichier du Finder. Lancer le jar sans
+    `-DSINGLE_INSTANCE_DISABLED`, ports libres et BudgetView 6 fermée, puis un second `java -jar … fichier.ofx` avec les
+    mêmes propriétés : l'instance unique transmet le fichier à la première (vérifié en audit 4c).
 - Consulter les données d'un dossier (`<data.path>/data`) sans passer par l'IHM (vérifié le 2026-11-18) :
   - Toujours travailler sur une **copie** (`cp -R`) : l'outil ci-dessous ouvre Prevayler en écriture, et
     l'appli qui tourne écrit dans les mêmes journaux.
