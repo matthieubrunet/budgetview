@@ -225,6 +225,7 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   refuse ; ils n'ont jamais tourné par Maven. Passer à JUnit 4.12+ dans son `pom`. Lancés à la main en 3a (JUnitCore) :
   72, dont 10 échecs anciens à trier (7 de `SiteUploaderTest`, 3 classes sans test, qu'un `TestSuite` signale).
   Fait le 2026-11-21, voir [5d, `siteweaver`](#5d-siteweaver) plus bas : 67 verts sous Maven (`mvn -o test -pl siteweaver`).
+  Module supprimé le même jour, après ce chantier (même section).
 - Chantier suivant, à part : compléter les tests unitaires et corriger les défauts d'import relevés
   par le sondage du 2026-11-18, voir [tests-unitaires.md](tests-unitaires.md).
 - Ne pas toucher aux tests fonctionnels qui couvrent des fonctions encore utilisées : ce sont
@@ -1603,6 +1604,13 @@ sous surefire. Restaient les 7 échecs de `SiteUploaderTest` (envoi du site par 
 
 Résultat : 67 tests verts (69 − 2), 1 s ; build du réacteur sans `[WARNING]`. `bv_desktop` ne dépend pas de `siteweaver`.
 
+**Module supprimé le 2026-11-21**, juste après (décision de Matthieu). Aucun autre module ne l'utilisait, il n'entrait pas
+dans le livrable, et son envoi par FTP visait l'hébergement d'origine de budgetview.fr. `bv_website` garde le contenu du
+site (fragments HTML, gabarits, `siteweaver.xml`), qui reste lisible tel quel comme référence du comportement attendu,
+mais plus rien ne l'assemble en pages. Pour le retrouver : `git show 7fc3ff608:siteweaver/…`, dernier commit où il existe,
+tests verts. Sortent du réacteur avec lui : Xerces et Jetty, qu'il était seul à amener (commons-net reste, `bv_desktop` s'en sert). L'idée « envoi du
+site : seulement les fichiers modifiés » (`FileHandle.isNewer` forcé à vrai) est retirée de `idees-ameliorations.md`.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -1668,3 +1676,4 @@ Résultat : 67 tests verts (69 − 2), 1 s ; build du réacteur sans `[WARNING]`
 | 2026-11-21 | 5a, lot B (réparations) | `DeferredTest.testCategorization` réduit à sa partie catégorisation (+5 −19 lignes) ; `TimeViewPanelUISpecTest.testMouseMove` réactivé, glisser arrêté au bord intérieur du panneau (défaut hors du bord noté dans `tests-unitaires.md`). Tests de `bv_desktop` 1 031 verts (+2), 5 min 39 s |
 | 2026-11-21 | 5a, lot C (documentation) | `etat-des-tests.md` : les 12 tests gardés désactivés, avec leur échec du jour et le chantier qui les reprendra ; `CLAUDE.md` à 1 031 tests, 163 classes. **5a terminé** |
 | 2026-11-21 | 5d, `siteweaver` sous Maven | JUnit 4.12, surefire 3.0.0 ; `SiteUploaderTest` réaligné sur l'envoi complet (`isNewer` forcé à vrai), 2 tests de dates supprimés, ordre d'envoi rendu stable (`LinkedHashMap`, tri par nom). Tests de `siteweaver` 67 verts sous Maven, pour la première fois. **5d terminé** |
+| 2026-11-21 | `siteweaver` supprimé | Module retiré du réacteur et de l'arbre : 85 fichiers, dont 83 de Java (58 du programme, 25 de test, ~5 450 lignes), 67 tests ; dépendances Xerces et Jetty sorties du réacteur. `bv_website/readme.txt` renvoie à l'historique git (`7fc3ff608`). Réacteur : 4 modules construits |

@@ -23,12 +23,11 @@ de code du projet est **Picsou** : on le retrouve dans les noms de classes
 |---|---|---|
 | `globs/` | GlobsFramework, **version privée et ancienne** du framework de MarcGuiot : modèle de données réactif (`GlobType`, champs statiques annotés `@Key`, `@Target`…), repository, changesets. Contient aussi `splits` (`org.globsframework.gui.splits`), le moteur de mise en page Swing déclaratif des fichiers `.splits`, dont le dossier séparé a été supprimé le 2026-11-20. Contient depuis le 2026-11-20 l'ancien module `saxstack` (parseur SAX à pile, écriture XML, paquets `org.saxstack`) | oui |
 | `prevayler/` | Prevayler (persistance par journal de transactions + snapshots), forké | oui |
-| `siteweaver/` | Générateur du site web statique | oui |
 | `budgetview/bv_shared` | Code commun client/serveur | oui |
 | `budgetview/bv_desktop` | **L'application** (~1 100 classes, ~350 tests) | oui |
 | `budgetview/bv_server` | Serveur (licences, cloud, mobile ; Jetty, MySQL, Stripe). Porte depuis le 2026-11-20 la couche SQL `sqlstreams` sortie de `globs` | **commenté** |
 | `budgetview/bv_analytics` | Analyse de logs | **commenté** |
-| `budgetview/bv_website` | Contenu du site (fr/en). **Référence du comportement attendu** : aide utilisateur dans `fr/content/support/` (`faq/`, `guides/`) et journal des versions `support/derniers_changements.html` (5.0 du 2017-10-29 = Sync/Budgea ; 5.01 du 2017-11-12 = jar 156, la version officielle). À consulter avant de trancher entre le code et un test | hors Maven |
+| `budgetview/bv_website` | Contenu du site (fr/en). **Référence du comportement attendu** : aide utilisateur dans `fr/content/support/` (`faq/`, `guides/`) et journal des versions `support/derniers_changements.html` (5.0 du 2017-10-29 = Sync/Budgea ; 5.01 du 2017-11-12 = jar 156, la version officielle). À consulter avant de trancher entre le code et un test. Fragments HTML et gabarits : le générateur qui les assemblait et les envoyait par FTP (module `siteweaver`) a été supprimé le 2026-11-21, il reste dans l'historique git (dernier état : commit `7fc3ff608`) | hors Maven |
 | `uispec4j/` | Framework de tests d'IHM Swing (fork) | **commenté** |
 | `budgetview-android/` | Appli mobile (Gradle, à part) | hors Maven |
 | `functests/` | Ancien projet de tests IntelliJ (fichiers `.ipr` retirés le 2026-11-15) | hors Maven |
@@ -257,8 +256,6 @@ Tests de `globs` : `mvn -o clean test -pl globs` (~1 min ; le `pom` fixe JVM par
 813 verts au 2026-11-20, `saxstack` compris (détail dans [docs/etat-des-tests.md](docs/etat-des-tests.md)). `clean` après un changement de signature (le vieux
 compilateur ne recompile pas les tests non touchés) ; `mvn -o install -pl globs -DskipTests` avant de tester bv_desktop,
 qui prend globs dans `~/.m2`.
-
-Tests de `siteweaver` (générateur et envoi du site) : `mvn -o test -pl siteweaver`, 67 verts en 1 s au 2026-11-21.
 
 Modules hors build (`bv_server`, `bv_analytics`) : après `mvn install` du réacteur, `mvn -f budgetview/bv_server/pom.xml compile`
 (la première fois en ligne, pour télécharger ses dépendances) vérifie le `main`. Ses tests ne compilent plus en bloc

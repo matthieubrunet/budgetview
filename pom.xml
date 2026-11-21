@@ -10,7 +10,6 @@
     <module>budgetview</module>
 <!--    <module>uispec4j</module>-->
     <module>prevayler</module>
-    <module>siteweaver</module>
   </modules>
 
   <build>
