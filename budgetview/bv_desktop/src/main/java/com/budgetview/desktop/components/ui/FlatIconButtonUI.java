@@ -1,6 +1,5 @@
 package com.budgetview.desktop.components.ui;
 
-import org.globsframework.gui.splits.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -60,9 +59,6 @@ public class FlatIconButtonUI extends BasicButtonUI {
 
     int width = size.width;
     int height = size.height;
-    if (GuiUtils.isMacOSX()) {
-      height -= 2;
-    }
 
     int x = 0;
     int y = 0;

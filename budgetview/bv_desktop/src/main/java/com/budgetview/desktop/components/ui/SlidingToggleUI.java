@@ -1,7 +1,6 @@
 package com.budgetview.desktop.components.ui;
 
 import org.globsframework.gui.splits.color.Colors;
-import org.globsframework.gui.splits.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicToggleButtonUI;
@@ -42,9 +41,6 @@ public abstract class SlidingToggleUI extends BasicToggleButtonUI {
 
     int width = size.width - 1;
     int height = size.height - 1;
-    if (GuiUtils.isMacOSX()) {
-      height -= 1;
-    }
 
     GeneralPath shape = createBackgroundShape();
     Rectangle initialRectangle = shape.getBounds();
