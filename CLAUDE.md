@@ -196,7 +196,7 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
 ## Tests de bv_desktop
 
 ```sh
-caffeinate -i mvn test -pl budgetview/bv_desktop       # ~5 min, 1 026 tests, 162 classes, 3 JVM (2026-11-21)
+caffeinate -i mvn test -pl budgetview/bv_desktop       # ~5 min, 1 031 tests, 163 classes, 3 JVM (2026-11-21)
 mvn test -pl budgetview/bv_desktop -Dtest=LoginTest    # une classe (liste séparée par des virgules)
 mvn -Pcoverage test -pl budgetview/bv_desktop && docs/audit/coverage.sh   # couverture JaCoCo → target/coverage/
 ```

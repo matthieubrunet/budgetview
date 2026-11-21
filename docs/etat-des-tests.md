@@ -82,34 +82,34 @@ Corrections de l'appli elle-même (le test passe sans modification) :
 Les tests héritent de JUnit 3 (`TestCase`) : `@Ignore` n'a aucun effet. Une méthode est donc
 désactivée en la renommant, et une classe vide est exclue dans le `pom` (sinon « No tests found »).
 
-Audit 5a, lot A (2026-11-21) : supprimés, car ils ne testaient plus rien, `DashboardTest` ×2 et `SeriesEditionTest` ×2
-(pense-bêtes de l'auteur, notés dans [idees-ameliorations.md](idees-ameliorations.md)), `UndoRedoTest.testUndoRedoMaintainsSelection`
-(fonction commencée en 2008, jamais finie), `UrlTest` (budgetview.fr), `JsonImporterTest` (synchro Budgea) et
-`LaPosteTest.testDeferred` (plugin La Poste laissé débranché). Détail : [audit-code.md](audit-code.md), « 5a, inventaire ».
+Audit 5a (2026-11-21), détail dans [audit-code.md](audit-code.md), « 5a, inventaire » :
+- **supprimés**, car ils ne testaient plus rien : `DashboardTest` ×2 et `SeriesEditionTest` ×2 (pense-bêtes de l'auteur,
+  notés dans [idees-ameliorations.md](idees-ameliorations.md)), `UndoRedoTest.testUndoRedoMaintainsSelection` (fonction
+  commencée en 2008, jamais finie), `UrlTest` (budgetview.fr), `JsonImporterTest` (synchro Budgea) et
+  `LaPosteTest.testDeferred` (plugin La Poste laissé débranché) ;
+- **réactivés** : `DeferredTest.testCategorization` (réduit à sa partie catégorisation) et
+  `TimeViewPanelUISpecTest.testMouseMove` (glisser arrêté au bord du panneau, défaut noté dans
+  [tests-unitaires.md](tests-unitaires.md)) ;
+- **gardés désactivés**, ci-dessous : 11 dans `bv_desktop`, plus `GlobTableViewTest` dans `globs` (voir « Tests de globs »).
+  Chacun a été relancé le 2026-11-21, sauf `SingleInstanceTest`.
 
-| Tests | Raison |
-|---|---|
-| `RestartTest.testChangeDayChangesPlannedTransactionsForSavingsSeries` | **bug connu** noté par l'auteur : des opérations prévues sont générées sur un mois passé après redémarrage |
-| `ImportTest.testImportAndChangeDate` | **bug connu** noté par l'auteur dans un `fail()` final : `PositionTrigger` saute le contrôle si le solde importé égale le précédent |
-| `DeferredTest.testCategorization` | test en chantier chez l'auteur (« en cours », 2015) : ses attentes de fin ne correspondent pas au fichier importé ; la partie catégorisation passe |
+Les rendre verts demande soit de **corriger l'appli** (changement de comportement, qui attend le chantier des tests
+unitaires, après l'audit), soit de **fiabiliser uispec4j** (courses et fenêtres non interceptées, même chantier).
 
-### Mis de côté durablement (2026-11-15), sans correction
-
-Les derniers échecs, désactivés par décision et non parce qu'ils seraient obsolètes. Pistes conservées
-pour une éventuelle reprise :
-
-| Tests | Piste |
-|---|---|
-| `SingleInstanceTest` ×6 (classe exclue) | plusieurs instances lancées dans la même JVM, vrais ports 5454… ; fenêtres non interceptées |
-| `ProjectUpgradeTest.testProjectsWithVariousTranferItemsFromJar125` | après migration d'une base de 2014, une opération finit sur le compte de synthèse « Main accounts », sans enveloppe : contraire à `v3_14b_maj.html`. **Seul des neuf à toucher les données réelles**, si elles passent un jour sur la 6.00 |
-| `AnalysisBudgetViewStackChartTest.testPopupMenus` | « component must be showing on the screen » à l'ouverture d'un menu contextuel |
-| `SeriesUpgradeTest.testNoMessagesDisplayedWhenConvertingASavingsSeriesWithNoTransactionsAndASingleMainAccount` | instable, passe ou échoue selon les passes (`expected:<MainA> but was:<SavingsA>`) |
+| Tests | Échec au 2026-11-21 | Nature | Repris par |
+|---|---|---|---|
+| `RestartTest.testChangeDayChangesPlannedTransactionsForSavingsSeries` | `fail()` de l'auteur : des opérations prévues sont générées sur un mois passé après redémarrage (`CurrentMonthTrigger` sur `globReset`) | bug de l'appli | correction de l'appli |
+| `ImportTest.testImportAndChangeDate` | `fail()` final de l'auteur : `PositionTrigger` saute le contrôle si le solde importé égale le précédent | bug de l'appli | correction de l'appli |
+| `ProjectUpgradeTest.testProjectsWithVariousTranferItemsFromJar125` | après migration d'une base de 2014, une opération finit sur le compte de synthèse « Main accounts », sans enveloppe : contraire à `v3_14b_maj.html`. **Seul à toucher les données réelles**, celles de la 5.01 passées en 6.0.1 | bug de l'appli | correction de l'appli, en priorité |
+| `AnalysisBudgetViewStackChartTest.testPopupMenus` | `IllegalComponentStateException` « component must be showing on the screen » à l'ouverture d'un menu contextuel | limite d'uispec4j | fiabilisation d'uispec4j |
+| `SeriesUpgradeTest.testNoMessagesDisplayedWhenConvertingASavingsSeriesWithNoTransactionsAndASingleMainAccount` | vert ce jour ; instable (`expected:<MainA> but was:<SavingsA>`) | ordre non déterministe, cause non cherchée | fiabilisation des tests |
+| `SingleInstanceTest` ×6 (classe exclue du `pom`) | non relancé : ouvre les vrais ports 5454…, que BudgetView 6 écoute si elle tourne | plusieurs instances dans la même JVM ; fenêtres non interceptées | fiabilisation d'uispec4j, ports à rendre configurables |
 
 Instable mais actif : `SignpostSequenceTest.testSwitchingToTheDemoAccountAndBackPreservesSignposts` a échoué
 une fois sur la suite complète (2026-11-16, sous JaCoCo) : `homeCardToggle` introuvable alors qu'il figure dans
 la liste des composants disponibles, juste après le passage au compte de démo. La classe seule passe 3 fois sur 3.
 Le 2026-11-20, même erreur sur 2 des 4 suites complètes de l'audit 2b (sans JaCoCo), au hasard des lots ; la classe
-seule passe 4 fois sur 4. L'échec devient fréquent : à regarder au chantier 5 (attente sur la fenêtre après la bascule).
+seule passe 4 fois sur 4. L'échec devient fréquent : à regarder avec la fiabilisation d'uispec4j (attente sur la fenêtre après la bascule).
 Audit 3a (2026-11-20) : 1 échec sur 3 suites complètes (`budgetCardToggle`, même cas), et 1 sur 10 passages de la
 classe seule, sans lien avec le lot testé (4 sur 4 verts avec et sans lui) : l'échec n'exige donc pas la suite complète.
 

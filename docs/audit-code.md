@@ -211,8 +211,10 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
 
 À faire après les étapes 1 et 2, qui en suppriment déjà une partie.
 
-- [ ] **5a. Tests désactivés** (`disabled_test…`, voir [etat-des-tests.md](etat-des-tests.md)) :
+- [x] **5a. Tests désactivés** (`disabled_test…`, voir [etat-des-tests.md](etat-des-tests.md)) :
   pour chacun, réparer ou supprimer.
+  Fait le 2026-11-21, voir [5a, inventaire](#5a-inventaire) plus bas : 9 supprimés, 2 réactivés, 12 gardés désactivés
+  (bugs de l'appli et limites d'uispec4j, repris après l'audit). Suite de `bv_desktop` 1 031 verts.
 - [ ] **5b. Tests en double** : avec JaCoCo par test, repérer ceux qui couvrent exactement les
   mêmes lignes.
 - [x] **5c. Durée** : repérer les classes de test les plus lentes (`target/surefire-reports`) et
@@ -1644,3 +1646,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 5a, inventaire | Rien de modifié. 25 tests désactivés ou commentés (22 dans `bv_desktop`, 3 dans `globs`) ; 14 réactivés à part : 1 passe (instable), 13 échouent. 9 méthodes à supprimer (dont 2 classes entières), 2 à réparer, 12 à garder désactivés (bugs connus, limites d'uispec4j) ; 1 exclusion périmée dans `globs`. Trois lots proposés (A à C) |
 | 2026-11-21 | 5a, lot A (suppressions) | 6 méthodes, 2 classes (`UrlTest`, `JsonImporterTest`), 1 fichier OFX, 2 tests commentés de `globs` et 2 exclusions de `pom` supprimés (−312 lignes de Java, −95 d'OFX) ; 3 pense-bêtes de l'auteur notés dans `idees-ameliorations.md`. Tests de `globs` 811, `bv_desktop` 1 029 verts, 5 min 08 s |
 | 2026-11-21 | 5a, lot B (réparations) | `DeferredTest.testCategorization` réduit à sa partie catégorisation (+5 −19 lignes) ; `TimeViewPanelUISpecTest.testMouseMove` réactivé, glisser arrêté au bord intérieur du panneau (défaut hors du bord noté dans `tests-unitaires.md`). Tests de `bv_desktop` 1 031 verts (+2), 5 min 39 s |
+| 2026-11-21 | 5a, lot C (documentation) | `etat-des-tests.md` : les 12 tests gardés désactivés, avec leur échec du jour et le chantier qui les reprendra ; `CLAUDE.md` à 1 031 tests, 163 classes. **5a terminé** |
