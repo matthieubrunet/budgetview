@@ -1515,6 +1515,39 @@ police des tableaux par système (`Gui`, 2008).
 **Lots proposés.** A (code mort, ~60 lignes), B (`hasModifiers` seul, ou les quatre avec tests qui figent le comportement),
 C (cinq essais dans l'appli, un commit par contournement retiré).
 
+## 5a, inventaire
+
+Fait le 2026-11-21. Rien de modifié. Chaque test désactivé a été réactivé à part (renommé, lancé par
+`-Dtest=Classe#méthode`, puis remis), sauf `SingleInstanceTest`, qui ouvre les vrais ports 5454… et enverrait ses requêtes à
+BudgetView 6 si elle tourne.
+
+**Périmètre** : 22 méthodes dans `bv_desktop` (dont 2 préfixées `DISABLED_`, de l'auteur, absentes de
+[etat-des-tests.md](etat-des-tests.md) : `TimeViewPanelUISpecTest.testMouseMove`, `UndoRedoTest.testUndoRedoMaintainsSelection`,
+ce dernier de 2008), 1 dans `globs`, 2 tests commentés dans `globs` (`SerializationTest.testBigWrite` / `testBigRead`, mesures
+de débit sans assertion). Une exclusion périmée : `MySqlExceptionTest` dans le `pom` de `globs`, parti dans `bv_server` en 2a.
+Hors périmètre : `bv_server` (`SqlExceptionTest`, hors build) et le fork `uispec4j`.
+
+**Réactivés, résultat** : 14 lancés, 1 passe (`SeriesUpgradeTest`, déjà connu comme instable), 11 échecs, 2 erreurs.
+
+| Tests | Résultat réactivé | Nature | Proposition |
+|---|---|---|---|
+| `DashboardTest` ×2, `SeriesEditionTest.testClosedAccount` | `fail("…")` seul | pense-bête de l'auteur, aucun test | **supprimer** ; les 3 idées dans [idees-ameliorations.md](idees-ameliorations.md) |
+| `SeriesEditionTest.testUnknownPeriodicity` | `fail` en tête | l'auteur conteste le comportement testé | **supprimer** |
+| `UndoRedoTest.testUndoRedoMaintainsSelection` | mois sélectionné non rétabli par l'annulation | fonction commencée en 2008 (« début prise en compte sélections »), jamais finie | **supprimer** |
+| `UrlTest` ×2 (classe exclue) | non lancé | vérifie en ligne des URL de budgetview.fr, mort | **supprimer** la classe et l'exclusion |
+| `JsonImporterTest` (classe exclue) | erreur de lecture du JSON ; la dernière attente est vide | `JsonImporter` ne sert qu'à la synchro Budgea : sans compte venu de la synchro, il rejette tout fichier (`OperationCancelled`) | **supprimer** la classe et l'exclusion ; `JsonImporter` lui-même, mort par configuration, à traiter à part |
+| `LaPosteTest.testDeferred` | montants de signe inversé | repose sur le plugin La Poste, laissé débranché exprès | **supprimer**, avec `laposteCBDiffere.ofx` (seul usage) |
+| `DeferredTest.testCategorization` | la partie catégorisation passe, les attentes suivantes non | test en chantier chez l'auteur (2015) | **réparer** : garder la partie qui passe, qui couvre la correction du filtre `ORIGINAL_ACCOUNT` |
+| `TimeViewPanelUISpecTest.testMouseMove` | « Invalid number of items » | sélection de mois au glisser | **examiner** : attente périmée → réparer ; sinon supprimer |
+| `RestartTest.testChangeDay…`, `ImportTest.testImportAndChangeDate`, `ProjectUpgradeTest.…FromJar125` | échecs attendus | **bugs connus de l'appli** | **garder désactivés** : les corriger change le comportement, ce qui attend le chantier des tests unitaires |
+| `AnalysisBudgetViewStackChartTest.testPopupMenus`, `SeriesUpgradeTest.…`, `SingleInstanceTest` ×6 | erreur d'uispec4j ; instable (vert ce jour) ; non lancé | limites de l'outil de test | **garder désactivés**, avec les courses d'uispec4j |
+| `GlobTableViewTest.testRefreshUpdatesTheSortingAndKeepsSelection` | — | comportement réel gardé exprès (voir [etat-des-tests.md](etat-des-tests.md)) | **garder** |
+| `SerializationTest` (2 commentés), exclusion `MySqlExceptionTest` | — | restes | **supprimer** |
+
+Trois lots proposés : **A** suppressions (9 méthodes, 2 classes, 1 fichier de test, 2 exclusions, 2 tests commentés) ;
+**B** `DeferredTest` et `TimeViewPanelUISpecTest` ; **C** mise à jour d'[etat-des-tests.md](etat-des-tests.md) (les 12 gardés,
+avec leur raison).
+
 ## 5c, durée
 
 Fait les 2026-11-20 et 21.
@@ -1608,3 +1641,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 4c, lot A (morts sous Java 21) | Détection de Windows XP à 8 (`GuiUtils`, `AppPaths`), `setProperty("sun.awt.exception.handler")` et `PicsouLinuxLookAndFeel` supprimés (−87 lignes, 4 fichiers) ; build sans `[WARNING]`. Tests de `globs` 808, `bv_desktop` 1 027 verts, 5 min 11 s |
 | 2026-11-21 | 4c, lot B (masques dépréciés) | `Gui.isAddModifier` (prend désormais le `MouseEvent`), `Gui.hasModifiers`, `GuiUtils.isRightClick`, condition de `GlobTableView` sans API dépréciée, comportement identique défaut compris ; nouveau `GuiUtils.isButton` (4 fichiers, +37 −15 lignes ; 3 classes de test, 5 tests). Tests de `globs` 811, `bv_desktop` 1 029 (1 course d'uispec4j dans `DashboardTest`, verte relancée seule deux fois), 5 min 11 s |
 | 2026-11-21 | 4c, lot C (essais dans l'appli) | 5 contournements retirés, un commit chacun (+3 −106 lignes, 10 fichiers), après essai sur macOS pour C1 à C4. Tests de `globs` 811, `bv_desktop` 1 029 (1 délai d'uispec4j dans `DeferredTest`, vert relancé seul deux fois), 5 min 07 s. Association de fichiers absente du paquet 6.0.1 relevée. **4c terminé, étape 4 terminée** |
+| 2026-11-21 | 5a, inventaire | Rien de modifié. 25 tests désactivés ou commentés (22 dans `bv_desktop`, 3 dans `globs`) ; 14 réactivés à part : 1 passe (instable), 13 échouent. 9 méthodes à supprimer (dont 2 classes entières), 2 à réparer, 12 à garder désactivés (bugs connus, limites d'uispec4j) ; 1 exclusion périmée dans `globs`. Trois lots proposés (A à C) |
