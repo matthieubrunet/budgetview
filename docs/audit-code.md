@@ -187,7 +187,7 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
 - [x] **4b. Retrouver leur raison** : `git log -L <début>,<fin>:<fichier>` ou `git blame`, puis le
   message du commit d'origine. Chercher aussi directement dans les messages :
   `git log -i -E --grep='bug|mac|swing|jdk|java'`.
-- [ ] **4c. Tester sans le contournement** sous Java 21, sur macOS, et le retirer s'il n'est plus utile.
+- [x] **4c. Tester sans le contournement** sous Java 21, sur macOS, et le retirer s'il n'est plus utile.
   Lot A fait le 2026-11-21 : versions de Windows de `GuiUtils` et `AppPaths`, `sun.awt.exception.handler`,
   `PicsouLinuxLookAndFeel` (gardée en 1e comme « Linux, hors champ », mais aucun système ne la chargeait).
   Lot B fait le 2026-11-21 (choix de Matthieu : les quatre méthodes, tests d'abord) : masques `InputEvent` dépréciés
@@ -196,6 +196,16 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   Alt = bouton du milieu » est gardé et documenté. Garde : `MouseModifiersTest`, `GlobTableViewRightClickTest` (`globs`)
   et `GuiModifiersTest` (`bv_desktop`) comparent aux anciens masques sur ~3 000 événements, construits comme AWT
   (masques étendus) et à l'ancienne.
+  Lot C fait le 2026-11-21, dans l'appli avec Matthieu (version sans contournements, données de test) ; les cinq retirés :
+  C1 faux dialogue modal d'`ImportDialog` fenêtre réduite (le dialogue s'ouvre, macOS restaure la fenêtre), C2 pause de
+  50 ms d'`ImportController` (fichier pris en compte à l'étape 1), C3 coupure des bulles à la perte du focus (pas de bulle
+  fantôme après Cmd-Tab), C4 hauteur réduite des boutons maison (elle décentrait le texte : marges mesurées 20/16 pixels
+  avec, 20/20 sans), C5 marge des boutons hors OpenJDK (jamais posée avec les JDK actuels, non essayable ici).
+  **Essais.** Une icône Java lancée par `run-dev.sh` n'accepte pas de fichier glissé, et `BudgetView 6.app` non plus (aucune
+  association de fichiers, noté dans [idees-ameliorations.md](idees-ameliorations.md)). Seul chemin vers
+  `OpenRequestManager.openFiles` : lancer l'appli **sans** `-DSINGLE_INSTANCE_DISABLED` (ports libres, BudgetView 6 fermée),
+  puis un second `java -jar … fichier.ofx` avec les mêmes propriétés, que l'instance unique transmet à la première.
+  Une fenêtre Java ne se dessine dans `screencapture -l` qu'après un premier clic de Matthieu dedans. **Étape 4 terminée.**
 
 ## Étape 5 : les tests
 
@@ -1597,3 +1607,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 4a et 4b, inventaire | Rien de modifié. 21 tests de plateforme (11 fichiers), 34 `invokeLater`, 5 `Thread.sleep`, 25 `catch` vides, origine retrouvée par `git blame`. Morts sous Java 21 : versions de Windows d'`AppPaths`, `sun.awt.exception.handler`, `PicsouLinuxLookAndFeel` ; masques `InputEvent` dépréciés, dont un défaut latent (clic droit pris pour « Meta ») ; 5 contournements à essayer dans l'appli. Trois lots proposés (A à C) |
 | 2026-11-21 | 4c, lot A (morts sous Java 21) | Détection de Windows XP à 8 (`GuiUtils`, `AppPaths`), `setProperty("sun.awt.exception.handler")` et `PicsouLinuxLookAndFeel` supprimés (−87 lignes, 4 fichiers) ; build sans `[WARNING]`. Tests de `globs` 808, `bv_desktop` 1 027 verts, 5 min 11 s |
 | 2026-11-21 | 4c, lot B (masques dépréciés) | `Gui.isAddModifier` (prend désormais le `MouseEvent`), `Gui.hasModifiers`, `GuiUtils.isRightClick`, condition de `GlobTableView` sans API dépréciée, comportement identique défaut compris ; nouveau `GuiUtils.isButton` (4 fichiers, +37 −15 lignes ; 3 classes de test, 5 tests). Tests de `globs` 811, `bv_desktop` 1 029 (1 course d'uispec4j dans `DashboardTest`, verte relancée seule deux fois), 5 min 11 s |
+| 2026-11-21 | 4c, lot C (essais dans l'appli) | 5 contournements retirés, un commit chacun (+3 −106 lignes, 10 fichiers), après essai sur macOS pour C1 à C4. Tests de `globs` 811, `bv_desktop` 1 029 (1 délai d'uispec4j dans `DeferredTest`, vert relancé seul deux fois), 5 min 07 s. Association de fichiers absente du paquet 6.0.1 relevée. **4c terminé, étape 4 terminée** |

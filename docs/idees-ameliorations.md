@@ -26,6 +26,18 @@ Un défaut avéré qui bloque l'usage ne va pas ici : il se corrige tout de suit
   et proposer d'importer le fichier manquant. À voir aussi : rappeler l'écart à côté du solde du compte
   tant qu'il n'est pas résolu.
 
+### Ouvrir un relevé depuis le Finder : impossible avec le paquet 6.0.1
+
+- **Constaté le 2026-11-21** (audit 4c) : `package-mac.sh` ne passe pas `--file-associations` à jpackage, donc
+  `BudgetView 6.app` ne déclare aucun type de document. Le Finder refuse de lui glisser un `.ofx`, `.qif` ou `.csv`
+  sur l'icône du Dock et ne la propose pas dans « Ouvrir avec ». La 5.01 le faisait (types déclarés dans ses
+  installeurs depuis 2009, `b6125220a`).
+- **Le code est prêt** : `MacOSXHooks` reçoit les fichiers par `Desktop.setOpenFileHandler`, puis
+  `OpenRequestManager.openFiles` les passe à l'import, y compris fenêtre réduite ou import déjà ouvert (vérifié en 4c,
+  par un second lancement avec le fichier en argument, que l'instance unique transmet).
+- **Piste** : un fichier de propriétés par extension (`extension=ofx`, `mime-type`, `description`) passé par
+  `--file-associations`, puis essayer glisser-déposer et « Ouvrir avec », appli ouverte et fermée.
+
 ## À vérifier
 
 ### Interface en anglais sur le compte de test

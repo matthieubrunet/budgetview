@@ -11,10 +11,8 @@ import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.JXHyperlink;
 import org.jdesktop.swingx.plaf.basic.BasicMonthViewUI;
 import org.jdesktop.swingx.plaf.basic.BasicHyperlinkUI;
-import org.globsframework.gui.splits.utils.GuiUtils;
 
 import javax.swing.*;
-import javax.swing.plaf.InsetsUIResource;
 
 public class PicsouWindowsLookAndFeel extends Plastic3DLookAndFeel {
   protected void initClassDefaults(UIDefaults defaults) {
@@ -62,18 +60,6 @@ public class PicsouWindowsLookAndFeel extends Plastic3DLookAndFeel {
     }
     catch (Exception e) {
       e.printStackTrace();
-    }
-  }
-
-  protected void initComponentDefaults(UIDefaults defaults) {
-    super.initComponentDefaults(defaults);
-
-    if (!GuiUtils.isOpenJDK()){
-      Object[] properties = {
-        "Button.margin", new InsetsUIResource(2, 8, 2, 8),
-      };
-
-      defaults.putDefaults(properties);
     }
   }
 
