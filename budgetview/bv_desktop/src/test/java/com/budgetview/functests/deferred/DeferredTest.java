@@ -17,11 +17,10 @@ public class DeferredTest extends LoggedInFunctionalTestCase {
   }
 
   @Test
-  // Desactive : test reste en chantier chez l'auteur (commits "Corrections DeferredTest (en cours)",
-  // 2015). La partie categorisation (jusqu'a selectSeries) passe depuis la correction du filtre des
-  // cartes differees ; les attentes suivantes ne correspondent pas au fichier importe (AUCHAN -50
-  // pour une operation de -550, commentaire "on avait 1550").
-  public void disabled_testCategorization() throws Exception {
+  // Réduit en audit 5a (2026-11-21) à la catégorisation : le test était resté en chantier chez l'auteur
+  // (« Corrections DeferredTest (en cours) », 2015) et ses attentes de soldes ne correspondaient pas au fichier
+  // importé (AUCHAN -50 pour une opération de -550). Il couvre le filtre ORIGINAL_ACCOUNT des cartes différées.
+  public void testCategorization() throws Exception {
     operations.openPreferences().setFutureMonthsCount(2).validate();
     OfxBuilder.init(this)
       .addCardAccount("1111", 100, "2008/06/30")
@@ -32,8 +31,7 @@ public class DeferredTest extends LoggedInFunctionalTestCase {
 
     mainAccounts.edit("Card n. 1111").setDeferred(27, 28, 0).validate();
 
-
-    // si on selection les trois mois ca plante en NPE.
+    // si on selection les trois mois ca plante en NPE (note de l'auteur, non vérifiée).
     views.selectCategorization();
     categorization.selectTransaction("Auchan")
       .selectOther()
@@ -54,20 +52,8 @@ public class DeferredTest extends LoggedInFunctionalTestCase {
       .checkActiveSeries("Card n. 1111")
       .selectSeries("Card n. 1111");
 
-    views.selectData();
-    timeline.selectAll();
-    transactions
-      .initAmountContent()
-      .add("28/06/2008", "PRELEVEMENT", -550.00, "Card n. 1111", -550., "Card n. 1111")
-      .add("27/06/2008", "AUCHAN", -50.00, "To categorize", 1000.00, 1000., "Account n. 1234") //=> on avait 1550
-      .check();
-
-    transactions.deleteAndUpdatePosition("PRELEVEMENT");
-
-    transactions
-      .initAmountContent()
-      .add("27/06/2008", "AUCHAN", -50.00, "To categorize", -50.00, 1500.00, "Account n. 1234")
-      .check();
+    categorization.selectTransaction("Prelevement")
+      .checkOtherSeriesIsSelected("Card n. 1111");
   }
 
   @Test

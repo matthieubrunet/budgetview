@@ -37,7 +37,10 @@ public class TimeViewPanelUISpecTest extends UISpecTestCase {
     frame = null;
   }
 
-  public void DISABLED_testMouseMove() throws Exception {
+  // Réactivé en audit 5a (2026-11-21) : le glisser allait jusqu'à x=400, hors du panneau (270 px), où
+  // getSelectable ne trouve aucun mois (il compare y, et non x, à la largeur) ; la sélection ne s'étendait pas.
+  // Le test s'arrête désormais au bord intérieur, sur le dernier mois. Le cas hors du bord reste un défaut noté.
+  public void testMouseMove() throws Exception {
     DefaultDirectory defaultDirectory = new DefaultDirectory();
     defaultDirectory.add(new TimeService());
     GlobRepository repository = GlobRepositoryBuilder.init().get();
@@ -67,9 +70,10 @@ public class TimeViewPanelUISpecTest extends UISpecTestCase {
     final GlobList expected = allMonth.subList(i, allMonth.size());
     Mouse.pressed(panel, 200, 5);
     timeViewPanel.savePaintCount();
-    Mouse.drag(panel, 400, 5);
+    int lastX = timeViewPanel.getWidth() - 2;
+    Mouse.drag(panel, lastX, 5);
     timeViewPanel.waitRepaint();
-    Mouse.released(panel, 400, 5);
+    Mouse.released(panel, lastX, 5);
     timeViewPanel.waitRepaint();
     GlobList received = listener.getReceived();
     org.globsframework.utils.TestUtils.assertEquals(expected, received);

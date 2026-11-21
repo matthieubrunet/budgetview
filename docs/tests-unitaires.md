@@ -113,6 +113,15 @@ essayés). Mais :
 - `getTextType` : `1/2/2024` et `01.02.24 10:30` ne sont pas des dates (`TEXT`) ; `20240102`,
   `"-"`, `","` et `1.2.3` sont des nombres ; `99/99/9999` est une date.
 
+### Frise des mois (`TimeViewPanel`)
+
+Relevé en audit 5a (2026-11-21), en réactivant `TimeViewPanelUISpecTest.testMouseMove`.
+
+- Un glisser qui sort du panneau par la droite, alors que la frise est déjà au bout, n'étend pas la sélection au
+  dernier mois : `mouseDragged` cherche le mois sous le pointeur, et il n'y en a aucun hors du panneau.
+  `getSelectable(x, y)` semble avoir voulu ramener un `x` hors champ dans le panneau, mais compare `y` à la largeur
+  (code de 2008). Le test glisse désormais jusqu'au bord intérieur ; le cas hors du bord n'est pas testé.
+
 ## Chantier proposé
 
 À découper en petits lots, comme l'audit. Avant de corriger un comportement, consulter l'aide
