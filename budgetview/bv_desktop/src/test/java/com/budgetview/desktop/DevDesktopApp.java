@@ -17,6 +17,7 @@ import java.util.List;
 public class DevDesktopApp {
 
   static {
+    System.setProperty(Application.DEV_MODE_PROPERTY, "true");
     MacOSXHooks.initApplicationName();
     Gui.init();
   }

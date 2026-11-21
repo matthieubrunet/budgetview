@@ -1,6 +1,5 @@
 package com.budgetview.shared.mobile;
 
-import org.globsframework.utils.Utils;
 
 public class MobileConstants {
 
@@ -37,11 +36,7 @@ public class MobileConstants {
   }
 
   private static String getBaseUrl() {
-    String url = PROD_SERVER_URL;
-    Utils.beginRemove();
-    url = System.getProperty(SERVER_URL_PROPERTY, PROD_SERVER_URL);
-    Utils.endRemove();
-    return url;
+    return System.getProperty(SERVER_URL_PROPERTY, PROD_SERVER_URL);
   }
 
   public static String createUserUrl() {

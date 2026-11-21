@@ -10,7 +10,6 @@ import org.globsframework.model.delta.DefaultChangeSet;
 import org.globsframework.model.utils.ChangeVisitor;
 import org.globsframework.model.utils.GlobFunctor;
 import org.globsframework.model.utils.GlobMatcher;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.collections.MultiMap;
 import org.globsframework.utils.exceptions.*;
 
@@ -364,11 +363,8 @@ public class ReplicationGlobRepository extends DefaultGlobRepository implements 
     super.removeChangeListener(listener);
     listeners = new ArrayList<ChangeSetListener>(listeners);
     boolean isRemoved = listeners.remove(listener);
-    Utils.beginRemove();
-    if (!isRemoved) {
-      throw new RuntimeException("BUG");
-    }
-    Utils.endRemove();
+    // Contrôle de développement : le shrinker le retirait du jar livré jusqu'à la 5.01, d'où un assert.
+    assert isRemoved : "Listener not found, cannot be removed: " + listener;
 //    orgRepository.removeChangeListener(listener);
   }
 

@@ -81,6 +81,11 @@ public class Application {
    * Désactivées par défaut depuis la 6.00 (usage local seulement), voir docs/perimetre-local.md.
    */
   public static final String SERVER_ENABLED_PROPERTY = APPNAME + ".server.enabled";
+  /**
+   * "true" active le menu [Dev] et les réglages réservés au développement. Jusqu'à la 5.01, le shrinker retirait ce
+   * code du jar livré (balises Utils.beginRemove/endRemove) ; mis par run-dev.sh et les tests. Voir docs/audit-code.md, 3d.
+   */
+  public static final String DEV_MODE_PROPERTY = APPNAME + ".dev";
 
   public static boolean EXIT_ON_DATA_ERROR = true;
 
@@ -121,9 +126,9 @@ public class Application {
         return;
       }
     }
-    Utils.beginRemove();
-    changeDate();
-    Utils.endRemove();
+    if (isDevMode()) {
+      changeDate();
+    }
 
     MacOSXHooks.useScreenMenuBar();
     try {
@@ -250,6 +255,10 @@ public class Application {
 
   public static boolean isServerEnabled() {
     return "true".equalsIgnoreCase(System.getProperty(SERVER_ENABLED_PROPERTY));
+  }
+
+  public static boolean isDevMode() {
+    return "true".equalsIgnoreCase(System.getProperty(DEV_MODE_PROPERTY));
   }
 
   public static boolean isDataInMemory() {

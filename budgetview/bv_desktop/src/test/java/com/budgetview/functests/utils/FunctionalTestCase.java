@@ -42,6 +42,8 @@ public abstract class FunctionalTestCase extends UISpecTestCase {
         // L'application force le français au démarrage depuis la 6.00 :
         // on lui demande de garder la langue choisie par le test.
         System.setProperty(Application.LANG_PROPERTY, "keep");
+        // Menu [Dev] et réglages de développement, dont les tests se servent (durées de 1 à 6 mois futurs…).
+        System.setProperty(Application.DEV_MODE_PROPERTY, "true");
         Locale locale = getDefaultLocale();
         Locale.setDefault(locale);
         Lang.setLocale(locale);

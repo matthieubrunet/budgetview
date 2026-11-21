@@ -1,5 +1,6 @@
 package com.budgetview.desktop.utils;
 
+import com.budgetview.desktop.Application;
 import com.jgoodies.looks.Options;
 import com.jgoodies.looks.plastic.PicsouWindowsLookAndFeel;
 import org.globsframework.gui.splits.ImageLocator;
@@ -9,7 +10,6 @@ import org.globsframework.gui.splits.font.Fonts;
 import org.globsframework.gui.splits.utils.GuiUtils;
 import org.globsframework.gui.splits.utils.JarImageLocator;
 import org.globsframework.gui.utils.TableUtils;
-import org.globsframework.utils.Utils;
 
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
@@ -164,11 +164,7 @@ public class Gui {
   }
 
   public static boolean useMacOSMenu() {
-    boolean result = GuiUtils.isMacOSX();
-    Utils.beginRemove();
-    result = false;
-    Utils.endRemove();
-    return result;
+    return GuiUtils.isMacOSX() && !Application.isDevMode();
   }
 
   public static boolean isVisibleInWindow(JComponent component) {

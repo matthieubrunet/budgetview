@@ -1,5 +1,6 @@
 package com.budgetview.desktop.preferences.panes;
 
+import com.budgetview.desktop.Application;
 import com.budgetview.desktop.preferences.PreferencesDialog;
 import com.budgetview.desktop.preferences.PreferencesPane;
 import com.budgetview.desktop.preferences.PreferencesResult;
@@ -8,7 +9,6 @@ import com.budgetview.model.UserPreferences;
 import com.budgetview.utils.Lang;
 import org.globsframework.gui.GlobsPanelBuilder;
 import org.globsframework.model.GlobRepository;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
@@ -24,9 +24,9 @@ public class ParametersPane implements PreferencesPane {
                                                       repository, directory);
 
     int[] items = new int[]{12, 18, 24, 36, 48, 60};
-    Utils.beginRemove();
-    items = new int[]{0, 1, 2, 3, 4, 6, 12, 18, 24, 36, 48, 60};
-    Utils.endRemove();
+    if (Application.isDevMode()) {
+      items = new int[]{0, 1, 2, 3, 4, 6, 12, 18, 24, 36, 48, 60};
+    }
 
     builder.addComboEditor("futureMonth", UserPreferences.KEY,
                            UserPreferences.FUTURE_MONTH_COUNT, items);

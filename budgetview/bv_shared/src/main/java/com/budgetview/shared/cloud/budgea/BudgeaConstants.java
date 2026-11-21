@@ -1,6 +1,5 @@
 package com.budgetview.shared.cloud.budgea;
 
-import org.globsframework.utils.Utils;
 
 public class BudgeaConstants {
   public static final String APPNAME = "budgetview";
@@ -16,11 +15,7 @@ public class BudgeaConstants {
   public static final int TEST_BANK_ID = -999;
 
   public static String getServerUrl(String path) {
-    String url = PROD_SERVER_URL + path;
-    Utils.beginRemove();
-    url = System.getProperty(SERVER_URL_PROPERTY, PROD_SERVER_URL) + path;
-    Utils.endRemove();
-    return url;
+    return System.getProperty(SERVER_URL_PROPERTY, PROD_SERVER_URL) + path;
   }
 
   public static void setProd() {

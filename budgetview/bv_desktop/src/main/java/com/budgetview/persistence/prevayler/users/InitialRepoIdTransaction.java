@@ -2,7 +2,6 @@ package com.budgetview.persistence.prevayler.users;
 
 import com.budgetview.persistence.prevayler.CustomSerializable;
 import com.budgetview.persistence.prevayler.CustomSerializableFactory;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 import org.globsframework.utils.serialization.SerializedInput;
 import org.globsframework.utils.serialization.SerializedOutput;
@@ -10,7 +9,6 @@ import org.prevayler.Transaction;
 
 import java.security.SecureRandom;
 import java.util.Date;
-import java.util.Random;
 
 public class InitialRepoIdTransaction implements Transaction, CustomSerializable {
   private static final int V1 = 1;
@@ -47,12 +45,8 @@ public class InitialRepoIdTransaction implements Transaction, CustomSerializable
   }
 
   public static Transaction create() {
-    Random random = new SecureRandom();
-    Utils.beginRemove();
-    random = new Random();
-    Utils.endRemove();
-    byte repoId[] = new byte[50];
-    random.nextBytes(repoId);
+    byte[] repoId = new byte[50];
+    new SecureRandom().nextBytes(repoId);
     return new InitialRepoIdTransaction(repoId);
   }
 

@@ -723,11 +723,8 @@ public class DefaultGlobRepository implements GlobRepository, IndexSource {
   public void removeChangeListener(ChangeSetListener listener) {
     changeListeners = new ArrayList<ChangeSetListener>(changeListeners);
     boolean isRemoved = changeListeners.remove(listener);
-    Utils.beginRemove();
-    if (!isRemoved) {
-      throw new RuntimeException("Listener not found, cannot be removed: " + listener);
-    }
-    Utils.endRemove();
+    // Contrôle de développement : le shrinker le retirait du jar livré jusqu'à la 5.01, d'où un assert.
+    assert isRemoved : "Listener not found, cannot be removed: " + listener;
   }
 
   static boolean dump = false;

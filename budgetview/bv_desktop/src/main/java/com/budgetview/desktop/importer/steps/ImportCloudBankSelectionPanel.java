@@ -1,5 +1,6 @@
 package com.budgetview.desktop.importer.steps;
 
+import com.budgetview.desktop.Application;
 import com.budgetview.desktop.bank.BankChooserPanel;
 import com.budgetview.desktop.cloud.CloudService;
 import com.budgetview.desktop.components.ProgressPanel;
@@ -22,7 +23,6 @@ import org.globsframework.model.GlobList;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.utils.GlobMatcher;
 import org.globsframework.model.utils.GlobMatchers;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
@@ -82,9 +82,9 @@ public class ImportCloudBankSelectionPanel extends AbstractImportStepPanel imple
 
   private GlobMatcher testBankFilter() {
     GlobMatcher result = GlobMatchers.not(GlobMatchers.fieldEquals(Bank.ID, BudgeaConstants.TEST_BANK_ID));
-    Utils.beginRemove();
-    result = GlobMatchers.ALL;
-    Utils.endRemove();
+    if (Application.isDevMode()) {
+      result = GlobMatchers.ALL;
+    }
     return result;
   }
 

@@ -1,7 +1,6 @@
 package com.budgetview.shared.license;
 
 import org.globsframework.utils.Strings;
-import org.globsframework.utils.Utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -55,12 +54,6 @@ public class LicenseConstants {
 
   public static int RETRY_PERIOD = 10000;
 
-  static {
-    Utils.beginRemove();
-    LicenseConstants.RETRY_PERIOD = 500;
-    Utils.endRemove();
-  }
-
   public static String encodeContent(String content) {
     try {
       return URLEncoder.encode(content, "utf-8");
@@ -80,18 +73,10 @@ public class LicenseConstants {
   }
 
   public static String getServerUrl(String path) {
-    String url = PROD_SERVER_URL + path;
-    Utils.beginRemove();
-    url = System.getProperty(LICENSE_URL_PROPERTY, PROD_SERVER_URL) + path;
-    Utils.endRemove();
-    return url;
+    return System.getProperty(LICENSE_URL_PROPERTY, PROD_SERVER_URL) + path;
   }
 
   public static String getFtpServerUrl() {
-    String url = FTP_SERVER_URL;
-    Utils.beginRemove();
-    url = System.getProperty(FTP_URL_PROPERTY, FTP_SERVER_URL);
-    Utils.endRemove();
-    return url;
+    return System.getProperty(FTP_URL_PROPERTY, FTP_SERVER_URL);
   }
 }

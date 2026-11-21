@@ -1,6 +1,5 @@
 package com.budgetview.shared.cloud;
 
-import org.globsframework.utils.Utils;
 
 public class CloudConstants {
 
@@ -47,11 +46,7 @@ public class CloudConstants {
   public static final String CLOUD_END_DATE = "end_date";
 
   public static String getServerUrl(String path) {
-    String url = PROD_CLOUD_SERVER_URL + path;
-    Utils.beginRemove();
-    url = System.getProperty(CLOUD_URL_PROPERTY, PROD_CLOUD_SERVER_URL) + path;
-    Utils.endRemove();
-    return url;
+    return System.getProperty(CLOUD_URL_PROPERTY, PROD_CLOUD_SERVER_URL) + path;
   }
 
   public static String getSubscriptionValidationUrl(String code) {

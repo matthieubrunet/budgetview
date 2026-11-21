@@ -30,7 +30,6 @@ import com.budgetview.utils.Lang;
 import org.globsframework.gui.splits.utils.GuiUtils;
 import org.globsframework.model.GlobRepository;
 import org.globsframework.model.repository.ReplicationGlobRepository;
-import org.globsframework.utils.Utils;
 import org.globsframework.utils.directory.Directory;
 
 import javax.swing.*;
@@ -87,9 +86,9 @@ public class MenuBarBuilder {
     menuBar.add(createEditMenu(frame));
     menuBar.add(createViewMenu());
 
-    Utils.beginRemove();
-    menuBar.add(createDevMenu());
-    Utils.endRemove();
+    if (Application.isDevMode()) {
+      menuBar.add(createDevMenu());
+    }
 
     menuBar.add(createHelpMenu());
 

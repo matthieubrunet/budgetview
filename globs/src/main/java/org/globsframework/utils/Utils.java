@@ -280,12 +280,6 @@ public class Utils {
     return result;
   }
 
-  public static void beginRemove() {
-  }
-
-  public static void endRemove() {
-  }
-
   public static void dumpStack() {
     Map<Thread, StackTraceElement[]> map = Thread.getAllStackTraces();
     for (StackTraceElement[] elements : map.values()) {

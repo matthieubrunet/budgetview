@@ -51,6 +51,8 @@ echo "Données de dev : $DATA (log : $DATA/logs/log.txt)"
 
 cd "$DESKTOP"
 exec "$JAVA_HOME/bin/java" \
+  -ea \
   -DSINGLE_INSTANCE_DISABLED=true \
+  -Dbudgetview.dev=true \
   -Dbudgetview.data.path="$DATA" \
   -jar "$JAR" "$@"

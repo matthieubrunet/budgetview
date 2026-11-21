@@ -117,8 +117,13 @@ mvn -Pgen-version clean install -DskipTests
 ```
 
 Lancer l'application de dev : **`./run-dev.sh`** (`--build` pour reconstruire le jar avant).
-Le script fixe le JDK 21, met `-DSINGLE_INSTANCE_DISABLED=true` et utilise les données de
-`~/.budgetview-dev` (modifiable avec `BV_DEV_DATA`). Il refuse les dossiers de données de
+Le script fixe le JDK 21, met `-DSINGLE_INSTANCE_DISABLED=true`, `-Dbudgetview.dev=true` et `-ea`, et utilise les données de
+`~/.budgetview-dev` (modifiable avec `BV_DEV_DATA`).
+- **Mode dev** : `Application.isDevMode()` (propriété `budgetview.dev`, fausse par défaut) affiche le menu `[Dev]`, propose
+  1 à 6 mois futurs et met Préférences et Quitter dans le menu Fichier sur Mac. `FunctionalTestCase` l'active : les tests
+  s'en servent. Les contrôles de développement de `globs` sont des `assert` (actifs sous surefire et `run-dev.sh`).
+  Jusqu'à la 5.01, ce code était retiré du jar par le shrinker (balises `Utils.beginRemove`/`endRemove`, supprimées en
+  audit 3d) : ne pas réintroduire de code réservé au dev sans passer par l'un de ces deux moyens. Il refuse les dossiers de données de
 l'application officielle, y compris celui désigné par son `redirect.txt`, qui est dans Dropbox.
 
 - Le serveur d'origine `register.budgetview.fr` ne répond plus (constaté le 2026-11-15) :

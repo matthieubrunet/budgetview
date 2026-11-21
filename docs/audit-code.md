@@ -1207,7 +1207,7 @@ code livré (`globs`, `prevayler`, `siteweaver`, `bv_shared`, `bv_desktop`), les
 des utilitaires : ces deux méthodes vides marquent du code réservé au développement, que le `JarShrinker` retirait du jar
 livré (`FilterWriter`, commit `3f076953a` de 2008 : il ne recopiait pas les instructions situées entre les deux appels). Le
 shrinker a été supprimé le 2026-11-15 (`4ee7db9b8`) sans que ce rôle soit relevé : **depuis la 6.0.1, ce code s'exécute
-dans l'application livrée**, dont `BudgetView 6.app`. Sept blocs :
+dans l'application livrée**, dont `BudgetView 6.app`. Treize blocs (sept relevés d'abord, six de plus en faisant le lot 0) :
 
 | Fichier | Code « dev » qui tourne désormais en production | Effet pour l'utilisateur |
 |---|---|---|
@@ -1215,9 +1215,11 @@ dans l'application livrée**, dont `BudgetView 6.app`. Sept blocs :
 | `Gui.useMacOSMenu` | `result = false` | sur Mac, Préférences et Quitter apparaissent aussi dans le menu Fichier (en plus du menu de l'application) |
 | `ParametersPane` | choix de 0, 1, 2, 3, 4, 6 mois futurs | la 5.01 ne proposait que 12, 18, 24, 36, 48, 60 |
 | `InitialRepoIdTransaction` | `random = new Random()` au lieu de `SecureRandom` | identifiant de dépôt tiré par un générateur non cryptographique (sans usage local connu, mais à rétablir) |
-| `Application.main` | `changeDate()` | lit la propriété `budgetview.date` (date forcée) : sans effet si elle n'est pas fixée |
+| `Application.main` | `changeDate()` | lit la propriété `budgetview.today` (date forcée) : sans effet si elle n'est pas fixée |
 | `ImportCloudBankSelectionPanel` | banque de test Budgea visible | synchro coupée en usage local (`isServerEnabled`) : sans effet |
 | `LicenseConstants` (`bv_shared`) | `RETRY_PERIOD = 500` | licence supprimée en 1a : sans effet ; les tests de `bv_server` fixent eux-mêmes cette valeur |
+| `DefaultGlobRepository`, `ReplicationGlobRepository` (`globs`) | `removeChangeListener` lève une `RuntimeException` si le listener est inconnu | une erreur de programmation ignorée par la 5.01 devient une exception dans l'IHM |
+| `LicenseConstants` (×2), `CloudConstants`, `BudgeaConstants`, `MobileConstants` (`bv_shared`) | adresse du serveur surchargeable par propriété système | serveurs coupés en usage local : sans effet |
 
 Les tests reposent sur ces comportements : 91 appels à `setFutureMonthsCount(2)`, 45 à 6, 38 à 1, 3 ou 4 ; menu `[Dev]`
 par `OperationChecker` (`DevOptionsChecker`, `LoggedInFunctionalTestCase`, `SeriesShapeTest`) ; Préférences cherchées
@@ -1275,13 +1277,24 @@ de test d'un framework, les déplacer ne simplifie rien.
 
 | Lot | Contenu | Taille | Risque |
 |---|---|---|---|
-| 0. Balises « dev » | `beginRemove`/`endRemove` remplacés par `if (Application.isDevMode())` (propriété `budgetview.dev`, fausse par défaut, mise par `run-dev.sh` et `FunctionalTestCase`) ; `SecureRandom` rétabli sans condition ; bloc de `LicenseConstants` supprimé ; les deux méthodes vides retirées de `Utils` | 7 fichiers, ~40 lignes | moyen : comportement visible changé (retour à celui de la 5.01) ; à vérifier dans l'appli empaquetée |
+| 0. Balises « dev » | `beginRemove`/`endRemove` remplacés par `if (Application.isDevMode())` (propriété `budgetview.dev`, fausse par défaut, mise par `run-dev.sh` et `FunctionalTestCase`) ; `SecureRandom` rétabli sans condition ; bloc de `LicenseConstants` supprimé ; les deux méthodes vides retirées de `Utils` | 7 fichiers, ~40 lignes (13 en fin de compte) | moyen : comportement visible changé (retour à celui de la 5.01) ; à vérifier dans l'appli empaquetée |
 | A. JDK direct | `copyOf`, `repeat`, `LINE_SEPARATOR`, comparateurs, `NO_OP` ; tests de `Files`, puis son corps modernisé | ~10 fichiers, 3 classes en moins | faible |
 | B. Doublons et morts | doublons fusionnés, 7 méthodes mortes, `RandomStrings` et tirage du mot de passe mobile | ~8 fichiers, ~−200 lignes | faible |
 | C. `Utils.equal` → `Objects.equals` | remplacement mécanique, `bv_server` compris | ~90 fichiers, 155 appels | faible, mais diff volumineux (`git blame`) |
 
 **Décision de Matthieu (2026-11-21)** : faire les quatre lots, le lot 0 avec l'interrupteur `budgetview.dev` (retour au
 comportement de la 5.01 dans l'application livrée).
+
+**Réalisation**, un commit par lot :
+- Lot 0 (2026-11-21) : `Application.isDevMode()` (propriété `budgetview.dev`) commande le menu `[Dev]`, les 1 à 6 mois
+  futurs, les menus Mac et la date forcée de `Application.main` ; banque de test Budgea aussi. `run-dev.sh`,
+  `FunctionalTestCase` et `DevDesktopApp` l'activent. `SecureRandom` rétabli sans condition. Les deux contrôles de
+  `removeChangeListener` de `globs`, qui ne peut pas lire `isDevMode`, deviennent des `assert` (actifs sous surefire ;
+  `-ea` ajouté à `run-dev.sh`). Les cinq surcharges d'adresse de serveur de `bv_shared` restent, sans condition (serveurs
+  coupés). Méthodes `beginRemove`/`endRemove` supprimées. Un utilisateur resté sur 1 à 6 mois futurs voit la liste des
+  Préférences sans sélection, sa valeur est gardée (`GlobComboEditor`). 18 fichiers, +53 −86 lignes. Tests de `globs`
+  796, `bv_desktop` 1 026 verts, 4 min 51 s ; 0 `[WARNING]`, `bv_server` compile. Vérifié par Matthieu dans le jar
+  livré lancé sans mode dev : ni menu `[Dev]`, ni Préférences/Quitter dans Fichier, mois futurs de 12 à 60.
 
 
 
@@ -1363,3 +1376,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-20 | 3c, lot B (navigateur) | 3 services à `Runtime.exec` remplacés par `Desktop.browse` (+24 −67 lignes) ; 2 136 `.class` (−3), `target/dist` 11 Mo, `budgetview.jar` 4,54 Mo. Tests de `bv_desktop` 1 026 verts, 19 min ; liens d'aide vérifiés dans l'appli. **3c terminé** |
 | 2026-11-21 | 5c, durée | Calages de 80 s à 8 min dus à la veille du Mac : `caffeinate -i`. 3 JVM de test en parallèle, chacune dans `target/forks/<n>` (`pom` de `bv_desktop`) : suite de `bv_desktop` 1 026 verts en 5 min 08 s (9 à 21 min avant). **5c terminé** |
 | 2026-11-21 | 3d, inventaire | Rien de modifié. `Utils`, `Strings`, `Files` (941 lignes) : 8 remplacements exacts par le JDK, dont `Utils.equal` (155 appels) ; 4 doublons internes, 7 méthodes mortes, `RandomStrings` reste du mobile. Balises `beginRemove`/`endRemove` inopérantes depuis la suppression du shrinker : 7 blocs de développement actifs en production, dont le menu `[Dev]`. Quatre lots proposés (0, A à C) |
+| 2026-11-21 | 3d, lot 0 (balises « dev ») | 13 blocs `beginRemove`/`endRemove` remplacés par `Application.isDevMode()`, des `assert` ou supprimés (+53 −86 lignes, 18 fichiers) ; application livrée revenue au comportement de la 5.01. Tests de `globs` 796, `bv_desktop` 1 026 verts, 4 min 51 s |
