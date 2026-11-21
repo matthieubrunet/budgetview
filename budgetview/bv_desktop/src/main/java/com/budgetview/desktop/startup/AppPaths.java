@@ -48,12 +48,6 @@ public class AppPaths {
       if (new File(windowsXPPath).exists()) {
         return windowsXPPath + BUDGET_VIEW;
       }
-      if (GuiUtils.isVista() || GuiUtils.isWin7() || GuiUtils.isWin8()) {
-        return System.getProperty("user.home") + File.separator + "AppData" + File.separator + "Local" + BUDGET_VIEW;
-      }
-      if (GuiUtils.isXP()) {
-        return System.getProperty("user.home") + File.separator + "Application Data" + BUDGET_VIEW;
-      }
       return System.getProperty("user.home") + File.separator + "AppData" + File.separator + "Local" + BUDGET_VIEW;
     }
     return System.getProperty("user.home") + "/.budgetview";

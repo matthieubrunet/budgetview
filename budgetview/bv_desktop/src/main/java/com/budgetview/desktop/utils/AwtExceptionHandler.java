@@ -6,9 +6,6 @@ import org.globsframework.utils.directory.Directory;
 
 import java.awt.EventQueue;
 
-// attention cette classe est référencée dans picsou_exe_gen.jsmooth
-
-
 public class AwtExceptionHandler {
   private static GlobRepository repository;
   private static Directory directory;
@@ -30,8 +27,6 @@ public class AwtExceptionHandler {
   }
 
   public static void registerHandler() {
-    System.setProperty("sun.awt.exception.handler", AwtExceptionHandler.class.getName());
-
     // La propriété sun.awt.exception.handler n'est plus lue depuis Java 7 : sans ce relais, une exception
     // levée dans l'IHM n'ouvrait plus le contrôle des données. On ne traite que le fil de l'IHM (EDT),
     // comme le faisait la propriété ; les autres fils gardent le comportement par défaut.

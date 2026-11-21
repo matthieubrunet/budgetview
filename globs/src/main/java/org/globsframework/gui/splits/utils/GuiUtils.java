@@ -19,10 +19,6 @@ public class GuiUtils {
   public static final boolean IS_MACOSX;
   public static final boolean IS_LINUX;
   public static final boolean IS_WINDOWS;
-  public static final boolean IS_VISTA;
-  public static final boolean IS_XP;
-  public static final boolean IS_WIN7;
-  public static final boolean IS_WIN8;
   public static final boolean IS_OPEN_JDK;
 
   private static final String MAC_PLATFORM_ID = "Mac OS X";
@@ -34,10 +30,6 @@ public class GuiUtils {
     IS_MACOSX = os.contains(MAC_PLATFORM_ID);
     IS_LINUX = os.contains(LINUX_PLATFORM_ID);
     IS_WINDOWS = os.contains(WINDOWS_PLATFORM_ID);
-    IS_VISTA = IS_WINDOWS && os.toLowerCase().contains("vista");
-    IS_WIN7 = IS_WINDOWS && os.toLowerCase().contains("7");
-    IS_WIN8 = IS_WINDOWS && os.toLowerCase().contains("8");
-    IS_XP = IS_WINDOWS && os.toLowerCase().contains("xp");
 
     String vm = System.getProperty("java.vm.name"); //AccessController.doPrivileged(new GetPropertyAction("java.vm.name"));
     IS_OPEN_JDK = vm.contains("OpenJDK");
@@ -86,22 +78,6 @@ public class GuiUtils {
 
   public static boolean isWindows() {
     return IS_WINDOWS;
-  }
-
-  public static boolean isVista() {
-    return IS_VISTA;
-  }
-
-  public static boolean isWin7() {
-    return IS_WIN7;
-  }
-
-  public static boolean isWin8() {
-    return IS_WIN8;
-  }
-
-  public static boolean isXP() {
-    return IS_XP;
   }
 
   public static int getCtrlModifier() {
