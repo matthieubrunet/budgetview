@@ -156,6 +156,10 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   `Runtime.exec` dans le code livré, −189 lignes.
 - [ ] **3d. Utilitaires maison** (`Utils`, `Strings`, `Files`…) comparés à `java.util`,
   `java.nio.file`, `Objects`, `String` (`isBlank`, `repeat`, `strip`…).
+  Inventaire fait le 2026-11-21, voir [3d, inventaire](#3d-inventaire) plus bas : peu de remplacements exacts
+  (`Objects.equals`, `Arrays.copyOf`, `String.repeat`, comparateurs), le reste a une sémantique propre. **Découverte** :
+  les balises `Utils.beginRemove`/`endRemove`, que le shrinker supprimé exploitait, laissent depuis la 6.0.1 du code de
+  développement dans l'application livrée (menu `[Dev]`…). Quatre lots proposés (0, A à C).
 - [ ] **3e. Collections synchronisées** (`Vector`, `Hashtable`, `StringBuffer`, 5 fichiers).
 - [ ] **3f. Dates** (35 fichiers) → `java.time`. C'est le chantier le plus délicat : le modèle
   stocke des mois et des jours sous forme d'entiers. Ne toucher qu'au code de calcul et
@@ -1193,9 +1197,93 @@ l'utilisateur (saisie libre), licences de l'écran « À propos ». Différences
   de dev. Le lien vers le site d'une banque n'a pas pu l'être (pas de banque à site dans les données de dev) : même
   appel que l'aide.
 
-## 5c, durée
+## 3d, inventaire
 
-Fait les 2026-11-20 et 21.
+Fait le 2026-11-21, sans rien modifier dans l'arbre. Comptes d'appels qualifiés (`Utils.x(`) et imports statiques, dans le
+code livré (`globs`, `prevayler`, `siteweaver`, `bv_shared`, `bv_desktop`), les tests, et `bv_server`/`bv_analytics`
+(hors build, mais qui doivent compiler).
+
+**Découverte hors sujet, à traiter en premier : les balises `Utils.beginRemove()` / `Utils.endRemove()`.** Ce ne sont pas
+des utilitaires : ces deux méthodes vides marquent du code réservé au développement, que le `JarShrinker` retirait du jar
+livré (`FilterWriter`, commit `3f076953a` de 2008 : il ne recopiait pas les instructions situées entre les deux appels). Le
+shrinker a été supprimé le 2026-11-15 (`4ee7db9b8`) sans que ce rôle soit relevé : **depuis la 6.0.1, ce code s'exécute
+dans l'application livrée**, dont `BudgetView 6.app`. Sept blocs :
+
+| Fichier | Code « dev » qui tourne désormais en production | Effet pour l'utilisateur |
+|---|---|---|
+| `MenuBarBuilder` | `menuBar.add(createDevMenu())` | menu **`[Dev]`** visible : lever une exception, injecter une erreur de compte, changer la date, dump, activer/désactiver les extensions… |
+| `Gui.useMacOSMenu` | `result = false` | sur Mac, Préférences et Quitter apparaissent aussi dans le menu Fichier (en plus du menu de l'application) |
+| `ParametersPane` | choix de 0, 1, 2, 3, 4, 6 mois futurs | la 5.01 ne proposait que 12, 18, 24, 36, 48, 60 |
+| `InitialRepoIdTransaction` | `random = new Random()` au lieu de `SecureRandom` | identifiant de dépôt tiré par un générateur non cryptographique (sans usage local connu, mais à rétablir) |
+| `Application.main` | `changeDate()` | lit la propriété `budgetview.date` (date forcée) : sans effet si elle n'est pas fixée |
+| `ImportCloudBankSelectionPanel` | banque de test Budgea visible | synchro coupée en usage local (`isServerEnabled`) : sans effet |
+| `LicenseConstants` (`bv_shared`) | `RETRY_PERIOD = 500` | licence supprimée en 1a : sans effet ; les tests de `bv_server` fixent eux-mêmes cette valeur |
+
+Les tests reposent sur ces comportements : 91 appels à `setFutureMonthsCount(2)`, 45 à 6, 38 à 1, 3 ou 4 ; menu `[Dev]`
+par `OperationChecker` (`DevOptionsChecker`, `LoggedInFunctionalTestCase`, `SeriesShapeTest`) ; Préférences cherchées
+dans le menu Fichier. On ne peut donc pas simplement supprimer les blocs : il faut un interrupteur lu à l'exécution,
+comme `isServerEnabled()`, faux par défaut et mis par `run-dev.sh` et `FunctionalTestCase`. Point à vérifier en le
+faisant : un utilisateur qui a choisi 1 à 6 mois futurs en 6.0.1 garde cette valeur, absente de la liste de la 5.01.
+
+**`Utils` (416 lignes), `Strings` (261), `Files` (264), dans `org.globsframework.utils`.**
+
+Remplaçables par le JDK à comportement égal :
+
+| Maison | JDK | Appels (livré / tests / serveur) |
+|---|---|---|
+| `Utils.copyOf` (« code from java 1.6 ») | `Arrays.copyOf` | 2 / 0 / 0 (`Transaction`) |
+| `Strings.repeat` | `String.repeat` (Java 11) | 1 / 1 / 3 |
+| `Strings.LINE_SEPARATOR` | `System.lineSeparator()` | 84 usages : garder la constante, l'initialiser par le JDK |
+| `Utils.equal` | `Objects.equals` | **133 / 12 / 10**, dont 3 imports statiques ; seule différence théorique : un objet dont `equals` répond faux à lui-même |
+| `InvertedComparator` | `Comparator.reversed()` | 3 appels (`SeriesOrderManager`, `TransactionView`) |
+| `CompositeComparator` | `thenComparing` | 3 appels (`GlobTableView`) |
+| `Runnables.NO_OP` | `() -> {}` | 2 fichiers |
+| `Files.copyStream`, `copyFile`, `loadStreamToString` (corps) | `transferTo` (Java 9), `java.nio.file.Files.copy` avec `REPLACE_EXISTING` | appels inchangés, seul le corps change |
+
+`Files` laisse aussi des flux ouverts (`loadProperties` ×2, `loadPropertyKeys`, `copyFile` en cas d'erreur) : un
+`try`-avec-ressources les ferme sans changer ce que rendent les méthodes. `Files` n'a aucun test : il faut d'abord
+figer son comportement (règle des étapes 2 à 4).
+
+Doublons internes : `Utils.box` = `Utils.toObjectIntegers` ; `Utils.joinedList` = `Utils.list(first, other…)` ;
+`Utils.toString(Throwable)` = `Strings.toString(Throwable)` ; `Utils.capitalize` et `Utils.toNiceUpperCase` = ceux de
+`Strings` (le second ne sert qu'à `Utils.toEnum`).
+
+Morts partout, `bv_server` compris : `Utils.capitalize`, `defaultIfNull`, `dumpStack`, `remove`, `set` (×2), `sum`.
+Réservés aux tests : `Utils.append`, `box`, `join` (×3, plus 1 appel serveur), `max`, `randomInt`, `toArray` ;
+`Strings.toUpperCase(String[])`, `leftAlign` et `toUpperCaseLabel` (serveur aussi) ; `Files.copyResourceToTmpFile`
+(16), `copyStreamTofile`, `dumpStringToFile` (20, serveur 3), `loadPropertyKeys`. À laisser en place : ce sont des aides
+de test d'un framework, les déplacer ne simplifie rien.
+
+À garder, sans équivalent exact dans le JDK :
+- `Strings.isNullOrEmpty` / `isNotEmpty` (89 et 66 appels) : aucun test de vide sûr pour `null` dans le JDK ;
+  `isBlank` ne compte pas les blancs comme vides ici.
+- `Strings.join(String…)` saute les éléments vides, `String.join` non.
+- `Utils.compare` (nuls en premier) : `Comparator.nullsFirst(naturalOrder())` est plus long à l'appel.
+- `Utils.compareIgnoreCase` passe par `toLowerCase()` (locale par défaut), pas `CASE_INSENSITIVE_ORDER` : résultats
+  différents sur quelques caractères.
+- `Files.loadFileToString(File)` réécrit les fins de ligne en `LINE_SEPARATOR` et ajoute un saut final : ce n'est pas
+  `Files.readString`.
+- `Strings.unaccent` ne traite que les voyelles françaises (ni `ç`, ni `ñ`, ni `œ`) ; `Normalizer` changerait le
+  filtrage des listes (`GlobMatchers`, `GlobListViewFilter`) et l'import CSV. Correction de comportement : après l'audit.
+- `Functor` (`run() throws Exception`), `Ref`, `Pair`, `MultiMap`, `MapOfMaps`, `Range`, `Unset` : pas d'équivalent.
+
+**Reste du chantier 1a.** `RandomStrings` (105 lignes, copie de `commons-lang3`) ne sert qu'à tirer
+`UserPreferences.PASSWORD_FOR_MOBILE` (`PicsouInit`, `UpgradeTrigger`), pour l'appli mobile supprimée. Le champ reste
+(modèle), le tirage et la classe peuvent partir.
+
+**Lots proposés.**
+
+| Lot | Contenu | Taille | Risque |
+|---|---|---|---|
+| 0. Balises « dev » | `beginRemove`/`endRemove` remplacés par `if (Application.isDevMode())` (propriété `budgetview.dev`, fausse par défaut, mise par `run-dev.sh` et `FunctionalTestCase`) ; `SecureRandom` rétabli sans condition ; bloc de `LicenseConstants` supprimé ; les deux méthodes vides retirées de `Utils` | 7 fichiers, ~40 lignes | moyen : comportement visible changé (retour à celui de la 5.01) ; à vérifier dans l'appli empaquetée |
+| A. JDK direct | `copyOf`, `repeat`, `LINE_SEPARATOR`, comparateurs, `NO_OP` ; tests de `Files`, puis son corps modernisé | ~10 fichiers, 3 classes en moins | faible |
+| B. Doublons et morts | doublons fusionnés, 7 méthodes mortes, `RandomStrings` et tirage du mot de passe mobile | ~8 fichiers, ~−200 lignes | faible |
+| C. `Utils.equal` → `Objects.equals` | remplacement mécanique, `bv_server` compris | ~90 fichiers, 155 appels | faible, mais diff volumineux (`git blame`) |
+
+**Décision de Matthieu (2026-11-21)** : faire les quatre lots, le lot 0 avec l'interrupteur `budgetview.dev` (retour au
+comportement de la 5.01 dans l'application livrée).
+
+
 
 **Variabilité (9 à 21 min).** Les classes ordinaires durent la même chose d'une suite à l'autre (±1 s), mais chaque
 suite lente compte une ou deux classes qui « calent » : `SetPasswordTest` 80 s au lieu de 2 s, `AnalysisSeriesGroupViewTest`
@@ -1274,3 +1362,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-20 | 3c, lot A (hooks macOS) | `MacOSXHooks` sans réflexion ni `com.apple.eawt`, `PicsouMacLookAndFeel` supprimé (+56 −202 lignes) ; 2 139 `.class`, `target/dist` 11 Mo, `budgetview.jar` 4,55 Mo. Tests de `bv_desktop` 1 026 verts, 11 min ; menus vérifiés dans l'appli |
 | 2026-11-20 | 3c, lot B (navigateur) | 3 services à `Runtime.exec` remplacés par `Desktop.browse` (+24 −67 lignes) ; 2 136 `.class` (−3), `target/dist` 11 Mo, `budgetview.jar` 4,54 Mo. Tests de `bv_desktop` 1 026 verts, 19 min ; liens d'aide vérifiés dans l'appli. **3c terminé** |
 | 2026-11-21 | 5c, durée | Calages de 80 s à 8 min dus à la veille du Mac : `caffeinate -i`. 3 JVM de test en parallèle, chacune dans `target/forks/<n>` (`pom` de `bv_desktop`) : suite de `bv_desktop` 1 026 verts en 5 min 08 s (9 à 21 min avant). **5c terminé** |
+| 2026-11-21 | 3d, inventaire | Rien de modifié. `Utils`, `Strings`, `Files` (941 lignes) : 8 remplacements exacts par le JDK, dont `Utils.equal` (155 appels) ; 4 doublons internes, 7 méthodes mortes, `RandomStrings` reste du mobile. Balises `beginRemove`/`endRemove` inopérantes depuis la suppression du shrinker : 7 blocs de développement actifs en production, dont le menu `[Dev]`. Quatre lots proposés (0, A à C) |
