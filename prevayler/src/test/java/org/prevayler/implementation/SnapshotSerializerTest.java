@@ -64,7 +64,7 @@ public class SnapshotSerializerTest extends FileIOTest {
 	private Prevayler createPrevayler(Serializer snapshotSerializer)
 			throws IOException, ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configurePrevalentSystem(new StringBuffer("the system"));
+		factory.configurePrevalentSystem(new StringBuilder("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
 		factory.configureSnapshotSerializer("snapshot", snapshotSerializer);
 		return factory.create();
@@ -94,7 +94,7 @@ public class SnapshotSerializerTest extends FileIOTest {
 	private static class MySerializer implements Serializer {
 
 		public void writeObject(OutputStream stream, Object object) throws IOException {
-			StringBuffer system = (StringBuffer) object;
+			StringBuilder system = (StringBuilder) object;
 			Writer writer = new OutputStreamWriter(stream, "UTF-8");
 			writer.write("Yes, this is MySerializationStrategy!\n");
 			writer.write(system.toString());
@@ -107,7 +107,7 @@ public class SnapshotSerializerTest extends FileIOTest {
 			String prolog = reader.readLine();
 			if ("Yes, this is MySerializationStrategy!".equals(prolog)) {
 				String contents = reader.readLine();
-				return new StringBuffer(contents);
+				return new StringBuilder(contents);
 			} else {
 				throw new AssertionFailedError("got prolog=" + prolog);
 			}

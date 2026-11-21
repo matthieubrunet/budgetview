@@ -9,14 +9,14 @@ import java.util.Stack;
 public class SaxStackParser extends DefaultHandler {
 
   private Stack nodesStack = new Stack();
-  private StringBuffer charBuffer;
+  private StringBuilder charBuffer;
   private org.xml.sax.XMLReader parser;
 
   private SaxStackParser(org.xml.sax.XMLReader parser) {
     this.parser = parser;
     parser.setErrorHandler(this);
     parser.setContentHandler(this);
-    charBuffer = new StringBuffer();
+    charBuffer = new StringBuilder();
   }
 
   public static void parse(XMLReader parser, XmlNode rootNode, Reader reader) throws ExceptionHolder {

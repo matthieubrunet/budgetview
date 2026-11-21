@@ -20,7 +20,7 @@ public class AppendTransactionWithQuery implements TransactionWithQuery {
 	}
 
 	public Object executeAndQuery(Object prevalentSystem, Date executionTime) throws Exception {
-		StringBuffer system = (StringBuffer) prevalentSystem;
+		StringBuilder system = (StringBuilder) prevalentSystem;
 		system.append(toAdd);
 		return system.toString();
 	}

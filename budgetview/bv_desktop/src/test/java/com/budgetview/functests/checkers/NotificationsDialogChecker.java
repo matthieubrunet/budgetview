@@ -19,7 +19,7 @@ public class NotificationsDialogChecker extends ViewChecker {
   }
 
   public NotificationsDialogChecker checkContent(String... expectedMessages) {
-    StringBuffer actual = new StringBuffer();
+    StringBuilder actual = new StringBuilder();
     for (UIComponent panel : mainWindow.getUIComponents(Panel.class, "notificationPanel")) {
       actual.append(((Panel) panel).getTextBox("message").getText()).append("\n");
     }

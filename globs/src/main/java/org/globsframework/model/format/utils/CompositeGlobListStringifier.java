@@ -34,7 +34,7 @@ public class CompositeGlobListStringifier implements GlobListStringifier {
 
   public String toString(GlobList list, GlobRepository repository) {
 
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     boolean empty = true;
     for (Pair<GlobListMatcher, GlobListStringifier> element : elements) {
       GlobListMatcher matcher = element.getFirst();

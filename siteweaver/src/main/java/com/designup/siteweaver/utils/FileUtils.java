@@ -24,10 +24,10 @@ public class FileUtils {
 
   public static String readerToString(Reader anyReader) throws IOException {
     BufferedReader reader = null;
-    StringBuffer buffer;
+    StringBuilder buffer;
     try {
       reader = new BufferedReader(anyReader);
-      buffer = new StringBuffer();
+      buffer = new StringBuilder();
       String line;
       boolean firstLine = true;
       while ((line = reader.readLine()) != null) {

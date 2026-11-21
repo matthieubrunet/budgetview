@@ -47,7 +47,7 @@ public class BrowseFilesAction extends AbstractAction {
       return;
     }
 
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < files.length; i++) {
       buffer.append(files[i].getPath());
       if (i < files.length - 1) {

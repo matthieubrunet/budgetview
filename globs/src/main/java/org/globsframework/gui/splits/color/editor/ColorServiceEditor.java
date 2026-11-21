@@ -22,7 +22,6 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 
 public class ColorServiceEditor implements ColorCreationListener {
   private ColorService colorService;
@@ -181,7 +180,7 @@ public class ColorServiceEditor implements ColorCreationListener {
   }
 
   private JComboBox createComboBox() {
-    final JComboBox comboBox = new JComboBox(new DefaultComboBoxModel(new Vector(colorService.getColorSets())));
+    final JComboBox comboBox = new JComboBox(new DefaultComboBoxModel(colorService.getColorSets().toArray()));
     comboBox.setSelectedItem(colorService.getCurrentColorSet());
     comboBox.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {

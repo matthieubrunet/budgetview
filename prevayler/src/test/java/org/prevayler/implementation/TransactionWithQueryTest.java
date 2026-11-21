@@ -33,7 +33,7 @@ public class TransactionWithQueryTest extends FileIOTest {
 
 	private Prevayler createPrevayler(Serializer journalSerializer) throws Exception {
 		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configurePrevalentSystem(new StringBuffer("the system"));
+		factory.configurePrevalentSystem(new StringBuilder("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
 		factory.configureJournalSerializer("journal", journalSerializer);
 		return factory.create();

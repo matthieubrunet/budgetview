@@ -77,7 +77,7 @@ public class XmlUtils {
   }
 
   public static String addInCDataValue(String xmlString) {
-    return new StringBuffer("<![CDATA[").append(xmlString).append("]]>").toString();
+    return new StringBuilder("<![CDATA[").append(xmlString).append("]]>").toString();
   }
 
   public static XMLReader getXmlReader() {

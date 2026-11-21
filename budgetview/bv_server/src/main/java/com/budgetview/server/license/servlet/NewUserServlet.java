@@ -72,7 +72,7 @@ public class NewUserServlet extends HttpServlet {
       URIBuilder builder = new URIBuilder(PaypalConstants.PAYPAL_CONFIRM_URL);
       builder.addParameter("cmd", "_notify-validate");
       Map<String, String[]> map = (Map<String, String[]>)req.getParameterMap();
-      StringBuffer paramaters = new StringBuffer();
+      StringBuilder paramaters = new StringBuilder();
       for (Map.Entry<String, String[]> entry : map.entrySet()) {
         String key = entry.getKey();
         for (String name : entry.getValue()) {

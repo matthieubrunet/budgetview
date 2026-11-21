@@ -251,7 +251,7 @@ public class Utils {
   }
 
   public static String replace(Matcher groupMatcher, final Pattern placementRegexp, final String targetString) {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     Matcher matcher = placementRegexp.matcher(targetString);
     while (matcher.find()) {
       int group;

@@ -164,7 +164,9 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   les balises `Utils.beginRemove`/`endRemove`, que le shrinker supprimé exploitait, laissent depuis la 6.0.1 du code de
   développement dans l'application livrée (menu `[Dev]`…). Quatre lots proposés (0, A à C), tous faits le 2026-11-21 :
   balises remplacées par `Application.isDevMode()`, 4 classes et ~25 méthodes supprimées, `Utils.equal` → `Objects.equals`.
-- [ ] **3e. Collections synchronisées** (`Vector`, `Hashtable`, `StringBuffer`, 5 fichiers).
+- [x] **3e. Collections synchronisées** (`Vector`, `Hashtable`, `StringBuffer`, 5 fichiers).
+  Fait le 2026-11-21 en un seul lot, voir [3e](#3e-collections-synchronisées) plus bas : 41 `StringBuffer` → `StringBuilder`
+  (17 fichiers), 1 `Vector` → tableau, aucun `Hashtable` ; tous locaux à un thread.
 - [ ] **3f. Dates** (35 fichiers) → `java.time`. C'est le chantier le plus délicat : le modèle
   stocke des mois et des jours sous forme d'entiers. Ne toucher qu'au code de calcul et
   d'affichage, et le faire en dernier.
@@ -1322,7 +1324,23 @@ comportement de la 5.01 dans l'application livrée).
 course d'uispec4j « No such child » est sortie à deux suites sur quatre (lots B et C, deux classes différentes), toujours
 verte seule : elle reste à traiter avec les tests instables (voir 5c).
 
+## 3e, collections synchronisées
 
+Fait le 2026-11-21. Les 5 fichiers du point de départ étaient ceux du code livré de `bv_desktop`, `bv_shared` et `globs` ;
+compté sur tous les modules, sources de test comprises : 19 fichiers, 41 `StringBuffer`, 1 `Vector`, 0 `Hashtable`.
+Aucun de ces objets n'est partagé entre threads : variables locales, champ d'un parseur SAX (`SaxStackParser`), ou
+système de test des tests de `prevayler`, que Prevayler sérialise par sa propre stratégie (`StringBuilder` est lui aussi
+`Serializable`). `Matcher.appendReplacement` (`Utils.replace`) accepte un `StringBuilder` depuis Java 9. Le seul `Vector`
+alimentait un `DefaultComboBoxModel` de `ColorServiceEditor` (éditeur de couleurs de développement) : un tableau suffit.
+Laissé : `SmtpMessage` de `bv_server`, copie de la bibliothèque Dumbster (Apache 2.0), à garder telle quelle.
+
+Un seul lot, 18 fichiers, +25 −26 lignes. Tests de `globs` 808, `prevayler` 26 verts ; `siteweaver` à la main (JUnitCore,
+JUnit 4.12) 69, dont les 7 échecs anciens de `SiteUploaderTest` (5d) ; `bv_desktop` 1 026 verts, 4 min 50 s ; 0 `[WARNING]`,
+`bv_server` compile.
+
+## 5c, durée
+
+Fait les 2026-11-20 et 21.
 
 **Variabilité (9 à 21 min).** Les classes ordinaires durent la même chose d'une suite à l'autre (±1 s), mais chaque
 suite lente compte une ou deux classes qui « calent » : `SetPasswordTest` 80 s au lieu de 2 s, `AnalysisSeriesGroupViewTest`
@@ -1406,3 +1424,4 @@ charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chanti
 | 2026-11-21 | 3d, lot A (JDK direct) | 3 classes et `Utils.copyOf` supprimés, `Files` modernisé (4 flux fermés) ; `FilesTest` ajouté (12 tests). Tests de `globs` 808 verts, `bv_desktop` 1 026 verts, 4 min 43 s |
 | 2026-11-21 | 3d, lot B (doublons et morts) | 5 doublons fusionnés, 7 méthodes mortes, `RandomStrings` et le tirage du mot de passe mobile supprimés (+11 −217 lignes). Tests de `globs` 808 verts, `bv_desktop` 1 026 (1 course d'uispec4j, verte relancée), 4 min 56 s |
 | 2026-11-21 | 3d, lot C (`Objects.equals`) | 174 appels dans 79 fichiers, `Utils.equal` supprimé (+238 −243 lignes). Tests de `globs` 808 verts, `bv_desktop` 1 026 (1 course d'uispec4j, verte relancée), 5 min 02 s. **3d terminé** |
+| 2026-11-21 | 3e, collections synchronisées | 41 `StringBuffer` → `StringBuilder`, 1 `Vector` → tableau (18 fichiers, +25 −26 lignes). Tests de `globs` 808, `prevayler` 26, `bv_desktop` 1 026 verts, 4 min 50 s. **3e terminé** |

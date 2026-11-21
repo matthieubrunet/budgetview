@@ -8,13 +8,13 @@ import java.util.*;
 public class ArrayUtils {
 
   public static String toString(Object[] objects) {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     appendLine(buffer, objects, ",");
     return buffer.toString();
   }
 
   public static String toString(Object[][] objects) {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     buffer.append('[');
     for (int i = 0; i < objects.length; i++) {
       if (i > 0) {
@@ -27,7 +27,7 @@ public class ArrayUtils {
     return buffer.toString();
   }
 
-  private static void appendLine(StringBuffer buffer, Object[] objects, String separator) {
+  private static void appendLine(StringBuilder buffer, Object[] objects, String separator) {
     buffer.append('[');
     for (int i = 0; i < objects.length; i++) {
       if (objects[i] == null) {
@@ -47,7 +47,7 @@ public class ArrayUtils {
   }
 
   public static String toString(int[] ints) {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     buffer.append('[');
     for (int i = 0; i < ints.length; i++) {
       buffer.append(ints[i]);
@@ -60,7 +60,7 @@ public class ArrayUtils {
   }
 
   public static String toString(boolean[] booleans) {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     buffer.append('[');
     for (int i = 0; i < booleans.length; i++) {
       buffer.append(booleans[i]);

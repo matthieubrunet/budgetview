@@ -99,14 +99,14 @@ public class XmlComparator {
   }
 
   static String getReader(Reader reader) throws IOException {
-    StringBuffer stringBuffer = new StringBuffer();
+    StringBuilder builder = new StringBuilder();
     BufferedReader bufferedReaderA = new BufferedReader(reader);
     String readingString = bufferedReaderA.readLine();
     while (readingString != null) {
-      stringBuffer.append(readingString);
+      builder.append(readingString);
       readingString = bufferedReaderA.readLine();
     }
-    return stringBuffer.toString();
+    return builder.toString();
   }
 
   private static XmlComparableNode createXmlEqualComparableNode(Reader reader, XMLReader parser) throws Exception {
@@ -215,7 +215,7 @@ public class XmlComparator {
     }
 
     private String childrenString() {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for (Iterator iterator = childrenOccurences.keySet().iterator(); iterator.hasNext();) {
         XmlComparableNode node = (XmlComparableNode)iterator.next();
         sb.append(node);
@@ -225,7 +225,7 @@ public class XmlComparator {
     }
 
     private String attributeString() {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for (Iterator iterator = attributes.entrySet().iterator(); iterator.hasNext();) {
         Map.Entry e = (Map.Entry)iterator.next();
         sb.append(" ").append(e.getKey()).append("=\"").append(e.getValue()).append('"');

@@ -36,7 +36,7 @@ public class GenericSnapshotManagerTest extends FileIOTest {
 	private Prevayler createPrevayler(String suffix, Serializer serializer) throws IOException,
 			ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configurePrevalentSystem(new StringBuffer("initial"));
+		factory.configurePrevalentSystem(new StringBuilder("initial"));
 		factory.configurePrevalenceDirectory(_testDirectory);
 		factory.configureSnapshotSerializer(suffix, serializer);
 		return factory.create();

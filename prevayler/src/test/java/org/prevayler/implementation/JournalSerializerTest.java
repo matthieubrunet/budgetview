@@ -80,7 +80,7 @@ public class JournalSerializerTest extends FileIOTest {
 	private Prevayler createPrevayler(String suffix, Serializer journalSerializer)
 			throws IOException, ClassNotFoundException {
 		PrevaylerFactory factory = new PrevaylerFactory();
-		factory.configurePrevalentSystem(new StringBuffer("the system"));
+		factory.configurePrevalentSystem(new StringBuilder("the system"));
 		factory.configurePrevalenceDirectory(_testDirectory);
 		factory.configureJournalSerializer(suffix, journalSerializer);
 		factory.configureClock(new Clock() {
