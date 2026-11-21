@@ -179,8 +179,10 @@ Des remplacements mécaniques et relisibles, pas une réécriture.
   pour chacun, réparer ou supprimer.
 - [ ] **5b. Tests en double** : avec JaCoCo par test, repérer ceux qui couvrent exactement les
   mêmes lignes.
-- [ ] **5c. Durée** : repérer les classes de test les plus lentes (`target/surefire-reports`) et
+- [x] **5c. Durée** : repérer les classes de test les plus lentes (`target/surefire-reports`) et
   voir si leur coût est justifié.
+  Fait le 2026-11-21 (avancé avant 3d à la demande de Matthieu), voir [5c, durée](#5c-durée) plus bas : suite de
+  `bv_desktop` de 9 à 21 min ramenée à 5 min (3 JVM en parallèle, `caffeinate -i` contre la veille du Mac).
 - [ ] **5d. Tests de `siteweaver` sous Maven** : comme `prevayler` en 2c (lot 0), ils sont en JUnit 3.8.1, que surefire
   refuse ; ils n'ont jamais tourné par Maven. Passer à JUnit 4.12+ dans son `pom`. Lancés à la main en 3a (JUnitCore) :
   72, dont 10 échecs anciens à trier (7 de `SiteUploaderTest`, 3 classes sans test, qu'un `TestSuite` signale).
@@ -1191,6 +1193,39 @@ l'utilisateur (saisie libre), licences de l'écran « À propos ». Différences
   de dev. Le lien vers le site d'une banque n'a pas pu l'être (pas de banque à site dans les données de dev) : même
   appel que l'aide.
 
+## 5c, durée
+
+Fait les 2026-11-20 et 21.
+
+**Variabilité (9 à 21 min).** Les classes ordinaires durent la même chose d'une suite à l'autre (±1 s), mais chaque
+suite lente compte une ou deux classes qui « calent » : `SetPasswordTest` 80 s au lieu de 2 s, `AnalysisSeriesGroupViewTest`
+476 s au lieu de 2. Cause : la **veille du Mac**, sur batterie, quand personne ne touche le clavier (`pmset -g log`,
+« Entering Sleep state due to 'Idle Sleep' ») ; la JVM gelée fait durer la classe en cours le temps de la sieste. Veilles
+de 77 s et de 580 s, pour des calages de 78 s et de 555 s. Remède : `caffeinate -i mvn test …`. Il ne protège pas d'une
+veille capot fermé (« Clamshell Sleep » : une suite lancée à 22 h 23 a fini 8 h 57 plus tard).
+
+**Parallélisme.** Une JVM par classe (`reuseForks=false`) reste indispensable (fuites, voir `CLAUDE.md`), mais rien
+n'empêchait d'en lancer plusieurs à la fois, hormis le dossier `tmp/` partagé : `FunctionalTestCase` le vide au démarrage
+et les tests y gardent `tmp/test_prevayler`. Chaque JVM a désormais le sien (`workingDirectory` =
+`target/forks/${surefire.forkNumber}`) ; aucun test ne lit de fichier par un chemin relatif au module, JaCoCo écrit par
+chemin absolu. `forkCount` passe par la propriété `test.forks` : un `<forkCount>` écrit en dur dans le `pom` l'emporte
+sur `-DforkCount` en ligne de commande (premier essai faussé ainsi).
+
+| JVM | Durée | Somme des durées par classe | Résultat |
+|---|---|---|---|
+| 1 | 9 min 16 s (sans veille) | 560 s | vert ; 1 course « No such child » passagère sur un autre essai |
+| 3 | **5 min 08 s** | 800 s | vert |
+| 4 | 5 min 48 s | 1 239 s | 3 échecs, verts relancés seuls : 2 « No window was shown » (délai de 30 s), 1 « No such child » |
+
+Machine : 8 cœurs dont 4 de performance, 16 Go, batterie à 6 % en charge pendant les essais à 3 et 4 JVM. Retenu : 3.
+
+**Classes les plus lentes.** En série, sans veille : `SavingsTest` 14 s (38 tests), `SeriesEditionTest` 12 s (51),
+`CategorizationTest` 11 s (42), `LoginTest` 12 s (20), `RestartTest` 11 s (15) : 0,3 à 0,8 s par test, comme le reste de
+la suite. Rien d'injustifié ; leur seule réduction passerait par moins de tests (5b).
+
+**Restant, hors 5c.** Les courses d'uispec4j (« No such child », fenêtre non interceptée) se voient plus souvent sous la
+charge : à traiter avec les tests instables (`SignpostSequenceTest`), au chantier des tests unitaires.
+
 ## Journal
 
 | Date | Chantier | Résultat (classes, taille du jar, tests) |
@@ -1238,3 +1273,4 @@ l'utilisateur (saisie libre), licences de l'écran « À propos ». Différences
 | 2026-11-20 | 3c, inventaire | Rien de modifié. `MacOSXHooks` déjà sur `java.awt.Desktop`, mais par réflexion avec un repli `com.apple.eawt` mort (~130 lignes à retirer avec `PicsouMacLookAndFeel`) ; navigateur par trois `Runtime.exec(String)` (dépréciés), remplaçables par `Desktop.browse`. Deux lots proposés (A et B) |
 | 2026-11-20 | 3c, lot A (hooks macOS) | `MacOSXHooks` sans réflexion ni `com.apple.eawt`, `PicsouMacLookAndFeel` supprimé (+56 −202 lignes) ; 2 139 `.class`, `target/dist` 11 Mo, `budgetview.jar` 4,55 Mo. Tests de `bv_desktop` 1 026 verts, 11 min ; menus vérifiés dans l'appli |
 | 2026-11-20 | 3c, lot B (navigateur) | 3 services à `Runtime.exec` remplacés par `Desktop.browse` (+24 −67 lignes) ; 2 136 `.class` (−3), `target/dist` 11 Mo, `budgetview.jar` 4,54 Mo. Tests de `bv_desktop` 1 026 verts, 19 min ; liens d'aide vérifiés dans l'appli. **3c terminé** |
+| 2026-11-21 | 5c, durée | Calages de 80 s à 8 min dus à la veille du Mac : `caffeinate -i`. 3 JVM de test en parallèle, chacune dans `target/forks/<n>` (`pom` de `bv_desktop`) : suite de `bv_desktop` 1 026 verts en 5 min 08 s (9 à 21 min avant). **5c terminé** |

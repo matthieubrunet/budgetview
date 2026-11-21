@@ -12,6 +12,10 @@
     <jdk.test.args></jdk.test.args>
     <!-- Agent JaCoCo des JVM de test : vide sauf avec le profil coverage. -->
     <jacoco.args></jacoco.args>
+    <!-- Nombre de JVM de test lancées en même temps (-Dtest.forks=… pour changer). Mesures du 2026-11-21 (Mac M,
+         4 cœurs de performance) : 1 → 9 à 11 min ; 3 → 5 min, verte ; 4 → 6 min et 3 échecs d'uispec4j sous la
+         charge (fenêtre attendue plus de 30 s, course « No such child »). -->
+    <test.forks>3</test.forks>
   </properties>
   
   <repositories>
@@ -64,8 +68,11 @@
           <argLine>-Xmx1024m -Dapple.awt.UIElement=true ${jdk.test.args} @{jacoco.args}</argLine>
           <!-- Une JVM par classe de test : les tests fonctionnels laissent fuir fenêtres et threads,
                une JVM partagée finit en OutOfMemoryError et emporte tous les tests suivants. -->
-          <forkCount>1</forkCount>
+          <forkCount>${test.forks}</forkCount>
           <reuseForks>false</reuseForks>
+          <!-- Chaque JVM dans son dossier : FunctionalTestCase vide tmp/ au démarrage et les tests y partagent
+               tmp/test_prevayler. Indispensable dès que forkCount dépasse 1. -->
+          <workingDirectory>${project.build.directory}/forks/${surefire.forkNumber}</workingDirectory>
           <systemPropertyVariables>
             <file.encoding>UTF-8</file.encoding>
             <uispec4j.test.library>junit</uispec4j.test.library>

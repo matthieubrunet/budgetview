@@ -186,7 +186,7 @@ l'application officielle, y compris celui désigné par son `redirect.txt`, qui 
 ## Tests de bv_desktop
 
 ```sh
-mvn test -pl budgetview/bv_desktop                     # ~14 min, 1 028 tests, 163 classes (2026-11-16)
+caffeinate -i mvn test -pl budgetview/bv_desktop       # ~5 min, 1 026 tests, 162 classes, 3 JVM (2026-11-21)
 mvn test -pl budgetview/bv_desktop -Dtest=LoginTest    # une classe (liste séparée par des virgules)
 mvn -Pcoverage test -pl budgetview/bv_desktop && docs/audit/coverage.sh   # couverture JaCoCo → target/coverage/
 ```
@@ -197,9 +197,16 @@ Désactiver un test : JUnit 3, donc renommer la méthode `disabled_test…` avec
 (`@Ignore` est sans effet) ; exclure la classe dans le `pom` si plus aucun test n'y reste.
 Réglages du `pom.xml` (surefire) et leurs raisons :
 - `-Xmx1024m` : à 256 Mo, les tests s'enlisaient en `OutOfMemoryError`.
-- `forkCount=1` + `reuseForks=false` : une JVM par classe. Les tests fonctionnels laissent fuir
+- `reuseForks=false` : une JVM par classe. Les tests fonctionnels laissent fuir
   fenêtres et threads (700+) : en JVM partagée, l'`OutOfMemoryError` arrivait vers la 80e classe
   et la JVM mourait (« forked VM terminated without saying goodbye »), emportant la suite.
+- `forkCount=${test.forks}`, 3 par défaut : trois de ces JVM en même temps (audit 5c, mesures dans le `pom`).
+  À 4, la machine sature et uispec4j échoue par délai dépassé. `-Dtest.forks=1` pour revenir en série.
+- `workingDirectory` = `target/forks/<n>` : chaque JVM a son `tmp/`, qu'elle vide au démarrage
+  (`FunctionalTestCase`). Sans cela, des JVM parallèles s'effaceraient leurs fichiers.
+- **`caffeinate -i`** devant `mvn test` : sur batterie, le Mac se met en veille quand personne ne touche le
+  clavier, et la JVM gelée fait « durer » la classe en cours le temps de la sieste (de 80 s à 8 min relevés,
+  d'où des suites de 9 à 21 min). Capot fermé, la veille a lieu malgré `caffeinate` : le laisser ouvert.
 - `-Dapple.awt.UIElement=true` : sans cela, chaque JVM de test passe au premier plan sur macOS
   (icône Dock, vol du focus toutes les 2 s) et certaines fenêtres (« choix du compte ») s'affichent.
 
@@ -229,7 +236,7 @@ Adaptations des tests faites pour la 6.00 :
   `PicsouInit.createTransientDataForNewUser`), sinon le contrôle des liens (`GlobCheck.linksAreAllConnected`)
   signale de faux liens cassés (voir `DataCheckingServiceTest`).
 - Pour diagnostiquer : rapports dans `target/surefire-reports/*.txt`, pile complète avec
-  `-DtrimStackTrace=false`. Les tests écrivent dans `tmp/` (ignoré par git).
+  `-DtrimStackTrace=false`. Les tests écrivent dans `target/forks/<n>/tmp/`.
 - La commande `timeout` n'existe pas sur ce Mac (pas de coreutils). Une commande
   `timeout … mvn test | grep …` échoue sans message et sort avec le code 0 : on croit les tests passés
   alors qu'ils n'ont pas tourné. Pour limiter la durée, utiliser le délai de l'outil qui lance la commande,
