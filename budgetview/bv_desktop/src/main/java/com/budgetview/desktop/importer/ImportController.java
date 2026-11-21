@@ -483,12 +483,6 @@ public class ImportController implements Disposable {
         else {
           SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-              try {
-                Thread.sleep(50);
-              }
-              catch (InterruptedException e) {
-                // Ignore
-              }
               openRequestManager.openFiles(files);
             }
           });
